@@ -266,7 +266,7 @@ if (defaultLanguage = "Scale125") {
 	scaleParam := 287
 }
 
-; Gui, Add, DropDownList, x80 y245 w145 vdefaultLanguage choose%defaultLang%, Scale125
+; Gui, Add, DropDownList, x80 y245 w145 vdefaultLanguage choose%defaultLang%, Scale125|Scale100
 
 Gui, Show, , %localVersion% PTCGPB Bot Setup [Non-Commercial 4.0 International License] ;'
 Return
