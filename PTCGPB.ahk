@@ -21,6 +21,9 @@ if not A_IsAdmin
 MsgBox, 64, The project is now licensed under CC BY-NC 4.0, The original intention of this project was not for it to be used for paid services even those disguised as 'donations.' I hope people respect my wishes and those of the community. `nThe project is now licensed under CC BY-NC 4.0, which allows you to use, modify, and share the software only for non-commercial purposes. Commercial use, including using the software to provide paid services or selling it (even if donations are involved), is not allowed under this license. The new license applies to this and all future releases.
 
 CheckForUpdate()
+*/
+
+MsgBox, 64, 白王修改版, 感謝群友的努力新增了以下四點 1.SCALE100 2.出神包更換頭像成皮卡丘以及簽名改成我是新人(可能不同語系會不相同) 3.Main重啟改到心跳頻道 4.有超過一個Main需求的 可以手動進去SCRIPTS資料夾 點開Main2或是Main3 模擬器也要是相同名稱 提醒:作者表示這些都是公開且免費的 有需要的人都可以去他的GitHub下載.
 
 KillADBProcesses()
 
