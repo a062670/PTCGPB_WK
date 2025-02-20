@@ -1,3 +1,4 @@
+/*
 version = Arturos PTCGP Bot
 #SingleInstance, force
 CoordMode, Mouse, Screen
