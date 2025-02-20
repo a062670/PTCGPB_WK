@@ -1229,11 +1229,19 @@ FoundStars(star) {
 FindBorders(prefix) {
 	count := 0
 	searchVariation := 40
-	borderCoords := [[30, 284, 83, 286]
-		,[113, 284, 166, 286]
-		,[196, 284, 249, 286]
-		,[70, 399, 123, 401]
-		,[155, 399, 208, 401]]
+	if (scaleParam = 277) { ; 125% scale
+		borderCoords := [[30, 284, 83, 286]
+			,[113, 284, 166, 286]
+			,[196, 284, 249, 286]
+			,[70, 399, 123, 401]
+			,[155, 399, 208, 401]]
+	} else {
+		borderCoords := [[30, 284-6, 83, 286-6]
+			,[113, 284-6, 166, 286-6]
+			,[196, 284-6, 249, 286-6]
+			,[70, 399-6, 123, 401-6]
+			,[155, 399-6, 208, 401-6]]
+	}
 	pBitmap := from_window(WinExist(winTitle))
 	; imagePath := "C:\Users\Arturo\Desktop\PTCGP\GPs\" . Clipboard . ".png"
 	; pBitmap := Gdip_CreateBitmapFromFile(imagePath)
@@ -1261,8 +1269,13 @@ FindGodPack() {
 			break
 		Delay(1)
 	}
-	borderCoords := [[20, 284, 90, 286]
-		,[103, 284, 173, 286]]
+	if (scaleParam = 277) { ; 125% scale
+		borderCoords := [[20, 284, 90, 286]
+			,[103, 284, 173, 286]]
+	} else {
+		borderCoords := [[20, 284-6, 90, 286-6]
+			,[103, 284-6, 173, 286-6]]
+	}
 	if(packs = 3)
 		packs := 0
 	Loop {
@@ -2587,7 +2600,7 @@ PackOpening() {
 			adbClick(146, 494) ;146, 494
 		} else if(FindOrLoseImage(120, 70, 150, 100, , "Next2", 0, failSafeTime)) {
 			adbClick(146, 494) ;146, 494
-		} else if(FindOrLoseImage(121, 465, 140, 485, , "ConfirmPack", 0, failSafeTime)) {
+		} else if(FindOrLoseImage(121, 455, 160, 495, , "ConfirmPack", 0, failSafeTime)) {
 			break
 		} else if(FindOrLoseImage(178, 193, 251, 282, , "Hourglass", 0, failSafeTime)) {
 			break
@@ -2706,7 +2719,7 @@ HourglassOpening(HG := false) {
 			adbClick(146, 494) ;146, 494
 		} else if(FindOrLoseImage(120, 70, 150, 100, , "Next2", 0, failSafeTime)) {
 			adbClick(146, 494) ;146, 494
-		} else if(FindOrLoseImage(121, 465, 140, 485, , "ConfirmPack", 0, failSafeTime)) {
+		} else if(FindOrLoseImage(121, 455, 160, 495, , "ConfirmPack", 0, failSafeTime)) {
 			break
 		}
 		failSafeTime := (A_TickCount - failSafe) // 1000
@@ -2732,7 +2745,7 @@ getFriendCode() {
 			adbClick(146, 494) ;146, 494
 		} else if(FindOrLoseImage(120, 70, 150, 100, , "Next2", 0, failSafeTime)) {
 			adbClick(146, 494) ;146, 494
-		} else if(FindOrLoseImage(121, 465, 140, 485, , "ConfirmPack", 0, failSafeTime)) {
+		} else if(FindOrLoseImage(121, 455, 160, 495, , "ConfirmPack", 0, failSafeTime)) {
 			break
 		}
 		else if(FindOrLoseImage(20, 500, 55, 530, , "Home", 0, failSafeTime)) {
