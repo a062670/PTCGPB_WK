@@ -595,6 +595,26 @@ AddFriends(renew := false, getFC := false) {
 	return n ;return added friends so we can dynamically update the .txt in the middle of a run without leaving friends at the end
 }
 
+changeProfile() {
+	FindImageAndClick(120, 500, 155, 530, , "Social", 143, 518, 500)
+	FindImageAndClick(20, 500, 55, 530, , "Home", 40, 516, 500) 212 276 230 294
+	FindImageAndClick(203, 272, 237, 300, , "Profile", 143, 95, 500)
+	FindImageAndClick(130, 448, 157, 457, , "OK7", 143, 179, 500)
+	Delay(3)
+	adbClick(143,244)
+	Delay(3)
+	adbClick(55,244)
+	Delay(3)
+	adbClick(143,466)
+	Delay(1)
+	FindImageAndClick(130, 448, 157, 457, , "OK7", 143, 316, 500)
+	Delay(3)
+	adbClick(143,244)
+	Delay(3)
+	adbClick(143,466)
+	Delay(1)
+}
+
 EraseInput(num := 0, total := 0) {
 	if(num)
 		CreateStatusMessage("Removing friend ID " . num . "/" . total)
@@ -1314,6 +1334,7 @@ GodPackFound(validity) {
 	LogToFile(logMessage, godPackLog)
 	CreateStatusMessage(logMessage)
 	friendCode := getFriendCode()
+	changeProfile()
 	logMessage := Interjection . "\n" . username . " (" . friendCode . ")\n[" . starCount . "/5][" . packs . "P] " . invalid . " God pack found in instance: " . scriptName . "\nFile name: " . accountFile . "\nBacking up to the Accounts\\GodPacks folder and continuing..."
 	LogToFile(logMessage, godPackLog)
 	;Run, http://google.com, , Hide ;Remove the ; at the start of the line and replace your url if you want to trigger a link when finding a god pack.
@@ -2203,6 +2224,14 @@ DoTutorial() {
 			adbClick(41, 296)
 		}
 	FindImageAndClick(190, 241, 225, 270, , "Name", 189, 438) ;wait for name input screen
+	FindImageAndClick(80, 448, 217, 480, , "OK7", 143, 179, 500) ; change profile image
+	Delay(3)
+	adbClick(143,244)
+	Delay(3)
+	adbClick(230,338)
+	Delay(3)
+	adbClick(143,466)
+	Delay(1)
 
 	FindImageAndClick(0, 476, 40, 502, , "OK", 139, 257) ;wait for name input screen
 
