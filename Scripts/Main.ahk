@@ -40,6 +40,7 @@ IniRead, discordUserId, %A_ScriptDir%\..\Settings.ini, UserSettings, discordUser
 IniRead, deleteMethod, %A_ScriptDir%\..\Settings.ini, UserSettings, deleteMethod, Hoard
 IniRead, sendXML, %A_ScriptDir%\..\Settings.ini, UserSettings, sendXML, 0
 IniRead, heartBeat, %A_ScriptDir%\..\Settings.ini, UserSettings, heartBeat, 1
+IniRead, heartBeatWebhookURL, Settings.ini, UserSettings, heartBeatWebhookURL, ""
 if(heartBeat)
 	IniWrite, 1, %A_ScriptDir%\..\HeartBeat.ini, HeartBeat, Main
 
@@ -521,8 +522,8 @@ Screenshot(filename := "Valid") {
 }
 
 LogToDiscord(message, screenshotFile := "", ping := false, xmlFile := "") {
-	global discordUserId, discordWebhookURL, sendXML
-	if (discordWebhookURL != "") {
+	global discordUserId, heartBeatWebhookURL, sendXML
+	if (heartBeatWebhookURL != "") {
 		MaxRetries := 10
 		RetryCount := 0
 		Loop {
@@ -536,7 +537,7 @@ LogToDiscord(message, screenshotFile := "", ping := false, xmlFile := "") {
 
 				; Create the HTTP request object
 				whr := ComObjCreate("WinHttp.WinHttpRequest.5.1")
-				whr.Open("POST", discordWebhookURL, false)
+				whr.Open("POST", heartBeatWebhookURL, false)
 				whr.SetRequestHeader("Content-Type", "application/json")
 				whr.Send(data)
 
@@ -545,14 +546,14 @@ LogToDiscord(message, screenshotFile := "", ping := false, xmlFile := "") {
 					; Check if the file exists
 					if (FileExist(screenshotFile)) {
 						; Send the image using curl
-						RunWait, curl -k -F "file=@%screenshotFile%" %discordWebhookURL%,, Hide
+						RunWait, curl -k -F "file=@%screenshotFile%" %heartBeatWebhookURL%,, Hide
 					}
 				}
 				if (xmlFile != "" && sendXML > 0) {
 					; Check if the file exists
 					if (FileExist(xmlFile)) {
 						; Send the image using curl
-						RunWait, curl -k -F "file=@%xmlFile%" %discordWebhookURL%,, Hide
+						RunWait, curl -k -F "file=@%xmlFile%" %heartBeatWebhookURL%,, Hide
 					}
 				}
 				break
