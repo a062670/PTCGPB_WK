@@ -1,4 +1,4 @@
-/*
+﻿/*
 version = Arturos PTCGP Bot
 #SingleInstance, force
 CoordMode, Mouse, Screen
@@ -22,7 +22,6 @@ MsgBox, 64, The project is now licensed under CC BY-NC 4.0, The original intenti
 
 CheckForUpdate()
 */
-
 MsgBox, 64, 白王修改版, 感謝群友的努力新增了以下四點 1.SCALE100 2.出神包更換頭像成皮卡丘以及簽名改成我是新人(可能不同語系會不相同) 3.Main重啟改到心跳頻道 4.有超過一個Main需求的 可以手動進去SCRIPTS資料夾 點開Main2或是Main3 模擬器也要是相同名稱 提醒:作者表示這些都是公開且免費的 有需要的人都可以去他的GitHub下載.
 
 KillADBProcesses()
@@ -83,7 +82,7 @@ IniRead, Charizard, Settings.ini, UserSettings, Charizard, 0
 IniRead, Mewtwo, Settings.ini, UserSettings, Mewtwo, 0
 IniRead, slowMotion, Settings.ini, UserSettings, slowMotion, 0
 
-Gui, Add, Text, x10 y10, Friend ID:
+Gui, Add, Text, x10 y10, 主號 ID:
 ; Add input controls
 if(FriendID = "ERROR")
 	FriendID =
@@ -93,21 +92,21 @@ if(FriendID = )
 else
 	Gui, Add, Edit, vFriendID w120 x60 y8 h18, %FriendID%
 
-Gui, Add, Text, x10 y30, Rerolling Instances:
-Gui, Add, Text, x30 y50, Instances:
+Gui, Add, Text, x10 y30, 多開設定:
+Gui, Add, Text, x30 y50, 小號總數:
 Gui, Add, Edit, vInstances w25 x80 y45 h18, %Instances%
-Gui, Add, Text, x30 y75, Columns:
+Gui, Add, Text, x30 y75, 排列:
 Gui, Add, Edit, vColumns w25 x80 y70 h18, %Columns%
 if(runMain)
-	Gui, Add, Checkbox, Checked vrunMain x30 y95, Run Main
+	Gui, Add, Checkbox, Checked vrunMain x30 y95, 運行主號(Main)
 else
-	Gui, Add, Checkbox, vrunMain x30 y95, Run Main
+	Gui, Add, Checkbox, vrunMain x30 y95, 運行主號(Main)
 
-Gui, Add, Text, x10 y120, God Pack Settings:
-Gui, Add, Text, x30 y140, Min. 2 Stars:
+Gui, Add, Text, x10 y120, 神包設定:
+Gui, Add, Text, x30 y140, 最小二星數:
 Gui, Add, Edit, vminStars w25 x90 y135 h18, %minStars%
 
-Gui, Add, Text, x10 y160, Method:
+Gui, Add, Text, x10 y160, 刷包法:
 
 ; Pack selection logic
 if (deleteMethod = "5 Pack") {
@@ -121,21 +120,21 @@ if (deleteMethod = "5 Pack") {
 Gui, Add, DropDownList, vdeleteMethod gdeleteSettings choose%defaultDelete% x55 y158 w60, 5 Pack|3 Pack|Inject
 
 if(packMethod)
-	Gui, Add, Checkbox, Checked vpackMethod x30 y185, 1 Pack Method
+	Gui, Add, Checkbox, Checked vpackMethod x30 y185, 單包模式
 else
-	Gui, Add, Checkbox, vpackMethod x30 y185, 1 Pack Method
+	Gui, Add, Checkbox, vpackMethod x30 y185, 單包模式
 
 if(nukeAccount)
-	Gui, Add, Checkbox, Checked vnukeAccount x30 y205, Menu Delete Account
+	Gui, Add, Checkbox, Checked vnukeAccount x30 y205, 選單刪除帳號
 else
-	Gui, Add, Checkbox, vnukeAccount x30 y205, Menu Delete Account
+	Gui, Add, Checkbox, vnukeAccount x30 y205, 選單刪除帳號
 
 if(StrLen(discordUserID) < 3)
 	discordUserID =
 if(StrLen(discordWebhookURL) < 3)
 	discordWebhookURL =
 
-Gui, Add, Text, x10 y225, Discord Settings:
+Gui, Add, Text, x10 y225, Discord 設定:
 Gui, Add, Text, x30 y245, Discord ID:
 Gui, Add, Edit, vdiscordUserId w100 x90 y240 h18, %discordUserId%
 Gui, Add, Text, x30 y270, Discord Webhook URL:
@@ -146,93 +145,93 @@ if(StrLen(heartBeatName) < 3)
 if(StrLen(heartBeatWebhookURL) < 3)
 	heartBeatWebhookURL =
 if(heartBeat) {
-	Gui, Add, Checkbox, Checked vheartBeat x30 y295 gdiscordSettings, Discord Heartbeat
-	Gui, Add, Text, vhbName x30 y315, Name:
-	Gui, Add, Edit, vheartBeatName w50 x70 y310 h18, %heartBeatName%
-	Gui, Add, Text, vhbURL x30 y340, Webhook URL:
-	Gui, Add, Edit, vheartBeatWebhookURL h20 w100 x110 y335 h18, %heartBeatWebhookURL%
+	Gui, Add, Checkbox, Checked vheartBeat x30 y295 gdiscordSettings, Discord 心跳
+	Gui, Add, Text, vhbName x40 y315, 心跳顯示名字:
+	Gui, Add, Edit, vheartBeatName w50 x150 y310 h18, %heartBeatName%
+	Gui, Add, Text, vhbURL x40 y340, 心跳 Webhook URL:
+	Gui, Add, Edit, vheartBeatWebhookURL h20 w100 x150 y335 h18, %heartBeatWebhookURL%
 } else {
-	Gui, Add, Checkbox, vheartBeat x30 y295 gdiscordSettings, Discord Heartbeat
-	Gui, Add, Text, vhbName x30 y315 Hidden, Name:
-	Gui, Add, Edit, vheartBeatName w50 x70 y310 h18 Hidden, %heartBeatName%
-	Gui, Add, Text, vhbURL x30 y340 Hidden, Webhook URL:
-	Gui, Add, Edit, vheartBeatWebhookURL h20 w100 x110 y335 h18 Hidden, %heartBeatWebhookURL%
+	Gui, Add, Checkbox, vheartBeat x30 y295 gdiscordSettings, Discord 心跳
+	Gui, Add, Text, vhbName x40 y315 Hidden, 心跳顯示名字:
+	Gui, Add, Edit, vheartBeatName w50 x150 y310 h18 Hidden, %heartBeatName%
+	Gui, Add, Text, vhbURL x40 y340 Hidden, 心跳 Webhook URL:
+	Gui, Add, Edit, vheartBeatWebhookURL h20 w100 x150 y335 h18 Hidden, %heartBeatWebhookURL%
 }
 
-Gui, Add, Text, x275 y10, Choose Pack(s):
+Gui, Add, Text, x275 y10, 選擇卡包:
 
 if(Dialga)
-	Gui, Add, Checkbox, Checked vDialga x295 y30, Dialga
+	Gui, Add, Checkbox, Checked vDialga x295 y30, 帝牙
 else
-	Gui, Add, Checkbox, vDialga x295 y30, Dialga
+	Gui, Add, Checkbox, vDialga x295 y30, 帝牙
 
 if(Palkia)
-	Gui, Add, Checkbox, Checked vPalkia x295 y50, Palkia
+	Gui, Add, Checkbox, Checked vPalkia x295 y50, 帕路
 else
-	Gui, Add, Checkbox, vPalkia x295 y50, Palkia
+	Gui, Add, Checkbox, vPalkia x295 y50, 帕路
 
 if(Mew)
-	Gui, Add, Checkbox, Checked vMew x295 y70, Mew
+	Gui, Add, Checkbox, Checked vMew x295 y70, 夢幻
 else
-	Gui, Add, Checkbox, vMew x295 y70, Mew
+	Gui, Add, Checkbox, vMew x295 y70, 夢幻
 
 if(Pikachu)
-	Gui, Add, Checkbox, Checked vPikachu x350 y30, Pikachu
+	Gui, Add, Checkbox, Checked vPikachu x350 y30, 皮卡丘
 else
-	Gui, Add, Checkbox, vPikachu x350 y30, Pikachu
+	Gui, Add, Checkbox, vPikachu x350 y30, 皮卡丘
 
 if(Charizard)
-	Gui, Add, Checkbox, Checked vCharizard x350 y50, Charizard
+	Gui, Add, Checkbox, Checked vCharizard x350 y50, 噴火龍
 else
-	Gui, Add, Checkbox, vCharizard x350 y50, Charizard
+	Gui, Add, Checkbox, vCharizard x350 y50, 噴火龍
 
 if(Mewtwo)
-	Gui, Add, Checkbox, Checked vMewtwo x350 y70, Mewtwo
+	Gui, Add, Checkbox, Checked vMewtwo x350 y70, 超夢
 else
-	Gui, Add, Checkbox, vMewtwo x350 y70, Mewtwo
+	Gui, Add, Checkbox, vMewtwo x350 y70, 超夢
 
-Gui, Add, Text, x275 y90, Other Pack Detection Settings:
+Gui, Add, Text, x275 y90, 其他卡包檢測:
 
 if(FullArtCheck)
-	Gui, Add, Checkbox, Checked vFullArtCheck x295 y110, Single Full Art
+	Gui, Add, Checkbox, Checked vFullArtCheck x295 y110, Single 單張全圖
 else
-	Gui, Add, Checkbox, vFullArtCheck x295 y110, Single Full Art
+	Gui, Add, Checkbox, vFullArtCheck x295 y110, 單張全圖
 
 if(TrainerCheck)
-	Gui, Add, Checkbox, Checked vTrainerCheck x295 y130, Single Trainer
+	Gui, Add, Checkbox, Checked vTrainerCheck x295 y130, 單張人物
 else
-	Gui, Add, Checkbox, vTrainerCheck x295 y130, Single Trainer
+	Gui, Add, Checkbox, vTrainerCheck x295 y130, 單張人物
 
 if(RainbowCheck)
-	Gui, Add, Checkbox, Checked vRainbowCheck x295 y150, Single Rainbow
+	Gui, Add, Checkbox, Checked vRainbowCheck x295 y150, 單張彩邊
 else
-	Gui, Add, Checkbox, vRainbowCheck x295 y150, Single Rainbow
+	Gui, Add, Checkbox, vRainbowCheck x295 y150, 單張彩邊
 
 if(PseudoGodPack)
-	Gui, Add, Checkbox, Checked vPseudoGodPack x392 y110, Double 2 Star
+	Gui, Add, Checkbox, Checked vPseudoGodPack x392 y110, 雙 2 星
 else
-	Gui, Add, Checkbox, vPseudoGodPack x392 y110, Double 2 Star
+	Gui, Add, Checkbox, vPseudoGodPack x392 y110, 雙 2 星
 
 if(CrownCheck)
-	Gui, Add, Checkbox, Checked vCrownCheck x392 y130, Save Crowns
+	Gui, Add, Checkbox, Checked vCrownCheck x392 y130, 保留皇冠
 else
-	Gui, Add, Checkbox, vCrownCheck x392 y130, Save Crowns
+	Gui, Add, Checkbox, vCrownCheck x392 y130, 保留皇冠
 
 if(ImmersiveCheck)
-	Gui, Add, Checkbox, Checked vImmersiveCheck x392 y150, Save Immersives
+	Gui, Add, Checkbox, Checked vImmersiveCheck x392 y150, 保留實境
 else
-	Gui, Add, Checkbox, vImmersiveCheck x392 y150, Save Immersives
+	Gui, Add, Checkbox, vImmersiveCheck x392 y150, 保留實境
 
-Gui, Add, Text, x275 y170, Time Settings:
-Gui, Add, Text, x295 y190, Delay:
-Gui, Add, Edit, vDelay w35 x330 y190 h18, %Delay%
-Gui, Add, Text, x295 y210, Wait Time:
-Gui, Add, Edit, vwaitTime w25 x350 y210 h18, %waitTime%
-Gui, Add, Text, x295 y230, Swipe Speed:
+Gui, Add, Text, x275 y170, 腳本時機設定:
+Gui, Add, Text, x295 y190, 指令延遲:
+Gui, Add, Edit, vDelay w35 x365 y190 h18, %Delay%
+Gui, Add, Text, x295 y210, 加完好友後等待時間:
+Gui, Add, Edit, vwaitTime w25 x410 y210 h18, %waitTime%
+Gui, Add, Text, x295 y230, 開包速度:
 Gui, Add, Edit, vswipeSpeed w35 x365 y230 h18, %swipeSpeed%
 
-Gui, Add, Text, x275 y250, Other Settings:
-Gui, Add, Text, x295 y270, Monitor:
+Gui, Add, Text, x275 y250, 其他設定:
+Gui, Add, Text, x295 y270, 顯示器:
 ; Initialize monitor dropdown options
 SysGet, MonitorCount, MonitorCount
 MonitorOptions := ""
@@ -245,18 +244,20 @@ Loop, %MonitorCount%
 }
 SelectedMonitorIndex := RegExReplace(SelectedMonitorIndex, ":.*$")
 Gui, Add, DropDownList, x335 y268 w90 vSelectedMonitorIndex Choose%SelectedMonitorIndex%, %MonitorOptions%
-Gui, Add, Text, x295 y290, Folder Path:
+Gui, Add, Text, x295 y290, 路徑:
 Gui, Add, Edit, vfolderPath w100 x355 y290 h18, %folderPath%
 if(slowMotion)
-	Gui, Add, Checkbox, Checked vslowMotion x295 y310, Base Game Compatibility
+	Gui, Add, Checkbox, Checked vslowMotion x295 y310, 相容原版遊戲(無加速)
 else
-	Gui, Add, Checkbox, vslowMotion x295 y310, Base Game Compatibility
+	Gui, Add, Checkbox, vslowMotion x295 y310, 相容原版遊戲(無加速)
 
-Gui, Add, Button, gOpenLink x15 y380 w120, Buy Me a Coffee <3
-Gui, Add, Button, gOpenDiscord x145 y380 w120, Join our Discord!
-Gui, Add, Button, gCheckForUpdates x275 y360 w120, Check for updates
-Gui, Add, Button, gArrangeWindows x275 y380 w120, Arrange Windows
-Gui, Add, Button, gStart x405 y380 w120, Start
+Gui, Add, Button, gOpenLink x15 y380 w120, 請作者喝咖啡
+Gui, Add, Button, gOpenDiscord x145 y380 w120, 作者 Discord!
+Gui, Add, Button, gCheckForUpdates x275 y360 w120, 檢查更新
+Gui, Add, Button, gArrangeWindows x275 y380 w120, 排列視窗
+Gui, Add, Button, gStart x405 y380 w120, 開始
+
+Gui, Add, Button, gOpenGuide x445 y5 w80, ❓設定說明
 
 if (defaultLanguage = "Scale125") {
 	defaultLang := 1
@@ -313,6 +314,11 @@ ArrangeWindows:
 		resetWindows(A_Index, SelectedMonitorIndex)
 		sleep, 10
 	}
+return
+
+; 開啟說明網頁
+OpenGuide:
+	Run, https://dgood.notion.site/PTCGPB-v6-3-8-19ef6eced61b80898c5ef41e0b2c9b9f?pvs=4
 return
 
 ; Handle the link click
@@ -809,14 +815,14 @@ MoveFilesRecursively(srcFolder, destFolder) {
 		else
 		{
 			if ((relativePath = "ids.txt" && FileExist(destPath)) || (relativePath = "usernames.txt" && FileExist(destPath)) || (relativePath = "discord.txt" && FileExist(destPath))) {
-                continue
-            }
+				continue
+			}
 			if (relativePath = "usernames.txt" && FileExist(destPath)) {
-                continue
-            }
+				continue
+			}
 			if (relativePath = "usernames.txt" && FileExist(destPath)) {
-                continue
-            }
+				continue
+			}
 			; If it's a file, move it to the destination folder
 			; Ensure the directory exists before moving the file
 			FileCreateDir, % SubStr(destPath, 1, InStr(destPath, "\", 0, 0) - 1)
