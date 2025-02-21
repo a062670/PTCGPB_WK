@@ -595,7 +595,7 @@ AddFriends(renew := false, getFC := false) {
 	return n ;return added friends so we can dynamically update the .txt in the middle of a run without leaving friends at the end
 }
 
-changeProfile() {
+changeProfile(character) {
 	FindImageAndClick(120, 500, 155, 530, , "Social", 143, 518, 500)
 	FindImageAndClick(20, 500, 55, 530, , "Home", 40, 516, 500) 212 276 230 294
 	FindImageAndClick(203, 272, 237, 300, , "Profile", 143, 95, 500)
@@ -603,13 +603,20 @@ changeProfile() {
 	Delay(3)
 	adbClick(143,244)
 	Delay(3)
-	adbClick(55,244)
+	if(character = "Pikachu")
+		adbClick(55,244)
+	else if(character = "Erika")
+		adbClick(143,338)
+	else if(character = "Snorlax")
+		adbClick(230,244)
+	else if(character = "Slowpoke")
+		adbClick(55,338)
 	Delay(3)
 	adbClick(143,466)
 	Delay(1)
 	FindImageAndClick(130, 448, 157, 457, , "OK7", 143, 316, 500)
 	Delay(3)
-	adbClick(143,244)
+	adbClick(143,370)
 	Delay(3)
 	adbClick(143,466)
 	Delay(1)
@@ -1347,7 +1354,12 @@ GodPackFound(validity) {
 	LogToFile(logMessage, godPackLog)
 	CreateStatusMessage(logMessage)
 	friendCode := getFriendCode()
-	changeProfile()
+	if(validity = "Valid") {
+		if(starCount > 2)
+			changeProfile("Pikachu")
+		else
+			changeProfile("Erika")
+	}
 	logMessage := Interjection . "\n" . username . " (" . friendCode . ")\n[" . starCount . "/5][" . packs . "P] " . invalid . " God pack found in instance: " . scriptName . "\nFile name: " . accountFile . "\nBacking up to the Accounts\\GodPacks folder and continuing..."
 	LogToFile(logMessage, godPackLog)
 	;Run, http://google.com, , Hide ;Remove the ; at the start of the line and replace your url if you want to trigger a link when finding a god pack.
