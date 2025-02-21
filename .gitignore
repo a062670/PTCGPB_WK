@@ -1,0 +1,11 @@
+# 個人設定
+Settings.ini
+# 心跳資訊
+HeartBeat.ini
+# 神包截圖
+Screenshots/**/*.png
+# 帳號 xml
+Accounts/**/*.xml
+# 忽略所有 Logs 檔案，但保留 log1.txt
+Logs/*
+!Logs/log1.txt
