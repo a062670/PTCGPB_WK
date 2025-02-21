@@ -9,3 +9,5 @@ Accounts/**/*.xml
 # 忽略所有 Logs 檔案，但保留 log1.txt
 Logs/*
 !Logs/log1.txt
+# 車隊設定
+TeamSettings.ini
