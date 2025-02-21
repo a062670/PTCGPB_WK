@@ -46,7 +46,7 @@ if(heartBeat)
 
 adbPort := findAdbPorts(folderPath)
 
-adbPath := folderPath . "\MuMuPlayerGlobal-12.0\shell\adb.exe"
+adbPath := folderPath . "\MuMu Player 12\shell\adb.exe"
 
 if !FileExist(adbPath) ;if international mumu file path isn't found look for chinese domestic path
 	adbPath := folderPath . "\MuMu Player 12\shell\adb.exe"
@@ -896,7 +896,7 @@ findAdbPorts(baseFolder := "C:\Program Files\Netease") {
 	global adbPorts, winTitle, scriptName
 	; Initialize variables
 	adbPorts := 0  ; Create an empty associative array for adbPorts
-	mumuFolder = %baseFolder%\MuMuPlayerGlobal-12.0\vms\*
+	mumuFolder = %baseFolder%\MuMu Player 12\vms\*
 	if !FileExist(mumuFolder)
 		mumuFolder = %baseFolder%\MuMu Player 12\vms\*
 

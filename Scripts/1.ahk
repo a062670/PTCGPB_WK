@@ -82,7 +82,7 @@ if(heartBeat)
 
 adbPort := findAdbPorts(folderPath)
 
-adbPath := folderPath . "\MuMuPlayerGlobal-12.0\shell\adb.exe"
+adbPath := folderPath . "\MuMu Player 12\shell\adb.exe"
 
 if !FileExist(adbPath) ;if international mumu file path isn't found look for chinese domestic path
 	adbPath := folderPath . "\MuMu Player 12\shell\adb.exe"
@@ -729,7 +729,7 @@ FindOrLoseImage(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT", E
 
 FindImageAndClick(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT", clickx := 0, clicky := 0, sleepTime := "", skip := false, safeTime := 0) {
 	global winTitle, failSafe, confirmed, slowMotion
-	
+
 	if(slowMotion) {
 		if(imageName = "Platin" || imageName = "One" || imageName = "Two" || imageName = "Three")
 			return true
@@ -1269,7 +1269,7 @@ FindGodPack() {
 	global winTitle, discordUserId, Delay, username, packs, minStars
 	gpFound := false
 	invalidGP := false
-	searchVariation := 5
+	searchVariation := 6
 	confirm := false
 	Loop {
 		if(FindBorders("lag") = 0)
@@ -1417,7 +1417,7 @@ loadAccount() {
 
 		;initializeAdbShell()
 
-	adbShell.StdIn.WriteLine("am force-stop jp.pokemon.pokemontcgp")
+		adbShell.StdIn.WriteLine("am force-stop jp.pokemon.pokemontcgp")
 
 	RunWait, % adbPath . " -s 127.0.0.1:" . adbPort . " push " . loadDir . " /sdcard/deviceAccount.xml",, Hide
 
@@ -1500,26 +1500,26 @@ saveAccount(file := "Valid") {
 }
 
 ; adbClick(X, Y) {
-	; global adbShell, setSpeed, adbPath, adbPort
-	; initializeAdbShell()
-	; X := Round(X / 277 * 540)
-	; Y := Round((Y - 44) / 489 * 960)
-	; adbShell.StdIn.WriteLine("input tap " X " " Y)
+; global adbShell, setSpeed, adbPath, adbPort
+; initializeAdbShell()
+; X := Round(X / 277 * 540)
+; Y := Round((Y - 44) / 489 * 960)
+; adbShell.StdIn.WriteLine("input tap " X " " Y)
 ; }
 
 adbClick(X, Y) {
-    global adbShell
-    static clickCommands := Object()
-    static convX := 540/277, convY := 960/489, offset := -44
+	global adbShell
+	static clickCommands := Object()
+	static convX := 540/277, convY := 960/489, offset := -44
 
-    key := X << 16 | Y 
+	key := X << 16 | Y
 
-    if (!clickCommands.HasKey(key)) {
-        clickCommands[key] := Format("input tap {} {}"
-            , Round(X * convX)
-            , Round((Y + offset) * convY))
-    }
-    adbShell.StdIn.WriteLine(clickCommands[key])
+	if (!clickCommands.HasKey(key)) {
+		clickCommands[key] := Format("input tap {} {}"
+			, Round(X * convX)
+			, Round((Y + offset) * convY))
+	}
+	adbShell.StdIn.WriteLine(clickCommands[key])
 }
 
 ControlClick(X, Y) {
@@ -1882,7 +1882,6 @@ bboxAndPause(X1, Y1, X2, Y2, doPause := False) {
 	Gui, BoundingBox:Destroy
 }
 
-
 initializeAdbShell() {
 	global adbShell, adbPath, adbPort
 	RetryCount := 0
@@ -2016,7 +2015,7 @@ findAdbPorts(baseFolder := "C:\Program Files\Netease") {
 	global adbPorts, winTitle, scriptName
 	; Initialize variables
 	adbPorts := 0  ; Create an empty associative array for adbPorts
-	mumuFolder = %baseFolder%\MuMuPlayerGlobal-12.0\vms\*
+	mumuFolder = %baseFolder%\MuMu Player 12\vms\*
 	if !FileExist(mumuFolder)
 		mumuFolder = %baseFolder%\MuMu Player 12\vms\*
 

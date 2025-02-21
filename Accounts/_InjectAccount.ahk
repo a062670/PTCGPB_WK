@@ -33,7 +33,7 @@ SaveSettings:
 
 	MsgBox, Settings submitted!`nClosing the game and  injecting the account. `nIt takes a few seconds. `nYou'll get another message box telling you it's ready.
 
-	adbPath := folderPath . "\MuMuPlayerGlobal-12.0\shell\adb.exe"
+	adbPath := folderPath . "\MuMu Player 12\shell\adb.exe"
 	findAdbPorts(folderPath)
 
 	if(!WinExist(winTitle)) {
@@ -107,7 +107,7 @@ findAdbPorts(baseFolder := "C:\Program Files\Netease") {
 	global adbPorts, winTitle
 	; Initialize variables
 	adbPorts := 0  ; Create an empty associative array for adbPorts
-	mumuFolder = %baseFolder%\MuMuPlayerGlobal-12.0\vms\*
+	mumuFolder = %baseFolder%\MuMu Player 12\vms\*
 	if !FileExist(mumuFolder)
 		mumuFolder = %baseFolder%\MuMu Player 12\vms\*
 
