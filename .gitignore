@@ -11,3 +11,6 @@ Logs/*
 !Logs/log1.txt
 # 車隊設定
 TeamSettings.ini
+# json
+json/*
+!json/1.txt
