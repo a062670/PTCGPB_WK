@@ -6,7 +6,7 @@ SetTitleMatchMode, 3
 
 githubUser := "Arturo-1212"
 repoName := "PTCGPB"
-localVersion := "v6.3.9"
+localVersion := "v6.3.11"
 scriptFolder := A_ScriptDir
 zipPath := A_Temp . "\update.zip"
 extractPath := A_Temp . "\update"
@@ -26,7 +26,7 @@ MsgBox, 64, 白王修改版, 感謝群友的努力新增了以下四點 1.SCALE1
 
 KillADBProcesses()
 
-global Instances, jsonFileName, PacksText, runMain, scaleParam
+global Instances, instanceStartDelay, jsonFileName, PacksText, runMain, scaleParam
 
 totalFile := A_ScriptDir . "\json\total.json"
 backupFile := A_ScriptDir . "\json\total-backup.json"
@@ -57,6 +57,7 @@ IniRead, discordUserId, Settings.ini, UserSettings, discordUserId, ""
 IniRead, Columns, Settings.ini, UserSettings, Columns, 5
 IniRead, godPack, Settings.ini, UserSettings, godPack, Continue
 IniRead, Instances, Settings.ini, UserSettings, Instances, 1
+IniRead, instanceStartDelay, Settings.ini, UserSettings, instanceStartDelay, 0
 IniRead, defaultLanguage, Settings.ini, UserSettings, defaultLanguage, Scale125
 IniRead, SelectedMonitorIndex, Settings.ini, UserSettings, SelectedMonitorIndex, 1
 IniRead, swipeSpeed, Settings.ini, UserSettings, swipeSpeed, 300
@@ -94,19 +95,21 @@ else
 
 Gui, Add, Text, x10 y30, 多開設定:
 Gui, Add, Text, x30 y50, 小號總數:
-Gui, Add, Edit, vInstances w25 x80 y45 h18, %Instances%
-Gui, Add, Text, x30 y75, 排列:
-Gui, Add, Edit, vColumns w25 x80 y70 h18, %Columns%
+Gui, Add, Edit, vInstances w25 x90 y45 h18, %Instances%
+Gui, Add, Text, x30 y72, 啟動延遲:
+Gui, Add, Edit, vinstanceStartDelay w25 x90 y67 h18, %instanceStartDelay%
+Gui, Add, Text, x30 y95, 排列:
+Gui, Add, Edit, vColumns w25 x90 y90 h18, %Columns%
 if(runMain)
-	Gui, Add, Checkbox, Checked vrunMain x30 y95, 運行主號(Main)
+	Gui, Add, Checkbox, Checked vrunMain x30 y115, 運行主號(Main)
 else
-	Gui, Add, Checkbox, vrunMain x30 y95, 運行主號(Main)
+	Gui, Add, Checkbox, vrunMain x30 y115, 運行主號(Main)
 
-Gui, Add, Text, x10 y120, 神包設定:
-Gui, Add, Text, x30 y140, 最小二星數:
-Gui, Add, Edit, vminStars w25 x90 y135 h18, %minStars%
+Gui, Add, Text, x10 y135, 神包設定:
+Gui, Add, Text, x30 y155, 最小二星數:
+Gui, Add, Edit, vminStars w25 x90 y155 h18, %minStars%
 
-Gui, Add, Text, x10 y160, 刷包法:
+Gui, Add, Text, x10 y180, 刷包法:
 
 ; Pack selection logic
 if (deleteMethod = "5 Pack") {
@@ -117,45 +120,45 @@ if (deleteMethod = "5 Pack") {
 	defaultDelete := 3
 }
 
-Gui, Add, DropDownList, vdeleteMethod gdeleteSettings choose%defaultDelete% x55 y158 w60, 5 Pack|3 Pack|Inject
+Gui, Add, DropDownList, vdeleteMethod gdeleteSettings choose%defaultDelete% x55 y178 w60, 5 Pack|3 Pack|Inject
 
 if(packMethod)
-	Gui, Add, Checkbox, Checked vpackMethod x30 y185, 單包模式
+	Gui, Add, Checkbox, Checked vpackMethod x30 y205, 單包模式
 else
-	Gui, Add, Checkbox, vpackMethod x30 y185, 單包模式
+	Gui, Add, Checkbox, vpackMethod x30 y205, 單包模式
 
 if(nukeAccount)
-	Gui, Add, Checkbox, Checked vnukeAccount x30 y205, 選單刪除帳號
+	Gui, Add, Checkbox, Checked vnukeAccount x30 y225, 選單刪除帳號
 else
-	Gui, Add, Checkbox, vnukeAccount x30 y205, 選單刪除帳號
+	Gui, Add, Checkbox, vnukeAccount x30 y225, 選單刪除帳號
 
 if(StrLen(discordUserID) < 3)
 	discordUserID =
 if(StrLen(discordWebhookURL) < 3)
 	discordWebhookURL =
 
-Gui, Add, Text, x10 y225, Discord 設定:
-Gui, Add, Text, x30 y245, Discord ID:
-Gui, Add, Edit, vdiscordUserId w100 x90 y240 h18, %discordUserId%
-Gui, Add, Text, x30 y270, Discord Webhook URL:
-Gui, Add, Edit, vdiscordWebhookURL h20 w100 x150 y265 h18, %discordWebhookURL%
+Gui, Add, Text, x10 y245, Discord 設定:
+Gui, Add, Text, x30 y265, Discord ID:
+Gui, Add, Edit, vdiscordUserId w100 x90 y260 h18, %discordUserId%
+Gui, Add, Text, x30 y290, Discord Webhook URL:
+Gui, Add, Edit, vdiscordWebhookURL h20 w100 x150 y285 h18, %discordWebhookURL%
 
 if(StrLen(heartBeatName) < 3)
 	heartBeatName =
 if(StrLen(heartBeatWebhookURL) < 3)
 	heartBeatWebhookURL =
 if(heartBeat) {
-	Gui, Add, Checkbox, Checked vheartBeat x30 y295 gdiscordSettings, Discord 心跳
-	Gui, Add, Text, vhbName x40 y315, 心跳顯示名字:
-	Gui, Add, Edit, vheartBeatName w50 x150 y310 h18, %heartBeatName%
-	Gui, Add, Text, vhbURL x40 y340, 心跳 Webhook URL:
-	Gui, Add, Edit, vheartBeatWebhookURL h20 w100 x150 y335 h18, %heartBeatWebhookURL%
+	Gui, Add, Checkbox, Checked vheartBeat x30 y315 gdiscordSettings, Discord 心跳
+	Gui, Add, Text, vhbName x30 y335, 心跳顯示名字:
+	Gui, Add, Edit, vheartBeatName w50 x70 y330 h18, %heartBeatName%
+	Gui, Add, Text, vhbURL x30 y360, 心跳 Webhook URL:
+	Gui, Add, Edit, vheartBeatWebhookURL h20 w100 x110 y355 h18, %heartBeatWebhookURL%
 } else {
-	Gui, Add, Checkbox, vheartBeat x30 y295 gdiscordSettings, Discord 心跳
-	Gui, Add, Text, vhbName x40 y315 Hidden, 心跳顯示名字:
-	Gui, Add, Edit, vheartBeatName w50 x150 y310 h18 Hidden, %heartBeatName%
-	Gui, Add, Text, vhbURL x40 y340 Hidden, 心跳 Webhook URL:
-	Gui, Add, Edit, vheartBeatWebhookURL h20 w100 x150 y335 h18 Hidden, %heartBeatWebhookURL%
+	Gui, Add, Checkbox, vheartBeat x30 y315 gdiscordSettings, Discord 心跳
+	Gui, Add, Text, vhbName x30 y335 Hidden, 心跳顯示名字:
+	Gui, Add, Edit, vheartBeatName w50 x70 y330 h18 Hidden, %heartBeatName%
+	Gui, Add, Text, vhbURL x30 y360 Hidden, 心跳 Webhook URL:
+	Gui, Add, Edit, vheartBeatWebhookURL h20 w100 x110 y355 h18 Hidden, %heartBeatWebhookURL%
 }
 
 Gui, Add, Text, x275 y10, 選擇卡包:
@@ -310,6 +313,10 @@ ArrangeWindows:
 	GuiControlGet, Instances,, Instances
 	GuiControlGet, Columns,, Columns
 	GuiControlGet, SelectedMonitorIndex,, SelectedMonitorIndex
+	if (runMain) {
+		resetWindows("Main", SelectedMonitorIndex)
+		sleep, 10
+	}
 	Loop %Instances% {
 		resetWindows(A_Index, SelectedMonitorIndex)
 		sleep, 10
@@ -347,6 +354,7 @@ Start:
 	IniWrite, %openPack%, Settings.ini, UserSettings, openPack
 	IniWrite, %godPack%, Settings.ini, UserSettings, godPack
 	IniWrite, %Instances%, Settings.ini, UserSettings, Instances
+	IniWrite, %instanceStartDelay%, Settings.ini, UserSettings, instanceStartDelay
 	;IniWrite, %setSpeed%, Settings.ini, UserSettings, setSpeed
 	IniWrite, %defaultLanguage%, Settings.ini, UserSettings, defaultLanguage
 	IniWrite, %SelectedMonitorIndex%, Settings.ini, UserSettings, SelectedMonitorIndex
@@ -373,6 +381,12 @@ Start:
 	IniWrite, %Mewtwo%, Settings.ini, UserSettings, Mewtwo
 	IniWrite, %slowMotion%, Settings.ini, UserSettings, slowMotion
 
+	; Run main before instances to account for instance start delay
+	if (runMain) {
+		FileName := "Scripts\Main.ahk"
+		Run, %FileName%
+	}
+
 	; Loop to process each instance
 	Loop, %Instances%
 	{
@@ -391,12 +405,14 @@ Start:
 		FileName := "Scripts\" . A_Index . ".ahk"
 		Command := FileName
 
+		if (A_Index != 1 && instanceStartDelay > 0) {
+			instanceStartDelayMS := instanceStartDelay * 1000
+			Sleep, instanceStartDelayMS
+		}
+
 		Run, %Command%
 	}
-	if(runMain) {
-		FileName := "Scripts\Main.ahk"
-		Run, %FileName%
-	}
+
 	if(inStr(FriendID, "https"))
 		DownloadFile(FriendID, "ids.txt")
 	SelectedMonitorIndex := RegExReplace(SelectedMonitorIndex, ":.*$")
@@ -532,46 +548,27 @@ resetWindows(Title, SelectedMonitorIndex){
 	global Columns, runMain
 	RetryCount := 0
 	MaxRetries := 10
-	if(runMain){
-		if(Title = 1) {
-			Loop
-			{
-				try {
-					; Get monitor origin from index
-					SelectedMonitorIndex := RegExReplace(SelectedMonitorIndex, ":.*$")
-					SysGet, Monitor, Monitor, %SelectedMonitorIndex%
-
-					rowHeight := 533  ; Adjust the height of each row
-					currentRow := Floor((Title - 1) / Columns)
-					y := currentRow * rowHeight
-					x := Mod((Title - 1), Columns) * scaleParam
-					Title := "Main"
-					WinMove, %Title%, , % (MonitorLeft + x), % (MonitorTop + y), scaleParam, 537
-					break
-				}
-				catch {
-					if (RetryCount > MaxRetries)
-						Pause
-				}
-				Sleep, 1000
-			}
-			Title := 1
-		}
-	}
 	Loop
 	{
+		msgbox %Title%
 		try {
 			; Get monitor origin from index
 			SelectedMonitorIndex := RegExReplace(SelectedMonitorIndex, ":.*$")
 			SysGet, Monitor, Monitor, %SelectedMonitorIndex%
-			if(runMain)
-				Title := Title + 1
+			if(runMain) {
+				if (Title = "Main") {
+					instanceIndex := 1
+				} else {
+					instanceIndex := Title + 1
+				}
+			} else {
+				instanceIndex := Title
+			}
 			rowHeight := 533  ; Adjust the height of each row
-			currentRow := Floor((Title - 1) / Columns)
+			currentRow := Floor((instanceIndex - 1) / Columns)
 			y := currentRow * rowHeight
-			x := Mod((Title - 1), Columns) * scaleParam
-			if(runMain)
-				Title := Title - 1
+			x := Mod((instanceIndex - 1), Columns) * scaleParam
+			msgbox %Title% %x% %y% %scaleParam%
 			WinMove, %Title%, , % (MonitorLeft + x), % (MonitorTop + y), scaleParam, 537
 			break
 		}
