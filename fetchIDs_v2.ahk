@@ -5,7 +5,7 @@
 SetBatchLines, -1
 SetWorkingDir, %A_ScriptDir%
 
-global version = "25.2.8.1"
+global version = "25.2.24.1"
 
 global loopRunning := true  ; Control whether the loop continues running
 global firstUpdate := true  ; Track if it's the first update
@@ -43,7 +43,7 @@ Gui, Show, w280, %groupName% 自動更新ids
 WinGetPos, , , guiWidth , guiHeight, ahk_class AutoHotkeyGUI
 
 positionX := A_ScreenWidth - guiWidth
-positionY := A_ScreenHeight - guiHeight - 220
+positionY := A_ScreenHeight - guiHeight - 70
 Gui, Show, w280 x%positionX% y%positionY%,%groupName% 自動更新ids
 
 Gosub, AutoUpdate ; 一開始先執行一次
@@ -246,6 +246,7 @@ ReadSettings() {
 PostOnlineStatus(status) {
     global friendID, instances, openPack, apiUrl
 
+    GuiControl, , statusText, 當前狀態: 更新中...
     ReadSettings()  ; 讀取設定檔
 
     statusStr := status ? "true" : "false"
@@ -254,9 +255,9 @@ PostOnlineStatus(status) {
     response := HTTPRequest(apiUrl, "POST", jsonBody)
 
     if (response) {
-        MsgBox, 發送成功!
+        GuiControl, , statusText, 當前狀態: 確認目前狀態...
         GetOnlineIDs()  ; 更新 ids.txt
     } else {
-        MsgBox, 發送失敗!
+        GuiControl, , statusText, 當前狀態: 更新失敗
     }
 }
