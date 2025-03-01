@@ -1,21 +1,59 @@
 ﻿#Persistent
 #NoEnv
 #SingleInstance Force
+
 SetBatchLines, -1
 SetWorkingDir, %A_ScriptDir%
 
-global version = "25.2.8.1"
+global version = "25.2.27.1"
 
 global loopRunning := true  ; Control whether the loop continues running
 global firstUpdate := true  ; Track if it's the first update
 global discordName, friendID, instances, openPack, webhook ; 使用者設定
 global groupName, apiUrl, dcWebhook ; fetch ids 設定
-global statusText, userCountText, instanceCountText, timeText
+global statusText, userCountText, instanceCountText, timeText, loadingStatus, PTCGPBVersion
 
-ReadSettings()  ; Read settings from Settings.ini
-ShowWindow()  ; Display the GUI window
+ReadSettings()
 
+Gui, Font, s10 Bold, Segoe UI  ; 設定字體大小 10，加粗，使用 Segoe UI
+Gui, Add, Text, w280 x10 vstatusText, 當前狀態: --
+SetNormalFont()
+Gui, Add, Text, w280 , ID: %friendID%
+Gui, Add, Text, w280 vuserCountText, 在線人數: -- / --
+Gui, Add, Text, w280 vinstanceCountText , 小號人數: -- / --
+; 檢查 webhook 設定是否正確
+webhookText:= "未正確設定"
+if(webhook == dcWebhook)
+    webhookText:= "已正確設定"
+else ; 紅字
+    Gui, Font, s9 Norm cRed, Segoe UI
+Gui, Add, Text, w280, DC Webhook: %webhookText%
+
+SetNormalFont()
+
+; 添加按鈕（並排顯示）
+Gui, Add, Button, w100 h30 gOnOnline, 上線
+Gui, Add, Button, x+10 w100 h30 gOnOffline, 下線
+
+Gui, Add, Text, w280 x10 vLoadingStatus, 更新狀態: 無
+Gui, Add, Text, w280 x10 vtimeText, 最後更新: 更新中...
+; Gui, Add, Button, x10 gAutoUpdate, 手動更新 ; 測試用
+
+Gui, Add, Text, w280 x10 , PTCGPB版本: %PTCGPBVersion%
+
+Gui, Show, w280, %groupName% 自動更新ids
+WinGetPos, , , guiWidth , guiHeight, ahk_class AutoHotkeyGUI
+
+positionX := A_ScreenWidth - guiWidth
+positionY := A_ScreenHeight - guiHeight - 70
+Gui, Show, w280 x%positionX% y%positionY%,%groupName% 自動更新ids
+
+Gosub, AutoUpdate ; 一開始先執行一次
 SetTimer, AutoUpdate, 60000  ; Execute AutoUpdate every 60,000 ms (1 minute)
+Return
+
+GuiClose:
+ExitApp
 
 ; ===== Automatically fetch Online IDs and write to ids.txt =====
 AutoUpdate:
@@ -32,56 +70,16 @@ AutoUpdate:
     }
 return
 
-; 顯示視窗
-ShowWindow() {
-    global friendID, instances, openPack, statusText, userCountText, instanceCountText, timeText
-
-    Gui, MyGui:New, -AlwaysOnTop +ToolWindow +Resize, 自動更新ids  ; 創建 GUI 視窗
-    Gui, MyGui:Font, s10 Bold, Segoe UI  ; 設定字體大小 10，加粗，使用 Segoe UI
-
-    ; 添加標題（標題放在視窗內部，而非標題欄）
-    ; status := (userStatus ? "上線" : "離線")
-    Gui, MyGui:Add, Text, x10 y10 w280 Center vstatusText, 當前狀態: 更新中...
-
-    ; 添加資訊文字
-    Gui, MyGui:Font, s9 Norm, Segoe UI  ; 設定一般字體
-    Gui, MyGui:Add, Text, x10 y40 w280 Center, ID: %friendID%
-    Gui, MyGui:Add, Text, x10 y60 w280 Center vuserCountText, 在線人數: 更新中...
-    Gui, MyGui:Add, Text, x10 y80 w280 Center vinstanceCountText , 小號人數: 更新中...
-
-    ; 檢查 webhook 設定是否正確
-    webhookText:= "未正確設定"
-    if(webhook == dcWebhook)
-        webhookText:= "已正確設定"
-    else ; 紅字
-        Gui, MyGui:Font, s9 Norm cRed, Segoe UI
-    Gui, MyGui:Add, Text, x10 y100 w280 Center, DC Webhook: %webhookText%
-
-    ; 恢復字體顏色
-    Gui, MyGui:Font, s9 Norm cBlack, Segoe UI
-
-    ; 添加按鈕（並排顯示）
-    Gui, MyGui:Add, Button, x40 y120 w100 h30 gOnOnline, 上線
-    Gui, MyGui:Add, Button, x160 y120 w100 h30 gOnOffline, 下線
-
-    Gui, MyGui:Add, Text, x10 y160 w280 Right vtimeText, 最後更新: 更新中...
-
-    ; 顯示 GUI
-    Gui, MyGui:Show, AutoSize Center, %groupName% 自動更新ids（請勿關閉）  ; 視窗大小根據內容調整，並置中顯示
-    return
-
-    ; 按鈕函式
-    OnOnline:
+OnOnline:
     PostOnlineStatus(true)  ; 發送上線狀態
-    return
+return
 
-    OnOffline:
+OnOffline:
     PostOnlineStatus(false)  ; 發送離線狀態
-    return
+return
 
-    GuiClose:
-    ExitApp  ; 點擊視窗關閉按鈕時，關閉腳本
-    return
+SetNormalFont(){
+    Gui, Font, s9 Norm cBlack, Segoe UI
 }
 
 ;fix unicode
@@ -94,10 +92,11 @@ FixUnicode(text) {
 
 ; ===== Fetch Online IDs and write to file =====
 GetOnlineIDs() {
-    global apiUrl, friendID, statusText, userCountText, instanceCountText, timeText
+    global apiUrl, friendID, statusText, userCountText, instanceCountText, timeText, loadingStatus
+    GuiControl, , loadingStatus, 更新狀態: 正在更新中
     response := HTTPRequest(apiUrl, "GET")
-
     if (response) {
+        GuiControl, , loadingStatus, 更新狀態: 更新完成
         FileDelete, ids.txt  ; Delete old ids.txt
 
         ; Parse JSON response and extract Online IDs
@@ -126,22 +125,23 @@ GetOnlineIDs() {
 
         ; Update GUI text
         if(userStatus){
-            GuiControl, MyGui:, statusText, 當前狀態: 上線
+            GuiControl, , statusText, 當前狀態: 上線
         }
         else{
-            GuiControl, MyGui:, statusText, 當前狀態: 離線
+            GuiControl, , statusText, 當前狀態: 離線
         }
 
-        GuiControl,MyGui:, userCountText, 在線人數: %onlineUserCount% / %userCount%
-        GuiControl,MyGui:, instanceCountText, 小號人數: %onlineInstanceCount% / %instanceCount%
+        GuiControl, , userCountText, 在線人數: %onlineUserCount% / %userCount%
+        GuiControl, , instanceCountText, 小號人數: %onlineInstanceCount% / %instanceCount%
         time := A_Now
         time := SubStr(time, 5, 2) "/" SubStr(time, 7, 2) " " SubStr(time, 9, 2) ":" SubStr(time, 11, 2) ":" SubStr(time, 13, 2)
-        GuiControl,MyGui:, timeText, 最後更新: %time%
+        GuiControl, , timeText, 最後更新: %time%
 
-        Gui, MyGui:Show, AutoSize NA  ; 重新顯示 GUI
+        ; Gui, Show , NA  ; 重新顯示 GUI
 
         return true  ; Return true on success
     }
+    GuiControl, , loadingStatus, 更新狀態: 更新失敗
     return false  ; Return false on failure
 }
 
@@ -242,23 +242,45 @@ ReadSettings() {
     IniRead, groupName, TeamSettings.ini, TeamSettings, groupName, ""
     IniRead, apiUrl, TeamSettings.ini, TeamSettings, apiUrl, ""
     IniRead, dcWebhook, TeamSettings.ini, TeamSettings, dcWebhook, ""
+
+    PTCGPBVersion := FindPTCGPBVersion()
+}
+
+FindPTCGPBVersion() {
+    lineCount := 0
+    result := ""
+    Loop Read, PTCGPB.ahk
+    {
+        lineCount++
+        if(lineCount > 10){
+            break ;只找十行
+        }
+        pos := InStr(A_LoopReadLine, "localVersion :=")
+        if(pos){
+            RegExMatch(A_LoopReadLine, """(.*?)""", match)
+            result := match1
+            break
+        }
+    }
+    return result
 }
 
 ; ===== 發送測試的 POST 請求=====
 PostOnlineStatus(status) {
     global friendID, instances, openPack, apiUrl
 
+    GuiControl, , statusText, 當前狀態: 更新中...
     ReadSettings()  ; 讀取設定檔
 
     statusStr := status ? "true" : "false"
-
-    jsonBody := "{""id"":""" friendID """,""instances"":""" instances """,""pack"":""" openPack """,""status"":""" statusStr """,""webhook"":""" webhook """,""version"":""" version """}"
+    versionStr := Format("{}({})", PTCGPBVersion, version)
+    jsonBody := "{""id"":""" friendID """,""instances"":""" instances """,""pack"":""" openPack """,""status"":""" statusStr """,""webhook"":""" webhook """,""version"":""" versionStr """}"
     response := HTTPRequest(apiUrl, "POST", jsonBody)
 
     if (response) {
-        MsgBox, 發送成功!
+        GuiControl, , statusText, 當前狀態: 確認目前狀態...
         GetOnlineIDs()  ; 更新 ids.txt
     } else {
-        MsgBox, 發送失敗!
+        GuiControl, , statusText, 當前狀態: 更新失敗
     }
 }

@@ -6,7 +6,7 @@ SetTitleMatchMode, 3
 
 githubUser := "Arturo-1212"
 repoName := "PTCGPB"
-localVersion := "v6.3.12"
+localVersion := "v6.3.14"
 scriptFolder := A_ScriptDir
 zipPath := A_Temp . "\update.zip"
 extractPath := A_Temp . "\update"
@@ -76,7 +76,8 @@ IniRead, ImmersiveCheck, Settings.ini, UserSettings, ImmersiveCheck, 0
 IniRead, PseudoGodPack, Settings.ini, UserSettings, PseudoGodPack, 0
 IniRead, minStars, Settings.ini, UserSettings, minStars, 0
 IniRead, Palkia, Settings.ini, UserSettings, Palkia, 0
-IniRead, Dialga, Settings.ini, UserSettings, Dialga, 1
+IniRead, Dialga, Settings.ini, UserSettings, Dialga, 0
+IniRead, Arceus, Settings.ini, UserSettings, Arceus, 1
 IniRead, Mew, Settings.ini, UserSettings, Mew, 0
 IniRead, Pikachu, Settings.ini, UserSettings, Pikachu, 0
 IniRead, Charizard, Settings.ini, UserSettings, Charizard, 0
@@ -163,20 +164,20 @@ if(heartBeat) {
 
 Gui, Add, Text, x275 y10, 選擇卡包:
 
-if(Dialga)
-	Gui, Add, Checkbox, Checked vDialga x295 y30, 帝牙
+if(Arceus)
+	Gui, Add, Checkbox, Checked vArceus x295 y30, 阿爾
 else
-	Gui, Add, Checkbox, vDialga x295 y30, 帝牙
+	Gui, Add, Checkbox, vArceus x295 y30, 阿爾
 
 if(Palkia)
 	Gui, Add, Checkbox, Checked vPalkia x295 y50, 帕路
 else
 	Gui, Add, Checkbox, vPalkia x295 y50, 帕路
 
-if(Mew)
-	Gui, Add, Checkbox, Checked vMew x295 y70, 夢幻
+if(Dialga)
+	Gui, Add, Checkbox, Checked vDialga x295 y70, 帝牙
 else
-	Gui, Add, Checkbox, vMew x295 y70, 夢幻
+	Gui, Add, Checkbox, vDialga x295 y70, 帝牙
 
 if(Pikachu)
 	Gui, Add, Checkbox, Checked vPikachu x350 y30, 皮卡丘
@@ -192,6 +193,11 @@ if(Mewtwo)
 	Gui, Add, Checkbox, Checked vMewtwo x350 y70, 超夢
 else
 	Gui, Add, Checkbox, vMewtwo x350 y70, 超夢
+
+if(Mew)
+	Gui, Add, Checkbox, Checked vMew x410 y30, 夢幻
+else
+	Gui, Add, Checkbox, vMew x410 y30, 夢幻
 
 Gui, Add, Text, x275 y90, 其他卡包檢測:
 
@@ -375,6 +381,7 @@ Start:
 	IniWrite, %minStars%, Settings.ini, UserSettings, minStars
 	IniWrite, %Palkia%, Settings.ini, UserSettings, Palkia
 	IniWrite, %Dialga%, Settings.ini, UserSettings, Dialga
+	IniWrite, %Arceus%, Settings.ini, UserSettings, Arceus
 	IniWrite, %Mew%, Settings.ini, UserSettings, Mew
 	IniWrite, %Pikachu%, Settings.ini, UserSettings, Pikachu
 	IniWrite, %Charizard%, Settings.ini, UserSettings, Charizard
@@ -550,7 +557,6 @@ resetWindows(Title, SelectedMonitorIndex){
 	MaxRetries := 10
 	Loop
 	{
-		msgbox %Title%
 		try {
 			; Get monitor origin from index
 			SelectedMonitorIndex := RegExReplace(SelectedMonitorIndex, ":.*$")
@@ -568,7 +574,6 @@ resetWindows(Title, SelectedMonitorIndex){
 			currentRow := Floor((instanceIndex - 1) / Columns)
 			y := currentRow * rowHeight
 			x := Mod((instanceIndex - 1), Columns) * scaleParam
-			msgbox %Title% %x% %y% %scaleParam%
 			WinMove, %Title%, , % (MonitorLeft + x), % (MonitorTop + y), scaleParam, 537
 			break
 		}
