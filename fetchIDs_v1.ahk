@@ -5,7 +5,7 @@
 SetBatchLines, -1
 SetWorkingDir, %A_ScriptDir%
 
-global version = "25.3.4.2"
+global version = "25.3.4.3"
 
 global loopRunning := true  ; Control whether the loop continues running
 global firstUpdate := true  ; Track if it's the first update
@@ -13,6 +13,7 @@ global discordName, friendID, instances, openPack, webhook ; 使用者設定
 global groupName, apiUrl, dcWebhook ; fetch ids 設定
 global statusText, userCountText, instanceCountText, timeText, loadingStatus, PTCGPBVersion
 
+CheckUsername()
 ReadSettings()
 
 Gui, Font, s10 Bold, Segoe UI  ; 設定字體大小 10，加粗，使用 Segoe UI
@@ -41,16 +42,15 @@ Gui, Add, Text, w280 x10 vtimeText, 最後更新: 更新中...
 
 Gui, Add, Text, w280 x10, PTCGPB版本: %PTCGPBVersion%
 Gui, Add, Text, x10 w280 vVersion, fetchIDs版本: %version%
-; Gui, Add, Button, x10 vUpdateButton gUpdateToLatestVersion, 檢查更新
+Gui, Add, Button, x10 vUpdateButton gUpdateToLatestVersion, 檢查更新
 
-Gui, Show, w280, %groupName% 自動更新ids
-WinGetPos, , , guiWidth , guiHeight, ahk_class AutoHotkeyGUI
-
+title := groupName . "自動更新ids"
+guiWidth = 356
+guiHeight = 435
 positionX := A_ScreenWidth - guiWidth
 positionY := A_ScreenHeight - guiHeight - 90
-Gui, Show, w280 x%positionX% y%positionY%,%groupName% 自動更新ids
+Gui, Show, w280 x%positionX% y%positionY%, %title%
 
-CheckUsername()
 CheckForUpdate()
 Gosub, AutoUpdate ; 一開始先執行一次
 SetTimer, AutoUpdate, 60000  ; Execute AutoUpdate every 60,000 ms (1 minute)
@@ -133,24 +133,22 @@ CheckForUpdate(needAlert = false){
                 UpdateToLatestVersion()
             }
         }
+    } else {
+        if (needAlert){
+            MsgBox, 尚無新版本
+        }
     }
 }
 
 UpdateToLatestVersion(){
     url := "https://raw.githubusercontent.com/a062670/PTCGPB_WK/WK/fetchIDs_v1.ahk"
-    response := HttpGet(url)
-    if !response
-    {
-        MsgBox, 取得檔案失敗
-        return
+    RunWait, curl -o fetchIDs_v1.ahk %url%, , Hide
+    if (ErrorLevel = 0) {
+        MsgBox, 更新成功！
+        Reload
+    } else {
+        MsgBox, 更新失敗！錯誤碼：%ErrorLevel%
     }
-    SavePath := A_ScriptDir "\fetchIDs_v1.ahk"
-    File := FileOpen(SavePath, "w", "UTF-8")
-    File.Write(response)
-    File.Close()
-    MsgBox, 更新成功
-    Reload
-    return
 }
 
 CheckUsername(){
