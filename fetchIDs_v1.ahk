@@ -5,7 +5,7 @@
 SetBatchLines, -1
 SetWorkingDir, %A_ScriptDir%
 
-global version = "25.3.4.1"
+global version = "25.3.4.2"
 
 global loopRunning := true  ; Control whether the loop continues running
 global firstUpdate := true  ; Track if it's the first update
@@ -13,7 +13,6 @@ global discordName, friendID, instances, openPack, webhook ; 使用者設定
 global groupName, apiUrl, dcWebhook ; fetch ids 設定
 global statusText, userCountText, instanceCountText, timeText, loadingStatus, PTCGPBVersion
 
-CheckUsername()
 ReadSettings()
 
 Gui, Font, s10 Bold, Segoe UI  ; 設定字體大小 10，加粗，使用 Segoe UI
@@ -42,7 +41,7 @@ Gui, Add, Text, w280 x10 vtimeText, 最後更新: 更新中...
 
 Gui, Add, Text, w280 x10, PTCGPB版本: %PTCGPBVersion%
 Gui, Add, Text, x10 w280 vVersion, fetchIDs版本: %version%
-Gui, Add, Button, x10 vUpdateButton gUpdateToLatestVersion, 檢查更新
+; Gui, Add, Button, x10 vUpdateButton gUpdateToLatestVersion, 檢查更新
 
 Gui, Show, w280, %groupName% 自動更新ids
 WinGetPos, , , guiWidth , guiHeight, ahk_class AutoHotkeyGUI
@@ -51,6 +50,7 @@ positionX := A_ScreenWidth - guiWidth
 positionY := A_ScreenHeight - guiHeight - 90
 Gui, Show, w280 x%positionX% y%positionY%,%groupName% 自動更新ids
 
+CheckUsername()
 CheckForUpdate()
 Gosub, AutoUpdate ; 一開始先執行一次
 SetTimer, AutoUpdate, 60000  ; Execute AutoUpdate every 60,000 ms (1 minute)
