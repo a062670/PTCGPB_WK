@@ -5,7 +5,7 @@
 SetBatchLines, -1
 SetWorkingDir, %A_ScriptDir%
 
-global version = "25.2.27.1"
+global version = "25.3.4.1"
 
 global loopRunning := true  ; Control whether the loop continues running
 global firstUpdate := true  ; Track if it's the first update
@@ -13,6 +13,7 @@ global discordName, friendID, instances, openPack, webhook ; 使用者設定
 global groupName, apiUrl, dcWebhook ; fetch ids 設定
 global statusText, userCountText, instanceCountText, timeText, loadingStatus, PTCGPBVersion
 
+CheckUsername()
 ReadSettings()
 
 Gui, Font, s10 Bold, Segoe UI  ; 設定字體大小 10，加粗，使用 Segoe UI
@@ -39,21 +40,136 @@ Gui, Add, Text, w280 x10 vLoadingStatus, 更新狀態: 無
 Gui, Add, Text, w280 x10 vtimeText, 最後更新: 更新中...
 ; Gui, Add, Button, x10 gAutoUpdate, 手動更新 ; 測試用
 
-Gui, Add, Text, w280 x10 , PTCGPB版本: %PTCGPBVersion%
+Gui, Add, Text, w280 x10, PTCGPB版本: %PTCGPBVersion%
+Gui, Add, Text, x10 w280 vVersion, fetchIDs版本: %version%
+Gui, Add, Button, x10 vUpdateButton gUpdateToLatestVersion, 檢查更新
 
 Gui, Show, w280, %groupName% 自動更新ids
 WinGetPos, , , guiWidth , guiHeight, ahk_class AutoHotkeyGUI
 
 positionX := A_ScreenWidth - guiWidth
-positionY := A_ScreenHeight - guiHeight - 70
+positionY := A_ScreenHeight - guiHeight - 90
 Gui, Show, w280 x%positionX% y%positionY%,%groupName% 自動更新ids
 
+CheckForUpdate()
 Gosub, AutoUpdate ; 一開始先執行一次
 SetTimer, AutoUpdate, 60000  ; Execute AutoUpdate every 60,000 ms (1 minute)
 Return
 
 GuiClose:
 ExitApp
+
+CheckForUpdates:
+    CheckForUpdate()
+UpdateToLatestVersion:
+    CheckForUpdate(true)
+return
+
+HttpGet(url) {
+    http := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+    http.Open("GET", url, false)
+    http.Send()
+    return http.ResponseText
+}
+
+FineRemoteVersion(content){
+    Loop, Parse, content, `n
+    {
+        pos := InStr(A_LoopField, "global version =")
+        if(pos){
+            RegExMatch(A_LoopField, """(.*?)""", match)
+            return match1
+        }
+    }
+    return ""
+}
+
+VersionCompare(v1, v2) {
+    ; 從PTCGPB搬來
+    ; Remove non-numeric characters (like 'alpha', 'beta')
+    cleanV1 := RegExReplace(v1, "[^\d.]")
+    cleanV2 := RegExReplace(v2, "[^\d.]")
+
+    v1Parts := StrSplit(cleanV1, ".")
+    v2Parts := StrSplit(cleanV2, ".")
+
+    Loop, % Max(v1Parts.MaxIndex(), v2Parts.MaxIndex()) {
+        num1 := v1Parts[A_Index] ? v1Parts[A_Index] : 0
+        num2 := v2Parts[A_Index] ? v2Parts[A_Index] : 0
+        if (num1 > num2)
+            return 1
+        if (num1 < num2)
+            return -1
+    }
+
+    ; If versions are numerically equal, check if one is an alpha version
+    isV1Alpha := InStr(v1, "alpha") || InStr(v1, "beta")
+    isV2Alpha := InStr(v2, "alpha") || InStr(v2, "beta")
+
+    if (isV1Alpha && !isV2Alpha)
+        return -1 ; Non-alpha version is newer
+    if (!isV1Alpha && isV2Alpha)
+        return 1 ; Alpha version is older
+
+    return 0 ; Versions are equal
+}
+
+CheckForUpdate(needAlert = false){
+    url := "https://raw.githubusercontent.com/a062670/PTCGPB_WK/WK/fetchIDs_v1.ahk"
+    response := HttpGet(url)
+    if !response
+    {
+        MsgBox, 取得檔案失敗
+        return
+    }
+    ; 取得版本
+    remoteVersion := FineRemoteVersion(response)
+    if (VersionCompare(remoteVersion, version) > 0){
+        GuiControl, , version,fetchIDs版本: %version% (有新版本) ; 新版本提示
+        if (needAlert){
+            MsgBox, 4, 更新提示, 有新版本 %remoteVersion% 是否要更新？
+            IfMsgBox, Yes
+            {
+                UpdateToLatestVersion()
+            }
+        }
+    }
+}
+
+UpdateToLatestVersion(){
+    url := "https://raw.githubusercontent.com/a062670/PTCGPB_WK/WK/fetchIDs_v1.ahk"
+    response := HttpGet(url)
+    if !response
+    {
+        MsgBox, 取得檔案失敗
+        return
+    }
+    SavePath := A_ScriptDir "\fetchIDs_v1.ahk"
+    File := FileOpen(SavePath, "w", "UTF-8")
+    File.Write(response)
+    File.Close()
+    MsgBox, 更新成功
+    Reload
+    return
+}
+
+CheckUsername(){
+    ; 檢查第一行
+    FileReadLine, name, usernames.txt, 1
+    if(name == "bulbasaur" || name == "NoName1" || SubStr(name, 0) != 1){
+        MsgBox, usernames.txt 不正確，請先執行Rename.ahk
+        ExitApp
+        return false
+    }
+    ; 檢查最後一行
+    FileReadLine, lastName, usernames.txt, 5000
+    if(SubStr(lastName, -3) != 5000){
+        MsgBox, usernames.txt 不正確，請先執行Rename.ahk
+        ExitApp
+        return false
+    }
+    return true
+}
 
 ; ===== Automatically fetch Online IDs and write to ids.txt =====
 AutoUpdate:
