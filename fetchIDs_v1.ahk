@@ -5,7 +5,7 @@
 SetBatchLines, -1
 SetWorkingDir, %A_ScriptDir%
 
-global version = "25.3.5.1"
+global version = "25.3.5.2"
 
 global loopRunning := true  ; Control whether the loop continues running
 global firstUpdate := true  ; Track if it's the first update
@@ -68,10 +68,14 @@ UpdateToLatestVersion:
 Return
 
 HttpGet(url) {
-    http := ComObjCreate("WinHttp.WinHttpRequest.5.1")
-    http.Open("GET", url, false)
-    http.Send()
-    return http.ResponseText
+    try{
+        http := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+        http.Open("GET", url, false)
+        http.Send()
+        return http.ResponseText
+    } catch e {
+        return 0
+    }
 }
 
 FineRemoteVersion(content){
