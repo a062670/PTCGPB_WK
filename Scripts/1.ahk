@@ -1899,13 +1899,7 @@ initializeAdbShell() {
 					throw "Failed to start ADB shell."
 				}
 
-				adbShell.StdIn.WriteLine("su -c ""whoami && sh""")
-				Delay(2)
-				output := adbShell.StdOut.ReadLine()
-				if (output != "root") {
-					MsgBox, "Failed to gain root access."
-					ExitApp
-				}
+				adbShell.StdIn.WriteLine("su")
 			}
 
 			; If adbShell is running, break loop

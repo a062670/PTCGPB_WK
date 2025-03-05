@@ -6,7 +6,7 @@ SetTitleMatchMode, 3
 
 githubUser := "Arturo-1212"
 repoName := "PTCGPB"
-localVersion := "v6.3.15"
+localVersion := "v6.3.16"
 scriptFolder := A_ScriptDir
 zipPath := A_Temp . "\update.zip"
 extractPath := A_Temp . "\update"
@@ -84,189 +84,139 @@ IniRead, Charizard, Settings.ini, UserSettings, Charizard, 0
 IniRead, Mewtwo, Settings.ini, UserSettings, Mewtwo, 0
 IniRead, slowMotion, Settings.ini, UserSettings, slowMotion, 0
 
-Gui, Add, Text, x10 y10, 主號 ID:
-; Add input controls
-if(FriendID = "ERROR")
-	FriendID =
+; Create a stylish GUI with custom colors and modern look
+Gui, Color, 1E1E1E, 333333 ; Dark theme background
+Gui, Font, s10 cWhite, Segoe UI ; Modern font
 
-if(FriendID = )
-	Gui, Add, Edit, vFriendID w120 x60 y8
+; ========== Friend ID Section ==========
+Gui, Add, GroupBox, x5 y0 w240 h40 cWhite, 主號 ID
+if(FriendID = "ERROR" || FriendID = "")
+	Gui, Add, Edit, vFriendID w180 x35 y15 h20 -E0x200 Background2A2A2A cWhite
 else
-	Gui, Add, Edit, vFriendID w120 x60 y8 h18, %FriendID%
+	Gui, Add, Edit, vFriendID w180 x35 y15 h20 -E0x200 Background2A2A2A cWhite, %FriendID%
 
-Gui, Add, Text, x10 y30, 多開設定:
-Gui, Add, Text, x30 y50, 小號總數:
-Gui, Add, Edit, vInstances w25 x90 y45 h18, %Instances%
-Gui, Add, Text, x30 y72, 啟動延遲:
-Gui, Add, Edit, vinstanceStartDelay w25 x90 y67 h18, %instanceStartDelay%
-Gui, Add, Text, x30 y95, 排列:
-Gui, Add, Edit, vColumns w25 x90 y90 h18, %Columns%
-if(runMain)
-	Gui, Add, Checkbox, Checked vrunMain x30 y115, 運行主號(Main)
-else
-	Gui, Add, Checkbox, vrunMain x30 y115, 運行主號(Main)
+; ========== Instance Settings Section ==========
+Gui, Add, GroupBox, x5 y45 w240 h120 cWhite, 多開設定
+Gui, Add, Text, x20 y65 cWhite, 小號總數:
+Gui, Add, Edit, vInstances w50 x100 y63 h20 -E0x200 Background2A2A2A cWhite Center, %Instances%
 
-Gui, Add, Text, x10 y135, 神包設定:
-Gui, Add, Text, x30 y155, 最小二星數:
-Gui, Add, Edit, vminStars w25 x90 y155 h18, %minStars%
+Gui, Add, Text, x20 y90 cWhite, 啟動延遲:
+Gui, Add, Edit, vinstanceStartDelay w50 x100 y88 h20 -E0x200 Background2A2A2A cWhite Center, %instanceStartDelay%
 
-Gui, Add, Text, x10 y180, 刷包法:
+Gui, Add, Text, x20 y115 cWhite, 排列:
+Gui, Add, Edit, vColumns w50 x100 y113 h20 -E0x200 Background2A2A2A cWhite Center, %Columns%
 
-; Pack selection logic
-if (deleteMethod = "5 Pack") {
+Gui, Add, Checkbox, % (runMain ? "Checked" : "") " vrunMain x20 y140 cWhite", 運行主號(Main)
+
+; ========== God Pack Settings Section ==========
+Gui, Add, GroupBox, x5 y170 w240 h120 c39FF14, 神包設定 ; Neon green
+Gui, Add, Text, x20 y190 c39FF14, 最小二星數:
+Gui, Add, Edit, vminStars w50 x100 y188 h20 -E0x200 Background2A2A2A cWhite Center, %minStars%
+
+Gui, Add, Text, x20 y215 c39FF14, 刷包法:
+if (deleteMethod = "5 Pack")
 	defaultDelete := 1
-} else if (deleteMethod = "3 Pack") {
+else if (deleteMethod = "3 Pack")
 	defaultDelete := 2
-} else if (deleteMethod = "Inject") {
+else if (deleteMethod = "Inject")
 	defaultDelete := 3
-}
 
-Gui, Add, DropDownList, vdeleteMethod gdeleteSettings choose%defaultDelete% x55 y178 w60, 5 Pack|3 Pack|Inject
+Gui, Add, DropDownList, vdeleteMethod gdeleteSettings choose%defaultDelete% x80 y213 w100 Background2A2A2A cWhite, 5 Pack|3 Pack|Inject
 
-if(packMethod)
-	Gui, Add, Checkbox, Checked vpackMethod x30 y205, 單包模式
-else
-	Gui, Add, Checkbox, vpackMethod x30 y205, 單包模式
+Gui, Add, Checkbox, % (packMethod ? "Checked" : "") " vpackMethod x20 y240 c39FF14", 單包模式
+Gui, Add, Checkbox, % (nukeAccount ? "Checked" : "") " vnukeAccount x20 y265 c39FF14", 選單刪除帳號
 
-if(nukeAccount)
-	Gui, Add, Checkbox, Checked vnukeAccount x30 y225, 選單刪除帳號
-else
-	Gui, Add, Checkbox, vnukeAccount x30 y225, 選單刪除帳號
+; ========== Discord Settings Section ==========
+Gui, Add, GroupBox, x5 y295 w240 h120 cFF69B4, Discord 設定 ; Hot pink
 
 if(StrLen(discordUserID) < 3)
 	discordUserID =
 if(StrLen(discordWebhookURL) < 3)
 	discordWebhookURL =
 
-Gui, Add, Text, x10 y245, Discord 設定:
-Gui, Add, Text, x30 y265, Discord ID:
-Gui, Add, Edit, vdiscordUserId w100 x90 y260 h18, %discordUserId%
-Gui, Add, Text, x30 y290, Discord Webhook URL:
-Gui, Add, Edit, vdiscordWebhookURL h20 w100 x150 y285 h18, %discordWebhookURL%
+Gui, Add, Text, x20 y315 cFF69B4, Discord ID:
+Gui, Add, Edit, vdiscordUserId w180 x20 y335 h20 -E0x200 Background2A2A2A cWhite, %discordUserId%
 
+Gui, Add, Text, x20 y360 cFF69B4, Webhook URL:
+Gui, Add, Edit, vdiscordWebhookURL w180 x20 y380 h20 -E0x200 Background2A2A2A cWhite, %discordWebhookURL%
+
+; ========== Heartbeat Settings Section ==========
 if(StrLen(heartBeatName) < 3)
 	heartBeatName =
 if(StrLen(heartBeatWebhookURL) < 3)
 	heartBeatWebhookURL =
-if(heartBeat) {
-	Gui, Add, Checkbox, Checked vheartBeat x30 y315 gdiscordSettings, Discord 心跳
-	Gui, Add, Text, vhbName x30 y335, 心跳顯示名字:
-	Gui, Add, Edit, vheartBeatName w50 x70 y330 h18, %heartBeatName%
-	Gui, Add, Text, vhbURL x30 y360, 心跳 Webhook URL:
-	Gui, Add, Edit, vheartBeatWebhookURL h20 w100 x110 y355 h18, %heartBeatWebhookURL%
+
+Gui, Add, GroupBox, x250 y0 w240 h120 c00FFFF, 心跳設定 ; Cyan
+Gui, Add, Checkbox, % (heartBeat ? "Checked" : "") " vheartBeat x265 y20 gdiscordSettings c00FFFF", Discord 心跳
+
+if (heartBeat) {
+	Gui, Add, Text, vhbName x265 y45 c00FFFF, 心跳顯示名字:
+	Gui, Add, Edit, vheartBeatName w150 x265 y65 h20 -E0x200 Background2A2A2A cWhite, %heartBeatName%
+	Gui, Add, Text, vhbURL x265 y90 c00FFFF, 心跳 Webhook URL:
+	Gui, Add, Edit, vheartBeatWebhookURL w150 x265 y110 h20 -E0x200 Background2A2A2A cWhite, %heartBeatWebhookURL%
 } else {
-	Gui, Add, Checkbox, vheartBeat x30 y315 gdiscordSettings, Discord 心跳
-	Gui, Add, Text, vhbName x30 y335 Hidden, 心跳顯示名字:
-	Gui, Add, Edit, vheartBeatName w50 x70 y330 h18 Hidden, %heartBeatName%
-	Gui, Add, Text, vhbURL x30 y360 Hidden, 心跳 Webhook URL:
-	Gui, Add, Edit, vheartBeatWebhookURL h20 w100 x110 y355 h18 Hidden, %heartBeatWebhookURL%
+	Gui, Add, Text, vhbName x265 y45 Hidden c00FFFF, 心跳顯示名字:
+	Gui, Add, Edit, vheartBeatName w150 x265 y65 h20 Hidden -E0x200 Background2A2A2A cWhite, %heartBeatName%
+	Gui, Add, Text, vhbURL x265 y90 Hidden c00FFFF, 心跳 Webhook URL:
+	Gui, Add, Edit, vheartBeatWebhookURL w150 x265 y110 h20 Hidden -E0x200 Background2A2A2A cWhite, %heartBeatWebhookURL%
 }
 
-Gui, Add, Text, x275 y10, 選擇卡包:
+; ========== Pack Selection Section ==========
+Gui, Add, GroupBox, x250 y125 w240 h120 cFFD700, 選擇擴充包 ; Gold
+Gui, Add, Checkbox, % (Arceus ? "Checked" : "") " vArceus x265 y145 cFFD700", 阿爾
+Gui, Add, Checkbox, % (Palkia ? "Checked" : "") " vPalkia x265 y165 cFFD700", 帕路
+Gui, Add, Checkbox, % (Dialga ? "Checked" : "") " vDialga x265 y185 cFFD700", 帝牙
+Gui, Add, Checkbox, % (Pikachu ? "Checked" : "") " vPikachu x365 y145 cFFD700", 皮卡丘
+Gui, Add, Checkbox, % (Charizard ? "Checked" : "") " vCharizard x365 y165 cFFD700", 噴火龍
+Gui, Add, Checkbox, % (Mewtwo ? "Checked" : "") " vMewtwo x365 y185 cFFD700", 超夢
+Gui, Add, Checkbox, % (Mew ? "Checked" : "") " vMew x265 y205 cFFD700", 夢幻
 
-if(Arceus)
-	Gui, Add, Checkbox, Checked vArceus x295 y30, 阿爾
-else
-	Gui, Add, Checkbox, vArceus x295 y30, 阿爾
+; ========== Card Detection Settings ==========
+Gui, Add, GroupBox, x250 y250 w240 h120 cFF4500, 卡片偵測 ; Orange Red
+Gui, Add, Checkbox, % (FullArtCheck ? "Checked" : "") " vFullArtCheck x265 y270 cFF4500", 單張全圖
+Gui, Add, Checkbox, % (TrainerCheck ? "Checked" : "") " vTrainerCheck x265 y290 cFF4500", 單張人物
+Gui, Add, Checkbox, % (RainbowCheck ? "Checked" : "") " vRainbowCheck x265 y310 cFF4500", 單張彩邊
+Gui, Add, Checkbox, % (PseudoGodPack ? "Checked" : "") " vPseudoGodPack x265 y330 cFF4500",  雙 2 星
+Gui, Add, Checkbox, % (CrownCheck ? "Checked" : "") " vCrownCheck x365 y270 cFF4500", 保留皇冠
+Gui, Add, Checkbox, % (ImmersiveCheck ? "Checked" : "") " vImmersiveCheck x365 y290 cFF4500", 保留實境
 
-if(Palkia)
-	Gui, Add, Checkbox, Checked vPalkia x295 y50, 帕路
-else
-	Gui, Add, Checkbox, vPalkia x295 y50, 帕路
+; ========== Time Settings Section ==========
+Gui, Add, GroupBox, x495 y0 w240 h120 c9370DB, 時間設定 ; Purple
+Gui, Add, Text, x510 y20 c9370DB, 基本延遲:
+Gui, Add, Edit, vDelay w70 x580 y18 h20 -E0x200 Background2A2A2A cWhite Center, %Delay%
 
-if(Dialga)
-	Gui, Add, Checkbox, Checked vDialga x295 y70, 帝牙
-else
-	Gui, Add, Checkbox, vDialga x295 y70, 帝牙
+Gui, Add, Text, x510 y50 c9370DB, 好友等待時間:
+Gui, Add, Edit, vwaitTime w70 x580 y48 h20 -E0x200 Background2A2A2A cWhite Center, %waitTime%
 
-if(Pikachu)
-	Gui, Add, Checkbox, Checked vPikachu x350 y30, 皮卡丘
-else
-	Gui, Add, Checkbox, vPikachu x350 y30, 皮卡丘
+Gui, Add, Text, x510 y80 c9370DB, 開包滑動速度:
+Gui, Add, Edit, vswipeSpeed w70 x580 y78 h20 -E0x200 Background2A2A2A cWhite Center, %swipeSpeed%
 
-if(Charizard)
-	Gui, Add, Checkbox, Checked vCharizard x350 y50, 噴火龍
-else
-	Gui, Add, Checkbox, vCharizard x350 y50, 噴火龍
+; ========== System Settings Section ==========
+Gui, Add, GroupBox, x495 y125 w240 h120 c4169E1, 系統設定 ; Royal Blue
+Gui, Add, Text, x510 y145 c4169E1, 顯示器:
 
-if(Mewtwo)
-	Gui, Add, Checkbox, Checked vMewtwo x350 y70, 超夢
-else
-	Gui, Add, Checkbox, vMewtwo x350 y70, 超夢
-
-if(Mew)
-	Gui, Add, Checkbox, Checked vMew x410 y30, 夢幻
-else
-	Gui, Add, Checkbox, vMew x410 y30, 夢幻
-
-Gui, Add, Text, x275 y90, 其他卡包檢測:
-
-if(FullArtCheck)
-	Gui, Add, Checkbox, Checked vFullArtCheck x295 y110, Single 單張全圖
-else
-	Gui, Add, Checkbox, vFullArtCheck x295 y110, 單張全圖
-
-if(TrainerCheck)
-	Gui, Add, Checkbox, Checked vTrainerCheck x295 y130, 單張人物
-else
-	Gui, Add, Checkbox, vTrainerCheck x295 y130, 單張人物
-
-if(RainbowCheck)
-	Gui, Add, Checkbox, Checked vRainbowCheck x295 y150, 單張彩邊
-else
-	Gui, Add, Checkbox, vRainbowCheck x295 y150, 單張彩邊
-
-if(PseudoGodPack)
-	Gui, Add, Checkbox, Checked vPseudoGodPack x392 y110, 雙 2 星
-else
-	Gui, Add, Checkbox, vPseudoGodPack x392 y110, 雙 2 星
-
-if(CrownCheck)
-	Gui, Add, Checkbox, Checked vCrownCheck x392 y130, 保留皇冠
-else
-	Gui, Add, Checkbox, vCrownCheck x392 y130, 保留皇冠
-
-if(ImmersiveCheck)
-	Gui, Add, Checkbox, Checked vImmersiveCheck x392 y150, 保留實境
-else
-	Gui, Add, Checkbox, vImmersiveCheck x392 y150, 保留實境
-
-Gui, Add, Text, x275 y170, 腳本時機設定:
-Gui, Add, Text, x295 y190, 指令延遲:
-Gui, Add, Edit, vDelay w35 x365 y190 h18, %Delay%
-Gui, Add, Text, x295 y210, 加完好友後等待時間:
-Gui, Add, Edit, vwaitTime w25 x410 y210 h18, %waitTime%
-Gui, Add, Text, x295 y230, 開包速度:
-Gui, Add, Edit, vswipeSpeed w35 x365 y230 h18, %swipeSpeed%
-
-Gui, Add, Text, x275 y250, 其他設定:
-Gui, Add, Text, x295 y270, 顯示器:
-; Initialize monitor dropdown options
 SysGet, MonitorCount, MonitorCount
 MonitorOptions := ""
-Loop, %MonitorCount%
-{
+Loop, %MonitorCount% {
 	SysGet, MonitorName, MonitorName, %A_Index%
 	SysGet, Monitor, Monitor, %A_Index%
 	MonitorOptions .= (A_Index > 1 ? "|" : "") "" A_Index ": (" MonitorRight - MonitorLeft "x" MonitorBottom - MonitorTop ")"
-
 }
+
 SelectedMonitorIndex := RegExReplace(SelectedMonitorIndex, ":.*$")
-Gui, Add, DropDownList, x335 y268 w90 vSelectedMonitorIndex Choose%SelectedMonitorIndex%, %MonitorOptions%
-Gui, Add, Text, x295 y290, 路徑:
-Gui, Add, Edit, vfolderPath w100 x355 y290 h18, %folderPath%
-if(slowMotion)
-	Gui, Add, Checkbox, Checked vslowMotion x295 y310, 相容原版遊戲(無加速)
-else
-	Gui, Add, Checkbox, vslowMotion x295 y310, 相容原版遊戲(無加速)
+Gui, Add, DropDownList, x510 y165 w200 vSelectedMonitorIndex Choose%SelectedMonitorIndex% Background2A2A2A cWhite, %MonitorOptions%
 
-Gui, Add, Button, gOpenLink x15 y380 w120, 請作者喝咖啡
-Gui, Add, Button, gOpenDiscord x145 y380 w120, 作者 Discord!
-Gui, Add, Button, gCheckForUpdates x275 y360 w120, 檢查更新
-Gui, Add, Button, gArrangeWindows x275 y380 w120, 排列視窗
-Gui, Add, Button, gStart x405 y380 w120, 開始
+Gui, Add, Text, x510 y195 c4169E1, MUMU 資料夾路徑:
+Gui, Add, Edit, vfolderPath w200 x510 y215 h20 -E0x200 Background2A2A2A cWhite, %folderPath%
 
-Gui, Add, Button, gOpenGuide x445 y5 w80, ❓設定說明
+; ========== Action Buttons ==========
+Gui, Add, Button, gOpenLink x495 y300 w115 h30 +Default, 請作者喝咖啡
+Gui, Add, Button, gOpenDiscord x495 y340 w115 h30, 作者 Discord!
+Gui, Add, Button, gCheckForUpdates x620 y300 w115 h30, 檢查更新
+Gui, Add, Button, gArrangeWindows x620 y340 w115 h30, 排列視窗
+Gui, Add, Button, gStart x495 y380 w240 h40 +Default Background39FF14 cBlack, 開始
+
+Gui, Add, Button, gOpenGuide x400 y390 w90 h25, ❓設定說明
 
 if (defaultLanguage = "Scale125") {
 	defaultLang := 1
@@ -275,10 +225,9 @@ if (defaultLanguage = "Scale125") {
 	defaultLang := 2
 	scaleParam := 287
 }
+Gui, Add, DropDownList, x250 y390 w145 vdefaultLanguage choose%defaultLang%, Scale125|Scale100
 
-Gui, Add, DropDownList, x275 y330 w145 vdefaultLanguage choose%defaultLang%, Scale125|Scale100
-
-Gui, Show, , %localVersion% PTCGPB Bot Setup [Non-Commercial 4.0 International License] ;'
+Gui, Show, , %localVersion% PTCGPB Bot Setup [Non-Commercial 4.0 International License]
 Return
 
 CheckForUpdates:
