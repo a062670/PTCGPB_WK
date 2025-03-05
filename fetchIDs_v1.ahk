@@ -6,7 +6,7 @@ SetBatchLines, -1
 SetWorkingDir, %A_ScriptDir%
 
 global version = "25.3.5.5"
-global mumuType = "global"
+global wkBranch = "WK"
 
 global loopRunning := true  ; Control whether the loop continues running
 global firstUpdate := true  ; Track if it's the first update
@@ -138,7 +138,7 @@ VersionCompare(v1, v2) {
 }
 
 CheckForUpdate(needAlert = false){
-    url := "https://raw.githubusercontent.com/a062670/PTCGPB_WK/WK/fetchIDs_v1.ahk"
+    url := "https://raw.githubusercontent.com/a062670/PTCGPB_WK/" . wkBranch . "/fetchIDs_v1.ahk"
     response := HttpGet(url)
     if !response
     {
@@ -166,7 +166,7 @@ CheckForUpdate(needAlert = false){
 }
 
 UpdateToLatestVersion(){
-    url := "https://raw.githubusercontent.com/a062670/PTCGPB_WK/WK/fetchIDs_v1.ahk"
+    url := "https://raw.githubusercontent.com/a062670/PTCGPB_WK/" . wkBranch . "/fetchIDs_v1.ahk"
     RunWait, curl -o fetchIDs_v1.ahk %url%, , Hide
     if (ErrorLevel = 0) {
         MsgBox, 更新成功！
@@ -418,7 +418,7 @@ PostOnlineStatus(status) {
     ReadSettings()  ; 讀取設定檔
 
     statusStr := status ? "true" : "false"
-    versionStr := Format("{}({})({})", PTCGPBVersion, version, mumuType)
+    versionStr := Format("{}({})({})", PTCGPBVersion, version, wkBranch)
     jsonBody := "{""id"":""" friendID """,""instances"":""" instances """,""pack"":""" openPack """,""status"":""" statusStr """,""webhook"":""" webhook """,""version"":""" versionStr """}"
     response := HTTPRequest(apiUrl, "POST", jsonBody)
 
