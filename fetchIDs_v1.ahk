@@ -5,7 +5,7 @@
 SetBatchLines, -1
 SetWorkingDir, %A_ScriptDir%
 
-global version = "25.3.5.2"
+global version = "25.3.5.3"
 
 global loopRunning := true  ; Control whether the loop continues running
 global firstUpdate := true  ; Track if it's the first update
@@ -159,19 +159,23 @@ UpdateToLatestVersion(){
     }
 }
 
+RunRename(){
+    Run, "Rename.ahk",, Hide, PID
+    Process, WaitClose, %PID%  ; 等待該進程結束
+    Reload
+}
+
 CheckUsername(){
     ; 檢查第一行
     FileReadLine, name, usernames.txt, 1
     if(name == "bulbasaur" || name == "NoName1" || SubStr(name, 0) != 1){
-        MsgBox, usernames.txt 不正確，請先執行Rename.ahk
-        ExitApp
+        RunRename()
         return false
     }
     ; 檢查最後一行
     FileReadLine, lastName, usernames.txt, 5000
     if(SubStr(lastName, -3) != 5000){
-        MsgBox, usernames.txt 不正確，請先執行Rename.ahk
-        ExitApp
+        RunRename()
         return false
     }
     return true
