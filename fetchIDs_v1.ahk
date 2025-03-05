@@ -5,7 +5,7 @@
 SetBatchLines, -1
 SetWorkingDir, %A_ScriptDir%
 
-global version = "25.3.4.3"
+global version = "25.3.5.2"
 
 global loopRunning := true  ; Control whether the loop continues running
 global firstUpdate := true  ; Track if it's the first update
@@ -51,25 +51,31 @@ positionX := A_ScreenWidth - guiWidth
 positionY := A_ScreenHeight - guiHeight - 90
 Gui, Show, w280 x%positionX% y%positionY%, %title%
 
-CheckForUpdate()
 Gosub, AutoUpdate ; 一開始先執行一次
 SetTimer, AutoUpdate, 60000  ; Execute AutoUpdate every 60,000 ms (1 minute)
+SetTimer, CheckForUpdates, 1000
 Return
 
 GuiClose:
 ExitApp
 
 CheckForUpdates:
+    SetTimer, CheckForUpdates, Off
     CheckForUpdate()
+Return
 UpdateToLatestVersion:
     CheckForUpdate(true)
-return
+Return
 
 HttpGet(url) {
-    http := ComObjCreate("WinHttp.WinHttpRequest.5.1")
-    http.Open("GET", url, false)
-    http.Send()
-    return http.ResponseText
+    try{
+        http := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+        http.Open("GET", url, false)
+        http.Send()
+        return http.ResponseText
+    } catch e {
+        return 0
+    }
 }
 
 FineRemoteVersion(content){
@@ -119,7 +125,9 @@ CheckForUpdate(needAlert = false){
     response := HttpGet(url)
     if !response
     {
-        MsgBox, 取得檔案失敗
+        if (needAlert){
+            MsgBox, 取得檔案失敗
+        }
         return
     }
     ; 取得版本
