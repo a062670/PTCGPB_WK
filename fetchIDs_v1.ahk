@@ -6,6 +6,7 @@ SetBatchLines, -1
 SetWorkingDir, %A_ScriptDir%
 
 global version = "25.3.5.5"
+global mumuType = "global"
 
 global loopRunning := true  ; Control whether the loop continues running
 global firstUpdate := true  ; Track if it's the first update
@@ -417,7 +418,7 @@ PostOnlineStatus(status) {
     ReadSettings()  ; 讀取設定檔
 
     statusStr := status ? "true" : "false"
-    versionStr := Format("{}({})", PTCGPBVersion, version)
+    versionStr := Format("{}({})({})", PTCGPBVersion, version, mumuType)
     jsonBody := "{""id"":""" friendID """,""instances"":""" instances """,""pack"":""" openPack """,""status"":""" statusStr """,""webhook"":""" webhook """,""version"":""" versionStr """}"
     response := HTTPRequest(apiUrl, "POST", jsonBody)
 
