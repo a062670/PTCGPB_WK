@@ -1,4 +1,5 @@
 [TeamSettings]
-groupName=
-apiUrl=
-dcWebhook=
+groupName=              ; 隊伍名稱，中文會亂碼
+apiUrl=                 ; 用來取得 IDs 的 API 網址
+dcWebhook=              ; DC Webhook，用來驗證是否設定正確
+heartBeatWebhookURL=    ; 心跳 Webhook，可不填，不填時不驗證是否設定正確

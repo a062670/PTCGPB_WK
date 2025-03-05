@@ -5,12 +5,12 @@
 SetBatchLines, -1
 SetWorkingDir, %A_ScriptDir%
 
-global version = "25.3.5.4"
+global version = "25.3.5.5"
 
 global loopRunning := true  ; Control whether the loop continues running
 global firstUpdate := true  ; Track if it's the first update
-global discordName, friendID, instances, openPack, webhook ; 使用者設定
-global groupName, apiUrl, dcWebhook ; fetch ids 設定
+global discordName, friendID, instances, openPack, webhook, hbWebhook ; 使用者設定
+global groupName, apiUrl, dcWebhook, teamHbWebhook ; fetch ids 設定
 global statusText, userCountText, instanceCountText, timeText, loadingStatus, PTCGPBVersion
 
 CheckUsername()
@@ -23,13 +23,20 @@ SetNormalFont()
 Gui, Add, Text, w280 , ID: %friendID%
 Gui, Add, Text, w280 vuserCountText, 在線人數: -- / --
 Gui, Add, Text, w280 vinstanceCountText , 小號人數: -- / --
+
 ; 檢查 webhook 設定是否正確
-webhookText:= "未正確設定"
-if(webhook == dcWebhook)
-    webhookText:= "已正確設定"
-else ; 紅字
+webhookText:= ""
+if (webhook != dcWebhook)
+    webhookText:= webhookText . " 一般"
+if (!!teamHbWebhook && hbWebhook != teamHbWebhook)
+    webhookText:= webhookText . " 心跳"
+if (webhookText != "") {
+    webhookText:= "設定錯誤:" . webhookText
     Gui, Font, s9 Norm cRed, Segoe UI
-Gui, Add, Text, w280, DC Webhook: %webhookText%
+} else {
+    webhookText:= "設定正確"
+}
+Gui, Add, Text, w280, Webhook: %webhookText%
 
 SetNormalFont()
 
@@ -37,13 +44,13 @@ SetNormalFont()
 Gui, Add, Button, w100 h30 gOnOnline, 上線
 Gui, Add, Button, x+10 w100 h30 gOnOffline, 下線
 
-Gui, Add, Text, w280 x10 vLoadingStatus, 更新狀態: 無
-Gui, Add, Text, w280 x10 vtimeText, 最後更新: 更新中...
+Gui, Add, Text, w280 x10 vLoadingStatus, IDs 更新狀態: 無
+Gui, Add, Text, w280 x10 vtimeText, IDs 最後更新: 更新中...
 ; Gui, Add, Button, x10 gAutoUpdate, 手動更新 ; 測試用
 
 Gui, Add, Text, w280 x10, PTCGPB版本: %PTCGPBVersion%
 Gui, Add, Text, x10 w280 vVersion, fetchIDs版本: %version%
-Gui, Add, Button, x10 vUpdateButton gUpdateToLatestVersion, 檢查更新
+Gui, Add, Button, x10 vUpdateButton gUpdateToLatestVersion, 檢查新版本
 
 title := groupName . "自動更新ids"
 guiWidth = 356
@@ -228,10 +235,10 @@ FixUnicode(text) {
 ; ===== Fetch Online IDs and write to file =====
 GetOnlineIDs() {
     global apiUrl, friendID, statusText, userCountText, instanceCountText, timeText, loadingStatus
-    GuiControl, , loadingStatus, 更新狀態: 正在更新中
+    GuiControl, , loadingStatus, IDs 更新狀態: 正在更新中
     response := HTTPRequest(apiUrl, "GET")
     if (response) {
-        GuiControl, , loadingStatus, 更新狀態: 更新完成
+        GuiControl, , loadingStatus, IDs 更新狀態: 更新完成
         FileDelete, ids.txt  ; Delete old ids.txt
 
         ; Parse JSON response and extract Online IDs
@@ -270,13 +277,13 @@ GetOnlineIDs() {
         GuiControl, , instanceCountText, 小號人數: %onlineInstanceCount% / %instanceCount%
         time := A_Now
         time := SubStr(time, 5, 2) "/" SubStr(time, 7, 2) " " SubStr(time, 9, 2) ":" SubStr(time, 11, 2) ":" SubStr(time, 13, 2)
-        GuiControl, , timeText, 最後更新: %time%
+        GuiControl, , timeText, IDs 最後更新: %time%
 
         ; Gui, Show , NA  ; 重新顯示 GUI
 
         return true  ; Return true on success
     }
-    GuiControl, , loadingStatus, 更新狀態: 更新失敗
+    GuiControl, , loadingStatus, IDs 更新狀態: 更新失敗
     return false  ; Return false on failure
 }
 
@@ -373,10 +380,12 @@ ReadSettings() {
     IniRead, friendID, Settings.ini, UserSettings, FriendID, 0
     IniRead, instances, Settings.ini, UserSettings, Instances, 0
     IniRead, openPack, Settings.ini, UserSettings, openPack, Default
-    IniRead, webhook, Settings.ini, UserSettings, discordWebhookURL, ""
-    IniRead, groupName, TeamSettings.ini, TeamSettings, groupName, ""
-    IniRead, apiUrl, TeamSettings.ini, TeamSettings, apiUrl, ""
-    IniRead, dcWebhook, TeamSettings.ini, TeamSettings, dcWebhook, ""
+    IniRead, webhook, Settings.ini, UserSettings, discordWebhookURL, %A_Space%
+    IniRead, hbWebhook, Settings.ini, UserSettings, heartBeatWebhookURL, %A_Space%
+    IniRead, groupName, TeamSettings.ini, TeamSettings, groupName, %A_Space%
+    IniRead, apiUrl, TeamSettings.ini, TeamSettings, apiUrl, %A_Space%
+    IniRead, dcWebhook, TeamSettings.ini, TeamSettings, dcWebhook, %A_Space%
+    IniRead, teamHbWebhook, TeamSettings.ini, TeamSettings, heartBeatWebhookURL, %A_Space%
 
     PTCGPBVersion := FindPTCGPBVersion()
 }
