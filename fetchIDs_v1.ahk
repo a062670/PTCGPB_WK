@@ -6,7 +6,7 @@ SetBatchLines, -1
 SetWorkingDir, %A_ScriptDir%
 
 global version = "25.3.5.5"
-global wkBranch = "WK"
+global wkBranch = "WK_cn_cloud"
 
 global loopRunning := true  ; Control whether the loop continues running
 global firstUpdate := true  ; Track if it's the first update
