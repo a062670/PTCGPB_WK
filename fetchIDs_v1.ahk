@@ -5,7 +5,7 @@
 SetBatchLines, -1
 SetWorkingDir, %A_ScriptDir%
 
-global version = "25.3.5.3"
+global version = "25.3.5.4"
 
 global loopRunning := true  ; Control whether the loop continues running
 global firstUpdate := true  ; Track if it's the first update
@@ -14,6 +14,7 @@ global groupName, apiUrl, dcWebhook ; fetch ids 設定
 global statusText, userCountText, instanceCountText, timeText, loadingStatus, PTCGPBVersion
 
 CheckUsername()
+CheckTeamSettings()
 ReadSettings()
 
 Gui, Font, s10 Bold, Segoe UI  ; 設定字體大小 10，加粗，使用 Segoe UI
@@ -63,9 +64,17 @@ CheckForUpdates:
     SetTimer, CheckForUpdates, Off
     CheckForUpdate()
 Return
+
 UpdateToLatestVersion:
     CheckForUpdate(true)
 Return
+
+CheckTeamSettings(){
+    if(!FileExist("TeamSettings.ini")){
+        MsgBox, 請先下載TeamSettings.ini放進資料夾
+        ExitApp
+    }
+}
 
 HttpGet(url) {
     try{
