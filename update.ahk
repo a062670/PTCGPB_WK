@@ -6,7 +6,8 @@ SetWorkingDir, %A_ScriptDir%
 
 scriptFolder := A_ScriptDir
 zipPath := A_Temp . "\update.zip"
-zipDownloadURL := "https://github.com/a062670/PTCGPB_WK/archive/refs/heads/WK.zip"
+wkBranch := "WK"
+zipDownloadURL := "https://github.com/a062670/PTCGPB_WK/archive/refs/heads/" . wkBranch .  ".zip"
 update()
 Return
 
@@ -82,7 +83,7 @@ InArray(needle, haystack){
 }
 
 BackupFile(scriptFolder, tempFolder){
-    needBackupFile := ["ids.txt", "discord.txt", "usernames.txt", "TeamSettings.ini", "vip_ids.txt"]
+    needBackupFile := ["ids.txt", "discord.txt", "usernames.txt", "Settings.ini", "TeamSettings.ini", "vip_ids.txt"]
     Loop, Files, % scriptFolder . "\*"
     {
         relativePath := SubStr(A_LoopFileFullPath, StrLen(scriptFolder) + 2)
@@ -121,7 +122,7 @@ MoveFilesRecursively(srcFolder, destFolder) {
         }
         else
         {
-            checkArray := ["ids.txt", "discord.txt", "usernames.txt", "TeamSettings.ini", "vip_ids.txt", "update.ahk"]
+            checkArray := ["ids.txt", "discord.txt", "usernames.txt", "Settings.ini", "TeamSettings.ini", "vip_ids.txt", "update.ahk"]
             if (InArray(relativePath, checkArray) && FileExist(destPath)) {
                 continue
             }
