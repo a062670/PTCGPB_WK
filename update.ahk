@@ -56,7 +56,7 @@ update(){
         ; Check if a subfolder was found and move its contents recursively to the script folder
         if (extractedFolder)
         {
-            BackupFile(scriptFolder, tempSavePath) ; 把不要動到的檔案輩分
+            BackupFile(scriptFolder, tempSavePath) ; 把不要動到的檔案備份
             MoveFilesRecursively(extractedFolder, scriptFolder)
             RestoreFile(scriptFolder, tempSavePath) ; 把備份檔案還原
             ; Clean up the temporary extraction folder
@@ -74,8 +74,10 @@ update(){
 }
 
 InArray(needle, haystack){
+    StringLower, lower_needle, needle
     For Key, value in haystack {
-        if(needle == value){
+        StringLower, lower_value, value
+        if(lower_needle == lower_value){
             return true
         }
     }
@@ -122,10 +124,6 @@ MoveFilesRecursively(srcFolder, destFolder) {
         }
         else
         {
-            checkArray := ["ids.txt", "discord.txt", "usernames.txt", "Settings.ini", "TeamSettings.ini", "vip_ids.txt", "update.ahk"]
-            if (InArray(relativePath, checkArray) && FileExist(destPath)) {
-                continue
-            }
             ; If it's a file, move it to the destination folder
             ; Ensure the directory exists before moving the file
             FileCreateDir, % SubStr(destPath, 1, InStr(destPath, "\", 0, 0) - 1)
