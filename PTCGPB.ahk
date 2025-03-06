@@ -212,11 +212,14 @@ Gui, Add, Edit, vfolderPath w200 x510 y215 h20 -E0x200 Background2A2A2A cWhite, 
 ; ========== Action Buttons ==========
 Gui, Add, Button, gOpenLink x495 y300 w115 h30 +Default, 請作者喝咖啡
 Gui, Add, Button, gOpenDiscord x495 y340 w115 h30, 作者 Discord!
+/*
 Gui, Add, Button, gCheckForUpdates x620 y300 w115 h30, 檢查更新
+*/
 Gui, Add, Button, gArrangeWindows x620 y340 w115 h30, 排列視窗
 Gui, Add, Button, gStart x495 y380 w240 h40 +Default Background39FF14 cBlack, 開始
 
 Gui, Add, Button, gOpenGuide x400 y390 w90 h25, ❓設定說明
+Gui, Add, Button, gSaveSettings x620 y300 w115 h30, 儲存設定
 
 if (defaultLanguage = "Scale125") {
 	defaultLang := 1
@@ -291,6 +294,50 @@ return
 OpenDiscord:
 	Run, https://discord.gg/C9Nyf7P4sT
 return
+
+SaveSettings:
+	Gui, Submit, NoHide  ; Collect the input values from the first page
+
+	IniWrite, %FriendID%, Settings.ini, UserSettings, FriendID
+	IniWrite, %waitTime%, Settings.ini, UserSettings, waitTime
+	IniWrite, %Delay%, Settings.ini, UserSettings, Delay
+	IniWrite, %folderPath%, Settings.ini, UserSettings, folderPath
+	IniWrite, %discordWebhookURL%, Settings.ini, UserSettings, discordWebhookURL
+	IniWrite, %discordUserId%, Settings.ini, UserSettings, discordUserId
+	IniWrite, %Columns%, Settings.ini, UserSettings, Columns
+	IniWrite, %openPack%, Settings.ini, UserSettings, openPack
+	IniWrite, %godPack%, Settings.ini, UserSettings, godPack
+	IniWrite, %Instances%, Settings.ini, UserSettings, Instances
+	IniWrite, %instanceStartDelay%, Settings.ini, UserSettings, instanceStartDelay
+	;IniWrite, %setSpeed%, Settings.ini, UserSettings, setSpeed
+	IniWrite, %defaultLanguage%, Settings.ini, UserSettings, defaultLanguage
+	IniWrite, %SelectedMonitorIndex%, Settings.ini, UserSettings, SelectedMonitorIndex
+	IniWrite, %swipeSpeed%, Settings.ini, UserSettings, swipeSpeed
+	IniWrite, %deleteMethod%, Settings.ini, UserSettings, deleteMethod
+	IniWrite, %runMain%, Settings.ini, UserSettings, runMain
+	IniWrite, %heartBeat%, Settings.ini, UserSettings, heartBeat
+	IniWrite, %heartBeatWebhookURL%, Settings.ini, UserSettings, heartBeatWebhookURL
+	IniWrite, %heartBeatName%, Settings.ini, UserSettings, heartBeatName
+	IniWrite, %nukeAccount%, Settings.ini, UserSettings, nukeAccount
+	IniWrite, %packMethod%, Settings.ini, UserSettings, packMethod
+	IniWrite, %TrainerCheck%, Settings.ini, UserSettings, TrainerCheck
+	IniWrite, %FullArtCheck%, Settings.ini, UserSettings, FullArtCheck
+	IniWrite, %RainbowCheck%, Settings.ini, UserSettings, RainbowCheck
+	IniWrite, %CrownCheck%, Settings.ini, UserSettings, CrownCheck
+	IniWrite, %ImmersiveCheck%, Settings.ini, UserSettings, ImmersiveCheck
+	IniWrite, %PseudoGodPack%, Settings.ini, UserSettings, PseudoGodPack
+	IniWrite, %minStars%, Settings.ini, UserSettings, minStars
+	IniWrite, %Palkia%, Settings.ini, UserSettings, Palkia
+	IniWrite, %Dialga%, Settings.ini, UserSettings, Dialga
+	IniWrite, %Arceus%, Settings.ini, UserSettings, Arceus
+	IniWrite, %Mew%, Settings.ini, UserSettings, Mew
+	IniWrite, %Pikachu%, Settings.ini, UserSettings, Pikachu
+	IniWrite, %Charizard%, Settings.ini, UserSettings, Charizard
+	IniWrite, %Mewtwo%, Settings.ini, UserSettings, Mewtwo
+	IniWrite, %slowMotion%, Settings.ini, UserSettings, slowMotion
+
+	MsgBox, 儲存成功
+Return
 
 Start:
 	Gui, Submit  ; Collect the input values from the first page
