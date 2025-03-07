@@ -30,7 +30,7 @@ setupOnce(){
     }
     if(discordWebhookURL != ""){
         IniWrite, %discordWebhookURL%, Settings.ini, UserSettings, discordWebhookURL
-        IniWrite, %discordWebhookURL%, TeamSettings.ini, TeamSettings, discordWebhookURL
+        IniWrite, %discordWebhookURL%, TeamSettings.ini, TeamSettings, dcWebhook
     }
     if(heartBeatWebhookURL != ""){
         IniWrite, %heartBeatWebhookURL%, Settings.ini, UserSettings, heartBeatWebhookURL
