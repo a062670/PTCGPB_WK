@@ -8,8 +8,35 @@ scriptFolder := A_ScriptDir
 zipPath := A_Temp . "\update.zip"
 wkBranch := "WK_cn_cloud"
 zipDownloadURL := "https://github.com/a062670/PTCGPB_WK/archive/refs/heads/" . wkBranch .  ".zip"
+
+; ↓↓↓↓↓ git上不可以有值
+groupName := ""
+apiUrl := ""
+discordWebhookURL := ""
+heartBeatWebhookURL := ""
+; ↑↑↑↑↑ git上不可以有值
+
 update()
 Return
+
+setupOnce(){
+    global discordWebhookURL, heartBeatWebhookURL, apiUrl, groupName
+    ; 一次性更新到新版使用 變數有值才做
+    if(groupName != ""){
+        IniWrite, %groupName%, TeamSettings.ini, TeamSettings, groupName
+    }
+    if(apiUrl != ""){
+        IniWrite, %apiUrl%, TeamSettings.ini, TeamSettings, apiUrl
+    }
+    if(discordWebhookURL != ""){
+        IniWrite, %discordWebhookURL%, Settings.ini, UserSettings, discordWebhookURL
+        IniWrite, %discordWebhookURL%, TeamSettings.ini, TeamSettings, discordWebhookURL
+    }
+    if(heartBeatWebhookURL != ""){
+        IniWrite, %heartBeatWebhookURL%, Settings.ini, UserSettings, heartBeatWebhookURL
+        IniWrite, %heartBeatWebhookURL%, TeamSettings.ini, TeamSettings, heartBeatWebhookURL
+    }
+}
 
 update(){
     global zipPath, zipDownloadURL, scriptFolder
@@ -62,6 +89,7 @@ update(){
             ; Clean up the temporary extraction folder
             FileRemoveDir, %tempExtractPath%, 1
             FileRemoveDir, %tempSavePath%, 1
+            setupOnce()
             MsgBox, 更新成功
             ExitApp
         }
