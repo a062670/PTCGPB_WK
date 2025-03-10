@@ -8,7 +8,7 @@ IniRead, Instances, Settings.ini, UserSettings, Instances, 1
 IniRead, folderPath, Settings.ini, UserSettings, folderPath, C:\Program Files\Netease
 IniRead, runMain, Settings.ini, UserSettings, runMain, 1
 
-mumuFolder = %folderPath%\MuMuPlayerGlobal-12.0
+mumuFolder = %folderPath%\MuMu Player 12
 if !FileExist(mumuFolder)
     mumuFolder = %folderPath%\MuMu Player 12
 if !FileExist(mumuFolder){

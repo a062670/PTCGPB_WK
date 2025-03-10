@@ -13,7 +13,7 @@ IniRead, instanceLaunchDelay, Settings.ini, UserSettings, instanceLaunchDelay, 5
 IniRead, waitAfterBulkLaunch, Settings.ini, UserSettings, waitAfterBulkLaunch, 20000
 IniRead, Instances, Settings.ini, UserSettings, Instances, 1
 IniRead, folderPath, Settings.ini, UserSettings, folderPath, C:\Program Files\Netease
-mumuFolder = %folderPath%\MuMuPlayerGlobal-12.0
+mumuFolder = %folderPath%\MuMu Player 12
 if !FileExist(mumuFolder)
     mumuFolder = %folderPath%\MuMu Player 12
 if !FileExist(mumuFolder){
