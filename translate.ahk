@@ -11,13 +11,7 @@ run(){
     outputFile := "PTCGPB.ahk"
     FileRead, translateJson, translate.json
     translations := JSON.Load(translateJson)
-    ; value := JSON.Load(translateJson)
 
-    ; MsgBox, %translateJson%
-    ; static JS := ComObjCreate("Scripting.Dictionary")
-    ; translations := JS.LoadJSON(translateJson)
-
-    ; 讀取 AHK 文件
     FileRead, content, %inputFile%
     if (ErrorLevel)
     {
@@ -25,16 +19,12 @@ run(){
         ExitApp
     }
 
-    ; 替換翻譯
     for key, value in translations
     {
         content := StrReplace(content, key, value, , 2)
     }
-    ; utf8BOM := Chr(0xEF) . Chr(0xBB) . Chr(0xBF)  ; UTF-8 BOM 碼
-    ; 輸出到新文件
     FileDelete, %outputFile%
-    ; **寫入新文件**
-    file := FileOpen(outputFile, "w", "UTF-8") ; "w" 表示覆蓋寫入，"UTF-8" 確保 BOM
+    file := FileOpen(outputFile, "w", "UTF-8")
     file.Write(content)
     file.Close()
 
