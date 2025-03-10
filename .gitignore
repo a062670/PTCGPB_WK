@@ -1,16 +1,21 @@
-# 個人設定
-Settings.ini
-# 心跳資訊
-HeartBeat.ini
-# 神包截圖
-Screenshots/**/*.png
-# 帳號 xml
-Accounts/**/*.xml
-# 忽略所有 Logs 檔案，但保留 log1.txt
-Logs/*
-!Logs/log1.txt
-# 車隊設定
-TeamSettings.ini
-# json
+sample.png
+MonitorTEST.ahk
+MonitorOnce.ahk
+
+Accounts/*
+!Accounts/Saved/1.txt
+!Accounts/*.ahk
 json/*
 !json/1.txt
+Logs/*
+!Logs/1.txt
+Screenshots/*
+!Screenshots/1.txt
+Scripts/*.ahk
+!Scripts/1.ahk
+!Scripts/Main.ahk
+HeartBeat.ini
+Settings.ini
+usernames.txt
+vip_ids.txt
+TeamSettings.ini

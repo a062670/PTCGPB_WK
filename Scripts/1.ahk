@@ -1,5 +1,9 @@
 #Include %A_ScriptDir%\Include\Gdip_All.ahk
 #Include %A_ScriptDir%\Include\Gdip_Imagesearch.ahk
+
+; BallCity - 2025.20.25 - Add OCR library for Username if Inject is on
+#Include *i %A_ScriptDir%\Include\OCR.ahk
+
 #SingleInstance on
 SetMouseDelay, -1
 SetDefaultMouseSpeed, 0
@@ -13,6 +17,8 @@ DllCall("AllocConsole")
 WinHide % "ahk_id " DllCall("GetConsoleWindow", "ptr")
 
 global winTitle, changeDate, failSafe, openPack, Delay, failSafeTime, StartSkipTime, Columns, failSafe, adbPort, scriptName, adbShell, adbPath, GPTest, StatusText, defaultLanguage, setSpeed, jsonFileName, pauseToggle, SelectedMonitorIndex, swipeSpeed, godPack, scaleParam, discordUserId, discordWebhookURL, deleteMethod, packs, FriendID, friendIDs, Instances, username, friendCode, stopToggle, friended, runMain, showStatus, injectMethod, packMethod, loadDir, loadedAccount, nukeAccount, TrainerCheck, FullArtCheck, RainbowCheck, dateChange, foundGP, foundTS, friendsAdded, minStars, PseudoGodPack, Palkia, Dialga, Mew, Pikachu, Charizard, Mewtwo, packArray, CrownCheck, ImmersiveCheck, slowMotion, screenShot, accountFile, invalid, starCount, gpFound, foundTS
+global DeadCheck
+
 scriptName := StrReplace(A_ScriptName, ".ahk")
 winTitle := scriptName
 foundGP := false
@@ -56,6 +62,8 @@ IniRead, Pikachu, %A_ScriptDir%\..\Settings.ini, UserSettings, Pikachu, 0
 IniRead, Charizard, %A_ScriptDir%\..\Settings.ini, UserSettings, Charizard, 0
 IniRead, Mewtwo, %A_ScriptDir%\..\Settings.ini, UserSettings, Mewtwo, 0
 IniRead, slowMotion, %A_ScriptDir%\..\Settings.ini, UserSettings, slowMotion, 0
+IniRead, DeadCheck, %A_ScriptDir%\%scriptName%.ini, UserSettings, DeadCheck, 0
+IniRead, ocrLanguage, %A_ScriptDir%\..\Settings.ini, UserSettings, ocrLanguage, en
 
 pokemonList := ["Palkia", "Dialga", "Mew", "Pikachu", "Charizard", "Mewtwo", "Arceus"]
 
@@ -63,9 +71,9 @@ packArray := []  ; Initialize an empty array
 
 Loop, % pokemonList.MaxIndex()  ; Loop through the array
 {
-    pokemon := pokemonList[A_Index]  ; Get the variable name as a string
-    if (%pokemon%)  ; Dereference the variable using %pokemon%
-        packArray.push(pokemon)  ; Add the name to packArray
+	pokemon := pokemonList[A_Index]  ; Get the variable name as a string
+	if (%pokemon%)  ; Dereference the variable using %pokemon%
+		packArray.push(pokemon)  ; Add the name to packArray
 }
 
 changeDate := getChangeDateTime() ; get server reset time
@@ -115,11 +123,11 @@ Loop {
 		Gui, Default
 		Gui, Margin, 4, 4  ; Set margin for the GUI
 		Gui, Font, s5 cGray Norm Bold, Segoe UI  ; Normal font for input labels
-		Gui, Add, Button, x0 y0 w30 h25 gReloadScript, Reload  (F5)
-		Gui, Add, Button, x30 y0 w30 h25 gPauseScript, Pause (F6)
-		Gui, Add, Button, x60 y0 w40 h25 gResumeScript, Resume (F6)
-		Gui, Add, Button, x100 y0 w30 h25 gStopScript, Stop (F7)
-		Gui, Add, Button, x130 y0 w40 h25 gShowStatusMessages, Status (F8)
+		Gui, Add, Button, x0 y0 w40 h25 gReloadScript, Reload  (Shift+F5)
+		Gui, Add, Button, x40 y0 w40 h25 gPauseScript, Pause (Shift+F6)
+		Gui, Add, Button, x80 y0 w40 h25 gResumeScript, Resume (Shift+F6)
+		Gui, Add, Button, x120 y0 w40 h25 gStopScript, Stop (Shift+F7)
+		Gui, Add, Button, x160 y0 w40 h25 gShowStatusMessages, Status (Shift+F8)
 		Gui, Show, NoActivate x%x4% y%y4% AutoSize
 		break
 	}
@@ -175,110 +183,132 @@ if(!injectMethod || !loadedAccount)
 pToken := Gdip_Startup()
 packs := 0
 
-Loop {
-	Randmax := packArray.Length()
-	Random, rand, 1, Randmax
-	openPack := packArray[rand]
-	friended := false
-	IniWrite, 1, %A_ScriptDir%\..\HeartBeat.ini, HeartBeat, Instance%scriptName%
-	FormatTime, CurrentTime,, HHmm
+if(DeadCheck==1) {
+	;LogToDiscord("Sup dudes. Not sure what happened, but a script died and I'm doing a menu delete and starting over.")
+	friended:= true
+	menuDeleteStart()
+	IniWrite, 0, %A_ScriptDir%\%scriptName%.ini, UserSettings, DeadCheck
+	Reload
+}else{
+	Loop {
+		Randmax := packArray.Length()
+		Random, rand, 1, Randmax
+		openPack := packArray[rand]
+		friended := false
+		IniWrite, 1, %A_ScriptDir%\..\HeartBeat.ini, HeartBeat, Instance%scriptName%
+		FormatTime, CurrentTime,, HHmm
 
-	StartTime := changeDate - 45 ; 12:55 AM2355
-	EndTime := changeDate + 5 ; 1:01 AM
+		StartTime := changeDate - 45 ; 12:55 AM2355
+		EndTime := changeDate + 5 ; 1:01 AM
 
-	; Adjust for crossing midnight
-	if (StartTime < 0)
-		StartTime += 2400
-	if (EndTime >= 2400)
-		EndTime -= 2400
+		; Adjust for crossing midnight
+		if (StartTime < 0)
+			StartTime += 2400
+		if (EndTime >= 2400)
+			EndTime -= 2400
 
-	Random, randomTime, 3, 7
+		Random, randomTime, 3, 7
 
-	While(((CurrentTime - StartTime >= 0) && (CurrentTime - StartTime <= randomTime)) || ((EndTime - CurrentTime >= 0) && (EndTime - CurrentTime <= randomTime)))
-	{
-		CreateStatusMessage("I need a break... Sleeping until " . changeDate + randomTime . " `nto avoid being kicked out from the date change")
-		FormatTime, CurrentTime,, HHmm ; Update the current time after sleep
-		Sleep, 5000
-		dateChange := true
-	}
-	if(dateChange)
-		createAccountList(scriptName)
-	FindImageAndClick(65, 195, 100, 215, , "Platin", 18, 109, 2000) ; click mod settings
-	if(setSpeed = 3)
-		FindImageAndClick(182, 170, 194, 190, , "Three", 187, 180) ; click mod settings
-	else
-		FindImageAndClick(100, 170, 113, 190, , "Two", 107, 180) ; click mod settings
-	Delay(1)
-	adbClick(41, 296)
-	Delay(1)
-	packs := 0
+		While(((CurrentTime - StartTime >= 0) && (CurrentTime - StartTime <= randomTime)) || ((EndTime - CurrentTime >= 0) && (EndTime - CurrentTime <= randomTime)))
+		{
+			CreateStatusMessage("I need a break... Sleeping until " . changeDate + randomTime . " `nto avoid being kicked out from the date change")
+			FormatTime, CurrentTime,, HHmm ; Update the current time after sleep
+			Sleep, 5000
+			dateChange := true
+		}
+		if(dateChange)
+			createAccountList(scriptName)
+		FindImageAndClick(65, 195, 100, 215, , "Platin", 18, 109, 2000) ; click mod settings
+		if(setSpeed = 3)
+			FindImageAndClick(182, 170, 194, 190, , "Three", 187, 180) ; click mod settings
+		else
+			FindImageAndClick(100, 170, 113, 190, , "Two", 107, 180) ; click mod settings
+		Delay(1)
+		adbClick(41, 296)
+		Delay(1)
+		packs := 0
 
-	if(!injectMethod || !loadedAccount)
-		DoTutorial()
+		; BallCity 2025.02.21 - Keep track of additional metrics
+		now := A_NowUTC
+		IniWrite, %now%, %A_ScriptDir%\%scriptName%.ini, Metrics, LastStartTimeUTC
+		EnvSub, now, 1970, seconds
+		IniWrite, %now%, %A_ScriptDir%\%scriptName%.ini, Metrics, LastStartEpoch
 
-	if(deleteMethod = "5 Pack" || packMethod)
-		if(!loadedAccount)
-			wonderPicked := DoWonderPick()
+		if(!injectMethod || !loadedAccount)
+			DoTutorial()
 
-	friendsAdded := AddFriends()
-	SelectPack("First")
-	PackOpening()
+		if(deleteMethod = "5 Pack" || packMethod)
+			if(!loadedAccount)
+				wonderPicked := DoWonderPick()
 
-	if(packMethod) {
-		friendsAdded := AddFriends(true)
-		SelectPack()
-	}
-
-	PackOpening()
-
-	if(!injectMethod || !loadedAccount)
-		HourglassOpening() ;deletemethod check in here at the start
-
-	if(wonderPicked) {
-		friendsAdded := AddFriends(true)
-		SelectPack("HGPack")
+		friendsAdded := AddFriends()
+		SelectPack("First")
 		PackOpening()
+
 		if(packMethod) {
+			friendsAdded := AddFriends(true)
+			SelectPack()
+		}
+
+		PackOpening()
+
+		if(!injectMethod || !loadedAccount)
+			HourglassOpening() ;deletemethod check in here at the start
+
+		if(wonderPicked) {
 			friendsAdded := AddFriends(true)
 			SelectPack("HGPack")
 			PackOpening()
+			if(packMethod) {
+				friendsAdded := AddFriends(true)
+				SelectPack("HGPack")
+				PackOpening()
+			}
+			else {
+				HourglassOpening(true)
+			}
 		}
-		else {
-			HourglassOpening(true)
+
+		if(nukeAccount && !injectMethod) {
+			menuDelete()
+		}else{
+			RemoveFriends()
 		}
+		IniWrite, 0, %A_ScriptDir%\%scriptName%.ini, UserSettings, DeadCheck
+
+		; BallCity 2025.02.21 - Keep track of additional metrics
+		now := A_NowUTC
+		IniWrite, %now%, %A_ScriptDir%\%scriptName%.ini, Metrics, LastEndTimeUTC
+		EnvSub, now, 1970, seconds
+		IniWrite, %now%, %A_ScriptDir%\%scriptName%.ini, Metrics, LastEndEpoch
+
+		if(injectMethod)
+			loadedAccount := loadAccount()
+
+		if(!injectMethod || !loadedAccount) {
+			if(!nukeAccount) {
+				saveAccount("All")
+				restartGameInstance("New Run", false)
+			}
+		}
+
+		CreateStatusMessage("New Run")
+		rerolls++
+		if(!loadedAccount)
+			if(deleteMethod = "5 Pack" || packMethod)
+				packs := 5
+		AppendToJsonFile(packs)
+		totalSeconds := Round((A_TickCount - rerollTime) / 1000) ; Total time in seconds
+		avgtotalSeconds := Round(totalSeconds / rerolls) ; Total time in seconds
+		minutes := Floor(avgtotalSeconds / 60) ; Total minutes
+		seconds := Mod(avgtotalSeconds, 60) ; Remaining seconds within the minute
+		mminutes := Floor(totalSeconds / 60) ; Total minutes
+		sseconds := Mod(totalSeconds, 60) ; Remaining seconds within the minute
+		CreateStatusMessage("Avg: " . minutes . "m " . seconds . "s Runs: " . rerolls, 25, 0, 510)
+		LogToFile("Packs: " . packs . " Total time: " . mminutes . "m " . sseconds . "s Avg: " . minutes . "m " . seconds . "s Runs: " . rerolls)
+		if(stopToggle)
+			ExitApp
 	}
-
-	if(nukeAccount && !injectMethod)
-		menuDelete()
-	else
-		RemoveFriends()
-
-	if(injectMethod)
-		loadedAccount := loadAccount()
-
-	if(!injectMethod || !loadedAccount) {
-		if(!nukeAccount) {
-			saveAccount("All")
-			restartGameInstance("New Run", false)
-		}
-	}
-
-	CreateStatusMessage("New Run")
-	rerolls++
-	if(!loadedAccount)
-		if(deleteMethod = "5 Pack" || packMethod)
-			packs := 5
-	AppendToJsonFile(packs)
-	totalSeconds := Round((A_TickCount - rerollTime) / 1000) ; Total time in seconds
-	avgtotalSeconds := Round(totalSeconds / rerolls) ; Total time in seconds
-	minutes := Floor(avgtotalSeconds / 60) ; Total minutes
-	seconds := Mod(avgtotalSeconds, 60) ; Remaining seconds within the minute
-	mminutes := Floor(totalSeconds / 60) ; Total minutes
-	sseconds := Mod(totalSeconds, 60) ; Remaining seconds within the minute
-	CreateStatusMessage("Avg: " . minutes . "m " . seconds . "s Runs: " . rerolls, 25, 0, 510)
-	LogToFile("Packs: " . packs . " Total time: " . mminutes . "m " . sseconds . "s Avg: " . minutes . "m " . seconds . "s Runs: " . rerolls)
-	if(stopToggle)
-		ExitApp
 }
 return
 
@@ -402,7 +432,10 @@ RemoveFriends() {
 		}
 	}
 	if(stopToggle)
+	{
+		IniWrite, 0, %A_ScriptDir%\%scriptName%.ini, UserSettings, DeadCheck
 		ExitApp
+	}
 	friended := false
 }
 
@@ -416,7 +449,8 @@ TradeTutorial() {
 }
 
 AddFriends(renew := false, getFC := false) {
-	global FriendID, friendIds, waitTime, friendCode
+	global FriendID, friendIds, waitTime, friendCode, scriptName
+	IniWrite, 1, %A_ScriptDir%\%scriptName%.ini, UserSettings, DeadCheck
 	friendIDs := ReadFile("ids")
 	count := 0
 	friended := true
@@ -703,6 +737,7 @@ FindOrLoseImage(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT", E
 			CreateStatusMessage("Loaded deleted account. Deleting XML." )
 			if(loadedAccount) {
 				FileDelete, %loadedAccount%
+				IniWrite, 0, %A_ScriptDir%\%scriptName%.ini, UserSettings, DeadCheck
 			}
 			LogToFile("Restarted game for instance " scriptName " Reason: No save data found", "Restart.txt")
 			Reload
@@ -726,7 +761,7 @@ FindOrLoseImage(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT", E
 
 FindImageAndClick(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT", clickx := 0, clicky := 0, sleepTime := "", skip := false, safeTime := 0) {
 	global winTitle, failSafe, confirmed, slowMotion
-	
+
 	if(slowMotion) {
 		if(imageName = "Platin" || imageName = "One" || imageName = "Two" || imageName = "Three")
 			return true
@@ -865,6 +900,7 @@ FindImageAndClick(X1, Y1, X2, Y2, searchVariation := "", imageName := "DEFAULT",
 				CreateStatusMessage("Loaded deleted account. Deleting XML." )
 				if(loadedAccount) {
 					FileDelete, %loadedAccount%
+					IniWrite, 0, %A_ScriptDir%\%scriptName%.ini, UserSettings, DeadCheck
 				}
 				LogToFile("Restarted game for instance " scriptName " Reason: No save data found", "Restart.txt")
 				Reload
@@ -991,14 +1027,14 @@ waitadb() {
 }
 
 restartGameInstance(reason, RL := true){
-	global Delay, scriptName, adbShell, adbPath, adbPort, friended, loadedAccount
+	global Delay, scriptName, adbShell, adbPath, adbPort, friended, loadedAccount, DeadCheck
 	;initializeAdbShell()
 	CreateStatusMessage("Restarting game reason: `n" reason)
 
 	if(!RL || RL != "GodPack") {
 		adbShell.StdIn.WriteLine("am force-stop jp.pokemon.pokemontcgp")
 		waitadb()
-		if(!RL)
+		if(!RL && DeadCheck==0)
 			adbShell.StdIn.WriteLine("rm /data/data/jp.pokemon.pokemontcgp/shared_prefs/deviceAccount:.xml") ; delete account data
 		waitadb()
 		adbShell.StdIn.WriteLine("am start -n jp.pokemon.pokemontcgp/com.unity3d.player.UnityPlayerActivity")
@@ -1008,14 +1044,18 @@ restartGameInstance(reason, RL := true){
 
 	if(RL = "GodPack") {
 		LogToFile("Restarted game for instance " scriptName " Reason: " reason, "Restart.txt")
+		IniWrite, 0, %A_ScriptDir%\%scriptName%.ini, UserSettings, DeadCheck
+
 		Reload
 	} else if(RL) {
 		if(menuDeleteStart()) {
+			IniWrite, 0, %A_ScriptDir%\%scriptName%.ini, UserSettings, DeadCheck
 			logMessage := "\n" . username . "\n[" . starCount . "/5][" . packs . "P] " . invalid . " God pack found in instance: " . scriptName . "\nFile name: " . accountFile . "\nGot stuck getting friend code."
 			LogToFile(logMessage, "GPlog.txt")
 			LogToDiscord(logMessage, screenShot, discordUserId)
 		}
 		LogToFile("Restarted game for instance " scriptName " Reason: " reason, "Restart.txt")
+
 		Reload
 	}
 }
@@ -1199,6 +1239,7 @@ CreateStatusMessage(Message, GuiName := 50, X := 0, Y := 80) {
 }
 
 CheckPack() {
+	global scriptName, DeadCheck
 	foundGP := false ;check card border to find godpacks
 	foundTrainer := false
 	foundRainbow := false
@@ -1239,8 +1280,10 @@ CheckPack() {
 			foundTS := "Double two star"
 	}
 	if(foundGP || foundTrainer || foundRainbow || foundFullArt || foundImmersive || foundCrown || 2starCount > 1) {
-		if(loadedAccount)
+		if(loadedAccount) {
 			FileDelete, %loadedAccount% ;delete xml file from folder if using inject method
+			IniWrite, 0, %A_ScriptDir%\%scriptName%.ini, UserSettings, DeadCheck
+		}
 		if(foundGP)
 			restartGameInstance("God Pack found. Continuing...", "GodPack") ; restarts to backup and delete xml file with account info.
 		else {
@@ -1251,15 +1294,22 @@ CheckPack() {
 }
 
 FoundStars(star) {
+	global scriptName, DeadCheck
 	screenShot := Screenshot(star)
 	accountFile := saveAccount(star)
 	friendCode := getFriendCode()
+	IniWrite, 0, %A_ScriptDir%\%scriptName%.ini, UserSettings, DeadCheck
+
+	; Pull back screenshot of the friend code/name (good for inject method)
+	Sleep, 8000
+	fcScreenshot := Screenshot("FRIENDCODE")
+
 	if(star = "Crown" || star = "Immersive")
 		RemoveFriends()
 	logMessage := star . " found by " . username . " (" . friendCode . ") in instance: " . scriptName . " (" . packs . " packs)\nFile name: " . accountFile . "\nBacking up to the Accounts\\SpecificCards folder and continuing..."
 	CreateStatusMessage(logMessage)
 	LogToFile(logMessage, "GPlog.txt")
-	LogToDiscord(logMessage, screenShot, discordUserId)
+	LogToDiscord(logMessage, screenShot, discordUserId, "", fcScreenshot)
 }
 
 FindBorders(prefix) {
@@ -1298,7 +1348,7 @@ FindBorders(prefix) {
 }
 
 FindGodPack() {
-	global winTitle, discordUserId, Delay, username, packs, minStars
+	global winTitle, discordUserId, Delay, username, packs, minStars, scriptName, DeadCheck
 	gpFound := false
 	invalidGP := false
 	searchVariation := 5
@@ -1357,6 +1407,7 @@ FindGodPack() {
 				gpFound := true
 				GodPackFound("Invalid")
 				RemoveFriends()
+				IniWrite, 0, %A_ScriptDir%\%scriptName%.ini, UserSettings, DeadCheck
 				break
 			}
 			else {
@@ -1370,7 +1421,10 @@ FindGodPack() {
 }
 
 GodPackFound(validity) {
+	global scriptName, DeadCheck, ocrLanguage
+
 	if(validity = "Valid") {
+		IniWrite, 0, %A_ScriptDir%\%scriptName%.ini, UserSettings, DeadCheck
 		Praise := ["Congrats!", "Congratulations!", "GG!", "Whoa!", "Praise Helix! ༼ つ ◕_◕ ༽つ", "Way to go!", "You did it!", "Awesome!", "Nice!", "Cool!", "You deserve it!", "Keep going!", "This one has to be live!", "No duds, no duds, no duds!", "Fantastic!", "Bravo!", "Excellent work!", "Impressive!", "You're amazing!", "Well done!", "You're crushing it!", "Keep up the great work!", "You're unstoppable!", "Exceptional!", "You nailed it!", "Hats off to you!", "Sweet!", "Kudos!", "Phenomenal!", "Boom! Nailed it!", "Marvelous!", "Outstanding!", "Legendary!", "Youre a rock star!", "Unbelievable!", "Keep shining!", "Way to crush it!", "You're on fire!", "Killing it!", "Top-notch!", "Superb!", "Epic!", "Cheers to you!", "Thats the spirit!", "Magnificent!", "Youre a natural!", "Gold star for you!", "You crushed it!", "Incredible!", "Shazam!", "You're a genius!", "Top-tier effort!", "This is your moment!", "Powerful stuff!", "Wicked awesome!", "Props to you!", "Big win!", "Yesss!", "Champion vibes!", "Spectacular!"]
 		invalid := ""
 	} else {
@@ -1394,10 +1448,40 @@ GodPackFound(validity) {
 		else
 			changeProfile("Erika")
 	}
+	IniWrite, 0, %A_ScriptDir%\%scriptName%.ini, UserSettings, DeadCheck
+
+	; Pull screenshot of the Friend code page; wait so we don't get the clipboard pop up; good for the inject method
+	Sleep, 8000
+	fcScreenshot := Screenshot("FRIENDCODE")
+
+	; BallCity 2025.02.20 - If we're doing the inject method, try to OCR our Username
+	try {
+		if(injectMethod && IsFunc("ocr_from_file"))
+		{
+			ocrText := Func("ocr_from_file").Call(fcScreenshot, ocrLanguage)
+			ocrLines := StrSplit(ocrText, "`n")
+			len := ocrLines.MaxIndex()
+			if(len > 1) {
+				playerName := ocrLines[1]
+				playerID := RegExReplace(ocrLines[2], "[^0-9]", "")
+				; playerID := SubStr(ocrLines[2], 1, 19)
+				username := playerName
+			}
+		}
+	} catch e {
+		LogToFile("Failed to OCR the friend code: " . e.message, "BC.txt")
+	}
+
 	logMessage := Interjection . "\n" . username . " (" . friendCode . ")\n[" . starCount . "/5][" . packs . "P] " . invalid . " God pack found in instance: " . scriptName . "\nFile name: " . accountFile . "\nBacking up to the Accounts\\GodPacks folder and continuing..."
 	LogToFile(logMessage, godPackLog)
 	;Run, http://google.com, , Hide ;Remove the ; at the start of the line and replace your url if you want to trigger a link when finding a god pack.
-	LogToDiscord(logMessage, screenShot, discordUserId)
+
+	; Adjust the below to only send a 'ping' to Discord friends on Valid packs
+	if(validity = "Valid") {
+		LogToDiscord(logMessage, screenShot, discordUserId, "", fcScreenshot)
+	} else {
+		LogToDiscord(logMessage, screenShot)
+	}
 }
 
 loadAccount() {
@@ -1451,7 +1535,7 @@ loadAccount() {
 
 		;initializeAdbShell()
 
-	adbShell.StdIn.WriteLine("am force-stop jp.pokemon.pokemontcgp")
+		adbShell.StdIn.WriteLine("am force-stop jp.pokemon.pokemontcgp")
 
 	RunWait, % adbPath . " -s 127.0.0.1:" . adbPort . " push " . loadDir . " /sdcard/deviceAccount.xml",, Hide
 
@@ -1464,6 +1548,9 @@ loadAccount() {
 	adbShell.StdIn.WriteLine("am start -n jp.pokemon.pokemontcgp/com.unity3d.player.UnityPlayerActivity")
 	waitadb()
 	Sleep, 1000
+
+	FileSetTime,, %loadDir%
+
 	return loadDir
 }
 
@@ -1529,26 +1616,26 @@ saveAccount(file := "Valid") {
 }
 
 ; adbClick(X, Y) {
-	; global adbShell, setSpeed, adbPath, adbPort
-	; initializeAdbShell()
-	; X := Round(X / 277 * 540)
-	; Y := Round((Y - 44) / 489 * 960)
-	; adbShell.StdIn.WriteLine("input tap " X " " Y)
+; global adbShell, setSpeed, adbPath, adbPort
+; initializeAdbShell()
+; X := Round(X / 277 * 540)
+; Y := Round((Y - 44) / 489 * 960)
+; adbShell.StdIn.WriteLine("input tap " X " " Y)
 ; }
 
 adbClick(X, Y) {
-    global adbShell
-    static clickCommands := Object()
-    static convX := 540/277, convY := 960/489, offset := -44
+	global adbShell
+	static clickCommands := Object()
+	static convX := 540/277, convY := 960/489, offset := -44
 
-    key := X << 16 | Y 
+	key := X << 16 | Y
 
-    if (!clickCommands.HasKey(key)) {
-        clickCommands[key] := Format("input tap {} {}"
-            , Round(X * convX)
-            , Round((Y + offset) * convY))
-    }
-    adbShell.StdIn.WriteLine(clickCommands[key])
+	if (!clickCommands.HasKey(key)) {
+		clickCommands[key] := Format("input tap {} {}"
+			, Round(X * convX)
+			, Round((Y + offset) * convY))
+	}
+	adbShell.StdIn.WriteLine(clickCommands[key])
 }
 
 ControlClick(X, Y) {
@@ -1577,7 +1664,7 @@ DownloadFile(url, filename) {
 
 ReadFile(filename, numbers := false) {
 	global FriendID
-	if(InStr(FriendID, "https")) {
+	if(InStr(FriendID, "http")) {
 		DownloadFile(FriendID, "ids.txt")
 		Delay(1)
 	}
@@ -1657,12 +1744,12 @@ Screenshot(filename := "Valid") {
 	return screenshotFile
 }
 
-LogToDiscord(message, screenshotFile := "", ping := false, xmlFile := "") {
+LogToDiscord(message, screenshotFile := "", ping := false, xmlFile := "", screenshotFile2 := "") {
 	global discordUserId, discordWebhookURL, friendCode
 	discordPing := "<@" . discordUserId . "> "
 	discordFriends := ReadFile("discord")
 
-	if(discordFriends) {
+	if(ping != false && discordFriends) {
 		for index, value in discordFriends {
 			if(value = discordUserId)
 				continue
@@ -1675,8 +1762,16 @@ LogToDiscord(message, screenshotFile := "", ping := false, xmlFile := "") {
 		RetryCount := 0
 		Loop {
 			try {
-				; If an image file is provided, send it
-				if (screenshotFile != "") {
+				if(screenshotFile != "" && screenshotFile2 != "" && FileExist(screenshotFile) && FileExist(screenshotFile2))
+				{
+					; Send the image using curl
+					curlCommand := "curl -k "
+						. "-F ""payload_json={\""content\"":\""" . discordPing . message . "\""};type=application/json;charset=UTF-8"" "
+						. "-F ""file1=@" . screenshotFile . """ "
+						. "-F ""file2=@" . screenshotFile2 . """ "
+						. discordWebhookURL
+					RunWait, %curlCommand%,, Hide
+				} else if (screenshotFile != "") {
 					; Check if the file exists
 					if (FileExist(screenshotFile)) {
 						; Send the image using curl
@@ -1916,7 +2011,6 @@ bboxAndPause(X1, Y1, X2, Y2, doPause := False) {
 
 	Gui, BoundingBox:Destroy
 }
-
 
 initializeAdbShell() {
 	global adbShell, adbPath, adbPort
@@ -2298,7 +2392,12 @@ DoTutorial() {
 	failSafe := A_TickCount
 	failSafeTime := 0
 	Loop {
-		name := ReadFile("usernames")
+		fileName := A_ScriptDir . "\..\usernames.txt"
+		if(FileExist("usernames.txt"))
+			name := ReadFile("usernames")
+		else
+			name := ReadFile("usernames_default")
+
 		Random, randomIndex, 1, name.MaxIndex()
 		username := name[randomIndex]
 		username := SubStr(username, 1, 14)  ;max character limit
@@ -2579,7 +2678,7 @@ SelectPack(HG := false) {
 			CreateStatusMessage("In failsafe for HourglassPack4. " . failSafeTime "/45 seconds")
 		}
 	}
-	;if(HG != "Tutorial")
+		;if(HG != "Tutorial")
 		failSafe := A_TickCount
 		failSafeTime := 0
 		Loop {
@@ -2840,7 +2939,7 @@ createAccountList(instance) {
 			xml := saveDir . "\" . A_LoopFileName
 			FileGetTime, fileTime, %xml%, M
 			timeDiff := A_Now - fileTime  ; Calculate time difference
-			if (timeDiff > 86400) {  ; 24 hours in seconds (60 * 60 * 24) 
+			if (timeDiff > 86400) {  ; 24 hours in seconds (60 * 60 * 24)
 				FileAppend, % A_LoopFileName "`n", %outputTxt%  ; Append file path to output.txt\
 			}
 		}
@@ -2978,11 +3077,10 @@ getChangeDateTime() {
 	Return FormattedTime
 }
 
-
-/*
-^e::
-	msgbox ss
-	pToken := Gdip_Startup()
-	Screenshot()
-return
-*/
+	/*
+	^e::
+		msgbox ss
+		pToken := Gdip_Startup()
+		Screenshot()
+	return
+	*/
