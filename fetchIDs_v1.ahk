@@ -5,7 +5,7 @@
 SetBatchLines, -1
 SetWorkingDir, %A_ScriptDir%
 
-global version = "25.3.5.5"
+global version = "25.3.14.1"
 global wkBranch = "WK"
 
 global loopRunning := true  ; Control whether the loop continues running
