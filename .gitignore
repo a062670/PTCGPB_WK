@@ -13,9 +13,12 @@ Screenshots/*
 !Screenshots/1.txt
 Scripts/*.ahk
 !Scripts/1.ahk
+!Scripts/F.ahk
 !Scripts/Main.ahk
+Scripts/*.ini
 HeartBeat.ini
 Settings.ini
 usernames.txt
 vip_ids.txt
+ids.txt
 TeamSettings.ini
