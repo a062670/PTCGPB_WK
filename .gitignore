@@ -14,8 +14,8 @@ Screenshots/*
 Scripts/*.ahk
 !Scripts/1.ahk
 !Scripts/F.ahk
-!Scripts/Main.ahk
 Scripts/*.ini
+!Scripts/Main.ahk
 HeartBeat.ini
 Settings.ini
 usernames.txt

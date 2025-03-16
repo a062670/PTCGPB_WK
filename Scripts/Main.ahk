@@ -1,4 +1,4 @@
-#Include %A_ScriptDir%\Include\Gdip_All.ahk
+﻿#Include %A_ScriptDir%\Include\Gdip_All.ahk
 #Include %A_ScriptDir%\Include\Gdip_Imagesearch.ahk
 
 #Include *i %A_ScriptDir%\Include\Gdip_Extra.ahk
@@ -51,6 +51,7 @@ if(heartBeat)
 	IniWrite, 1, %A_ScriptDir%\..\HeartBeat.ini, HeartBeat, Main
 IniRead, vipIdsURL, %A_ScriptDir%\..\Settings.ini, UserSettings, vipIdsURL
 IniRead, ocrLanguage, %A_ScriptDir%\..\Settings.ini, UserSettings, ocrLanguage, en
+IniRead, clientLanguage, %A_ScriptDir%\..\Settings.ini, UserSettings, clientLanguage, en
 
 adbPort := findAdbPorts(folderPath)
 
@@ -92,7 +93,7 @@ Loop {
 		x4 := x + 5
 		y4 := y + 44
 
-		Gui, Toolbar: New, +Owner%OwnerWND% -AlwaysOnTop +ToolWindow -Caption
+		Gui, Toolbar: New, +Owner%OwnerWND% -AlwaysOnTop +ToolWindow -Caption +LastFound
 		Gui, Toolbar: Default
 		Gui, Toolbar: Margin, 4, 4  ; Set margin for the GUI
 		Gui, Toolbar: Font, s5 cGray Norm Bold, Segoe UI  ; Normal font for input labels
@@ -102,6 +103,8 @@ Loop {
 		Gui, Toolbar: Add, Button, x105 y0 w35 h25 gStopScript, Stop (Shift+F7)
 		Gui, Toolbar: Add, Button, x140 y0 w35 h25 gShowStatusMessages, Status (Shift+F8)
 		Gui, Toolbar: Add, Button, x175 y0 w35 h25 gTestScript, GP Test (Shift+F9) ; hoytdj Add
+		DllCall("SetWindowPos", "Ptr", WinExist(), "Ptr", 1  ; HWND_BOTTOM
+			, "Int", 0, "Int", 0, "Int", 0, "Int", 0, "UInt", 0x13)  ; SWP_NOSIZE, SWP_NOMOVE, SWP_NOACTIVATE
 		Gui, Toolbar: Show, NoActivate x%x4% y%y4% AutoSize
 		break
 	}
@@ -127,6 +130,22 @@ if(heartBeat)
 	IniWrite, 1, %A_ScriptDir%\..\HeartBeat.ini, HeartBeat, Main
 FindImageAndClick(120, 500, 155, 530, , "Social", 143, 518, 1000, 150)
 firstRun := true
+
+global 99Configs := {}
+99Configs["en"] := {leftx: 123, rightx: 162}
+99Configs["es"] := {leftx: 68, rightx: 107}
+99Configs["fr"] := {leftx: 56, rightx: 95}
+99Configs["de"] := {leftx: 72, rightx: 111}
+99Configs["it"] := {leftx: 60, rightx: 99}
+99Configs["pt"] := {leftx: 127, rightx: 166}
+99Configs["jp"] := {leftx: 84, rightx: 127}
+99Configs["ko"] := {leftx: 65, rightx: 100}
+99Configs["cn"] := {leftx: 63, rightx: 102}
+
+99Path := "99" . clientLanguage
+99Leftx := 99Configs[clientLanguage].leftx
+99Rightx := 99Configs[clientLanguage].rightx
+
 Loop {
 	; hoytdj Add + 6
 	if (GPTest) {
@@ -158,7 +177,7 @@ Loop {
 			Loop {
 				Sleep, %Delay%
 				clickButton := FindOrLoseImage(75, 340, 195, 530, 80, "Button", 0, failSafeTime) ;looking for ok button in case an invite is withdrawn
-				if(FindOrLoseImage(123, 110, 162, 127, , "99", 0, failSafeTime)) {
+				if(FindOrLoseImage(99Leftx, 110, 99Rightx, 127, , 99Path, 0, failSafeTime)) {
 					done := true
 					break
 				} else if(FindOrLoseImage(80, 170, 120, 195, , "player", 0, failSafeTime)) {
@@ -435,27 +454,63 @@ LogToFile(message, logFile := "") {
 	FileAppend, % "[" readableTime "] " message "`n", %logFile%
 }
 
-CreateStatusMessage(Message, GuiName := 50, X := 0, Y := 80) {
+CreateStatusMessage(Message, GuiName := "StatusMessage", X := 0, Y := 80) {
 	global scriptName, winTitle, StatusText
+	static hwnds := {}
 	if(!showStatus)
 		return
 	try {
+		; Check if GUI with this name already exists
 		;GuiName := GuiName ; hoytdj Removed
-		WinGetPos, xpos, ypos, Width, Height, %winTitle%
-		X := X + xpos + 5
-		Y := Y + ypos
-		if(!X)
-			X := 0
-		if(!Y)
-			Y := 0
+		if !hwnds.HasKey(GuiName) {
+			WinGetPos, xpos, ypos, Width, Height, %winTitle%
+			X := X + xpos + 5
+			Y := Y + ypos
+			if(!X)
+				X := 0
+			if(!Y)
+				Y := 0
 
-		; Create a new GUI with the given name, position, and message
-		Gui, StatusMessage: New, -AlwaysOnTop +ToolWindow -Caption
-		Gui, StatusMessage: Margin, 2, 2  ; Set margin for the GUI
-		Gui, StatusMessage: Font, s8  ; Set the font size to 8 (adjust as needed)
-		Gui, StatusMessage: Add, Text, vStatusText, %Message%
-		Gui, StatusMessage: Show, NoActivate x%X% y%Y% AutoSize, NoActivate %GuiName%
+			; Create a new GUI with the given name, position, and message
+			Gui, %GuiName%:New, -AlwaysOnTop +ToolWindow -Caption
+			Gui, %GuiName%:Margin, 2, 2  ; Set margin for the GUI
+			Gui, %GuiName%:Font, s8  ; Set the font size to 8 (adjust as needed)
+			Gui, %GuiName%:Add, Text, hwndhCtrl vStatusText,
+			hwnds[GuiName] := hCtrl
+			OwnerWND := WinExist(winTitle)
+			Gui, %GuiName%:+Owner%OwnerWND% +LastFound
+			DllCall("SetWindowPos", "Ptr", WinExist(), "Ptr", 1  ; HWND_BOTTOM
+				, "Int", 0, "Int", 0, "Int", 0, "Int", 0, "UInt", 0x13)  ; SWP_NOSIZE, SWP_NOMOVE, SWP_NOACTIVATE
+			Gui, %GuiName%:Show, NoActivate x%X% y%Y% AutoSize
+		}
+		SetTextAndResize(hwnds[GuiName], Message)
+		Gui, %GuiName%:Show, NoActivate AutoSize
 	}
+}
+
+;Modified from https://stackoverflow.com/a/49354127
+SetTextAndResize(controlHwnd, newText) {
+	dc := DllCall("GetDC", "Ptr", controlHwnd)
+
+	; 0x31 = WM_GETFONT
+	SendMessage 0x31,,,, ahk_id %controlHwnd%
+	hFont := ErrorLevel
+	oldFont := 0
+	if (hFont != "FAIL")
+		oldFont := DllCall("SelectObject", "Ptr", dc, "Ptr", hFont)
+
+	VarSetCapacity(rect, 16, 0)
+	; 0x440 = DT_CALCRECT | DT_EXPANDTABS
+	h := DllCall("DrawText", "Ptr", dc, "Ptr", &newText, "Int", -1, "Ptr", &rect, "UInt", 0x440)
+	; width = rect.right - rect.left
+	w := NumGet(rect, 8, "Int") - NumGet(rect, 0, "Int")
+
+	if oldFont
+		DllCall("SelectObject", "Ptr", dc, "Ptr", oldFont)
+	DllCall("ReleaseDC", "Ptr", controlHwnd, "Ptr", dc)
+
+	GuiControl,, %controlHwnd%, %newText%
+	GuiControl MoveDraw, %controlHwnd%, % "h" h*96/A_ScreenDPI + 2 " w" w*96/A_ScreenDPI + 2
 }
 
 adbClick(X, Y) {
@@ -642,7 +697,7 @@ ToggleTestScript()
 			firstRun := True
 			testStartTime := ""
 		}
-		CreateStatusMessage("Exiting GP Test Mode")		
+		CreateStatusMessage("Exiting GP Test Mode")
 	}
 }
 
@@ -999,29 +1054,26 @@ cropAndOcr(winTitle := "Main", x := 0, y := 0, width := 200, height := 200, move
 	global ocrLanguage
 
     if(moveWindow) {
-        if(revertWindow) {
-            WinGetPos, srcX, srcY, srcW, srcH, %winTitle%
-        }
-
-        WinMove, %winTitle%, , 0, 0, 550, 1015
+		WinGetPos, srcX, srcY, srcW, srcH, %winTitle%
+        WinMove, %winTitle%, , srcX, srcY, 550, 1015
         Delay(1)
     }
     hwnd := WinExist(winTitle)
     pBitmap := from_window(hwnd) ; Gdip_BitmapFromScreen( "hwnd: " . hwnd)
-    ;;;;Gdip_SaveBitmapToFile(pBitmap, "src.jpg")
+				;;;;Gdip_SaveBitmapToFile(pBitmap, "src.jpg")
 
     pBitmap2 := Gdip_CropImage(pBitmap, x, y, width, height)
     pBitmap3 := Gdip_ResizeBitmap(pBitmap2, blowupPercent, true)
     hBitmap := Gdip_CreateHBITMAPFromBitmap(pBitmap3)
-    ;;hBitmap2 := ToGrayscale(hBitmap)
+				;;hBitmap2 := ToGrayscale(hBitmap)
 
-    ;;;; ret := SavePicture(hBitmap, "biggrey1.png")
+				;;;; ret := SavePicture(hBitmap, "biggrey1.png")
     pIRandomAccessStream := HBitmapToRandomAccessStream(hBitmap)
     text := ocr(pIRandomAccessStream, ocrLanguage)
-    ;;;; MsgBox %text%
+				;;;; MsgBox %text%
 
     DeleteObject(hBitmap)
-    ;;DeleteObject(hBitmap2)
+				;;DeleteObject(hBitmap2)
     Gdip_DisposeImage(pBitmap)
     Gdip_DisposeImage(pBitmap2)
     Gdip_DisposeImage(pBitmap3)
@@ -1124,7 +1176,7 @@ RemoveNonVipFriends() {
 					CreateStatusMessage("Couldn't parse friend. Skipping friend...`nParsed friend: " . friendAccount.ToString())
 					LogToFile("Friend skipped: " . friendAccount.ToString() . ". Couldn't parse identifiers.", "GPTestLog.txt")
 				}
-				; If it's a VIP friend, skip removal	
+				; If it's a VIP friend, skip removal
 				if (isVipResult)
 					CreateStatusMessage("Parsed friend: " . friendAccount.ToString() . "`nMatched VIP: " . matchedFriend.ToString() . "`nSkipping VIP...")
 				Sleep, 1500 ; Time to read
@@ -1167,8 +1219,6 @@ RemoveNonVipFriends() {
 	}
 }
 
-
-
 GetFriendCode(blowupPercent := 200) {
 	global winTitle
 	ocrText := cropAndOcr(winTitle, 336, 106, 188, 20, True, True, blowupPercent)
@@ -1183,59 +1233,58 @@ GetFriendName(blowupPercent := 200) {
 	return friendName
 }
 
-/*
-GetFriendCode() {
-	global winTitle, scaleParam
-	WinGetPos, x, y, w, h, %winTitle%
-	if (scaleParam = 287) {
-		x := x + 170
-		y := y + 63
-		w := 103
-		h := 20
-	}
-	else {
-		x := x + 169
-		y := y + 72
-		w := 100
-		h := 20
-	}
-	; Parse friendCode status from screen
-	; Expected output something like "1234-5678-1234-5678"
-	if (ScreenshotRegion(x, y, w, h, capturedScreenshot, "friendCode")) {
-		ocrText := GetTextFromImage(capturedScreenshot)
-		friendCode := RegExReplace(Trim(ocrText, " `t`r`n"), "\D")
-		;MsgBox % "OCR Text:`n" . ocrText . "`nClean Text:`n" . friendCode
-		return friendCode
-	}
-	return ""
-}
-
-GetFriendName() {
-	global winTitle, scaleParam
-	WinGetPos, x, y, w, h, %winTitle%
-	if (scaleParam = 287) {
-		x := x + 52
-		y := y + 255
-		w := 174
-		h := 28
-	}
-	else {
-		x := x + 51
-		y := y + 262
-		w := 174
-		h := 28
+	/*
+	GetFriendCode() {
+		global winTitle, scaleParam
+		WinGetPos, x, y, w, h, %winTitle%
+		if (scaleParam = 287) {
+			x := x + 170
+			y := y + 63
+			w := 103
+			h := 20
+		}
+		else {
+			x := x + 169
+			y := y + 72
+			w := 100
+			h := 20
+		}
+		; Parse friendCode status from screen
+		; Expected output something like "1234-5678-1234-5678"
+		if (ScreenshotRegion(x, y, w, h, capturedScreenshot, "friendCode")) {
+			ocrText := GetTextFromImage(capturedScreenshot)
+			friendCode := RegExReplace(Trim(ocrText, " `t`r`n"), "\D")
+			;MsgBox % "OCR Text:`n" . ocrText . "`nClean Text:`n" . friendCode
+			return friendCode
+		}
+		return ""
 	}
 
-	if (ScreenshotRegion(x, y, w, h, capturedScreenshot, "friendName")) {
-		ocrText := GetTextFromImage(capturedScreenshot)
-		friendName := Trim(ocrText, " `t`r`n")
-		;MsgBox % "OCR Text:`n" . ocrText . "`nClean Text:`n" . friendName
-		return friendName
-	}
-	return ""
-}
-*/
+	GetFriendName() {
+		global winTitle, scaleParam
+		WinGetPos, x, y, w, h, %winTitle%
+		if (scaleParam = 287) {
+			x := x + 52
+			y := y + 255
+			w := 174
+			h := 28
+		}
+		else {
+			x := x + 51
+			y := y + 262
+			w := 174
+			h := 28
+		}
 
+		if (ScreenshotRegion(x, y, w, h, capturedScreenshot, "friendName")) {
+			ocrText := GetTextFromImage(capturedScreenshot)
+			friendName := Trim(ocrText, " `t`r`n")
+			;MsgBox % "OCR Text:`n" . ocrText . "`nClean Text:`n" . friendName
+			return friendName
+		}
+		return ""
+	}
+	*/
 
 ParseFriendCode(ByRef friendCode) {
 	failSafe := A_TickCount
@@ -1310,14 +1359,12 @@ ParseFriendAccounts(filePath, ByRef includesIdsAndNames) {
 		line := A_LoopField
 		if (line = "" || line ~= "^\s*$")  ; Skip empty lines
 			continue
-		
 		friendCode := ""
 		friendName := ""
 		twoStarCount := ""
 
 		if InStr(line, " | ") {
 			parts := StrSplit(line, " | ") ; Split by " | "
-			
 			; Check for ID and Name parts
 			friendCode := Trim(parts[1])
 			friendName := Trim(parts[2])
@@ -1365,14 +1412,13 @@ IsFriendAccountInList(inputFriend, friendList, ByRef matchedFriend) {
 
 IsRecentlyCheckedAccount(inputFriend, ByRef friendList) {
 	if (inputFriend == "") {
-		return false	
+		return false
 	}
-	
+
 	; Check if the account is already in the list
 	if (IsFriendAccountInList(inputFriend, friendList, matchedFriend)) {
 		return true
 	}
-	
 	; Add the account to the end of the list
 	friendList.Push(inputFriend)
 
@@ -1443,7 +1489,6 @@ DownloadFile(url, filename) {
 	}
 	return !errored
 }
-
 
 ; DEBUG
 ; F1::

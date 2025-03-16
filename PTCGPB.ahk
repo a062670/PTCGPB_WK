@@ -1,12 +1,11 @@
-﻿;
-version = Arturos PTCGP Bot
+﻿version = Arturos PTCGP Bot
 #SingleInstance, force
 CoordMode, Mouse, Screen
 SetTitleMatchMode, 3
 
 githubUser := "Arturo-1212"
 repoName := "PTCGPB"
-localVersion := "v6.3.17"
+localVersion := "v6.3.18"
 scriptFolder := A_ScriptDir
 zipPath := A_Temp . "\update.zip"
 extractPath := A_Temp . "\update"
@@ -85,6 +84,7 @@ IniRead, Charizard, Settings.ini, UserSettings, Charizard, 0
 IniRead, Mewtwo, Settings.ini, UserSettings, Mewtwo, 0
 IniRead, slowMotion, Settings.ini, UserSettings, slowMotion, 0
 IniRead, ocrLanguage, Settings.ini, UserSettings, ocrLanguage, en
+IniRead, clientLanguage, Settings.ini, UserSettings, clientLanguage, en
 IniRead, autoLaunchMonitor, Settings.ini, UserSettings, autoLaunchMonitor, 1
 IniRead, mainIdsURL, Settings.ini, UserSettings, mainIdsURL, ""
 IniRead, vipIdsURL, Settings.ini, UserSettings, vipIdsURL, ""
@@ -143,14 +143,15 @@ Gui, Add, Edit, vfolderPath w200 x20 y365 h20 -E0x200 Background2A2A2A cWhite, %
 ;else
 ;Gui, Add, Checkbox, vslowMotion x270 y375, Base Game Compatibility
 
-Gui, Add, Text, x20 y395 c4169E1, Language Pack:
+Gui, Add, Text, x20 y395 c4169E1, OCR:
 
 ; ========== Language Pack list ==========
-languageList := "en|zh|es|de|fr|ja|ru|pt|ko|it|tr|pl|nl|sv|ar|uk|id|vi|th|he|cs|no|da|fi|hu|el|zh-TW"
+ocrLanguageList := "en|zh|es|de|fr|ja|ru|pt|ko|it|tr|pl|nl|sv|ar|uk|id|vi|th|he|cs|no|da|fi|hu|el|zh-TW"
 
 if (ocrLanguage != "")
 {
-	Loop, Parse, languageList, |
+	index := 0
+	Loop, Parse, ocrLanguageList, |
 	{
 		index++
 		if (A_LoopField = ocrLanguage)
@@ -161,7 +162,29 @@ if (ocrLanguage != "")
 	}
 }
 
-Gui, Add, DropDownList, vocrLanguage choose%defaultOcrLang% x120 y390 w50 Background2A2A2A cWhite, %languageList%
+Gui, Add, DropDownList, vocrLanguage choose%defaultOcrLang% x55 y390 w50 Background2A2A2A cWhite, %ocrLanguageList%
+
+Gui, Add, Text, x120 y395 c4169E1, Client:
+
+; ========== Client Language Pack list ==========
+clientLanguageList := "en|es|fr|de|it|pt|jp|ko|cn"
+
+if (clientLanguage != "")
+{
+	index := 0
+	Loop, Parse, clientLanguageList, |
+	{
+		index++
+		if (A_LoopField = clientLanguage)
+		{
+			defaultClientLang := index
+			break
+		}
+	}
+}
+
+Gui, Add, DropDownList, vclientLanguage choose%defaultClientLang% x165 y390 w50 Background2A2A2A cWhite, %clientLanguageList%
+
 Gui, Add, Text, x20 y425 c4169E1, Launch All Mumu Delay:
 Gui, Add, Edit, vinstanceLaunchDelay w50 x175 y425 h20 -E0x200 Background2A2A2A cWhite Center, %instanceLaunchDelay%
 Gui, Add, Checkbox, % (autoLaunchMonitor ? "Checked" : "") " vautoLaunchMonitor x35 y455 cWhite", Auto Launch Monitor
@@ -180,7 +203,10 @@ else if (deleteMethod = "3 Pack")
 	defaultDelete := 2
 else if (deleteMethod = "Inject")
 	defaultDelete := 3
-Gui, Add, DropDownList, vdeleteMethod gdeleteSettings choose%defaultDelete% x325 y48 w100 Background2A2A2A cWhite, 5 Pack|3 Pack|Inject
+else if (deleteMethod = "5 Pack (Fast)")
+	defaultDelete := 4
+;	SquallTCGP 2025.03.12 - 	Adding the delete method 5 Pack (Fast) to the delete method dropdown list.
+Gui, Add, DropDownList, vdeleteMethod gdeleteSettings choose%defaultDelete% x325 y48 w100 Background2A2A2A cWhite, 5 Pack|3 Pack|Inject|5 Pack (Fast)
 Gui, Add, Checkbox, % (packMethod ? "Checked" : "") " vpackMethod x280 y75 c39FF14", 1 Pack Method
 Gui, Add, Checkbox, % (nukeAccount ? "Checked" : "") " vnukeAccount x280 y95 c39FF14", Menu Delete Account
 
@@ -267,6 +293,9 @@ if (defaultLanguage = "Scale125") {
 	scaleParam := 287
 }
 Gui, Add, DropDownList, x597 y397 w145 vdefaultLanguage choose%defaultLang%, Scale125|Scale100
+
+;Gui, Add, Text, x270 y400 cWhite, Scale:
+;Gui, Add, DropDownList, x310 y395 w145 vdefaultLanguage choose%defaultLang%, Scale125
 
 ;Gui, Add, Text, x270 y400 cWhite, Scale:
 ;Gui, Add, DropDownList, x310 y395 w145 vdefaultLanguage choose%defaultLang%, Scale125
@@ -442,6 +471,7 @@ Start:
 	IniWrite, %slowMotion%, Settings.ini, UserSettings, slowMotion
 
 	IniWrite, %ocrLanguage%, Settings.ini, UserSettings, ocrLanguage
+	IniWrite, %clientLanguage%, Settings.ini, UserSettings, clientLanguage
 	IniWrite, %mainIdsURL%, Settings.ini, UserSettings, mainIdsURL
 	IniWrite, %vipIdsURL%, Settings.ini, UserSettings, vipIdsURL
 	IniWrite, %autoLaunchMonitor%, Settings.ini, UserSettings, autoLaunchMonitor
@@ -512,6 +542,22 @@ Start:
 	if(nukeAccount && !injectMethod)
 		typeMsg .= " (Menu Delete)"
 
+	selectMsg := "\nSelect: "
+	if(Arceus)
+		selectMsg .= "Arceus, "
+	if(Palkia)
+		selectMsg .= "Palkia, "
+	if(Dialga)
+		selectMsg .= "Dialga, "
+	if(Mew)
+		selectMsg .= "Mew, "
+	if(Pikachu)
+		selectMsg .= "Pikachu, "
+	if(Charizard)
+		selectMsg .= "Charizard, "
+	if(Mewtwo)
+		selectMsg .= "Mewtwo, "
+
 	Loop {
 		Sleep, 30000
 
@@ -567,6 +613,7 @@ Start:
 
 				discMessage := "\n" . onlineAHK . "\n" . offlineAHK . "\n" . packStatus
 				discMessage .= typeMsg
+				discMessage .= selectMsg
 				if(heartBeatName)
 					discordUserID := heartBeatName
 				LogToDiscord(discMessage, , discordUserID)
@@ -696,12 +743,14 @@ CreateStatusMessage(Message, X := 0, Y := 80) {
 			GuiControl, , PacksText, %Message%
 		} else {			OwnerWND := WinExist(1)
 			if(!OwnerWND)
-				Gui, %GuiName%:New, +ToolWindow -Caption
+				Gui, %GuiName%:New, +ToolWindow -Caption +LastFound
 			else
-				Gui, %GuiName%:New, +Owner%OwnerWND% +ToolWindow -Caption
+				Gui, %GuiName%:New, +Owner%OwnerWND% +ToolWindow -Caption +LastFound
 			Gui, %GuiName%:Margin, 2, 2  ; Set margin for the GUI
 			Gui, %GuiName%:Font, s8  ; Set the font size to 8 (adjust as needed)
 			Gui, %GuiName%:Add, Text, vPacksText, %Message%
+			DllCall("SetWindowPos", "Ptr", WinExist(), "Ptr", WinExist("A")  ; set behind active window
+				, "Int", 0, "Int", 0, "Int", 0, "Int", 0, "UInt", 0x13)  ; SWP_NOSIZE, SWP_NOMOVE, SWP_NOACTIVATE
 			Gui, %GuiName%:Show, NoActivate x%X% y%Y%, NoActivate %GuiName%
 		}
 	}
