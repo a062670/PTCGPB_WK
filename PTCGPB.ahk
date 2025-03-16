@@ -1,4 +1,4 @@
-version = Arturos PTCGP Bot
+﻿version = Arturos PTCGP Bot
 #SingleInstance, force
 CoordMode, Mouse, Screen
 SetTitleMatchMode, 3
@@ -91,17 +91,15 @@ IniRead, instanceLaunchDelay, Settings.ini, UserSettings, instanceLaunchDelay, 5
 Gui, Color, 1E1E1E, 333333 ; Dark theme background
 Gui, Font, s10 cWhite, Segoe UI ; Modern font
 
-
-
-; ========== Column 1 ========== 
+; ========== Column 1 ==========
 ; ==============================
 
 ; ========== Friend ID Section ==========
 Gui, Add, GroupBox, x5 y0 w240 h40 cWhite, Friend ID
 if(FriendID = "ERROR" || FriendID = "")
-    Gui, Add, Edit, vFriendID w180 x35 y15 h20 -E0x200 Background2A2A2A cWhite
-else 
-    Gui, Add, Edit, vFriendID w180 x35 y15 h20 -E0x200 Background2A2A2A cWhite, %FriendID%
+	Gui, Add, Edit, vFriendID w180 x35 y15 h20 -E0x200 Background2A2A2A cWhite
+else
+	Gui, Add, Edit, vFriendID w180 x35 y15 h20 -E0x200 Background2A2A2A cWhite, %FriendID%
 
 ; ========== Instance Settings Section ==========
 Gui, Add, GroupBox, x5 y40 w240 h125 cWhite, Instance Settings
@@ -128,9 +126,9 @@ Gui, Add, Text, x20 y295 c4169E1, Monitor:
 SysGet, MonitorCount, MonitorCount
 MonitorOptions := ""
 Loop, %MonitorCount% {
-    SysGet, MonitorName, MonitorName, %A_Index%
-    SysGet, Monitor, Monitor, %A_Index%
-    MonitorOptions .= (A_Index > 1 ? "|" : "") "" A_Index ": (" MonitorRight - MonitorLeft "x" MonitorBottom - MonitorTop ")"
+	SysGet, MonitorName, MonitorName, %A_Index%
+	SysGet, Monitor, Monitor, %A_Index%
+	MonitorOptions .= (A_Index > 1 ? "|" : "") "" A_Index ": (" MonitorRight - MonitorLeft "x" MonitorBottom - MonitorTop ")"
 }
 SelectedMonitorIndex := RegExReplace(SelectedMonitorIndex, ":.*$")
 Gui, Add, DropDownList, x20 y315 w200 vSelectedMonitorIndex Choose%SelectedMonitorIndex% Background2A2A2A cWhite, %MonitorOptions%
@@ -138,9 +136,9 @@ Gui, Add, Text, x20 y345 c4169E1, Folder Path:
 Gui, Add, Edit, vfolderPath w200 x20 y365 h20 -E0x200 Background2A2A2A cWhite, %folderPath%
 
 ;if(slowMotion)
-	;Gui, Add, Checkbox, Checked vslowMotion x270 y375, Base Game Compatibility
+;Gui, Add, Checkbox, Checked vslowMotion x270 y375, Base Game Compatibility
 ;else
-	;Gui, Add, Checkbox, vslowMotion x270 y375, Base Game Compatibility
+;Gui, Add, Checkbox, vslowMotion x270 y375, Base Game Compatibility
 
 Gui, Add, Text, x20 y395 c4169E1, OCR:
 
@@ -150,15 +148,15 @@ ocrLanguageList := "en|zh|es|de|fr|ja|ru|pt|ko|it|tr|pl|nl|sv|ar|uk|id|vi|th|he|
 if (ocrLanguage != "")
 {
 	index := 0
-    Loop, Parse, ocrLanguageList, |
-    {
-        index++
-        if (A_LoopField = ocrLanguage)
-        {
-            defaultOcrLang := index
-            break
-        }
-    }
+	Loop, Parse, ocrLanguageList, |
+	{
+		index++
+		if (A_LoopField = ocrLanguage)
+		{
+			defaultOcrLang := index
+			break
+		}
+	}
 }
 
 Gui, Add, DropDownList, vocrLanguage choose%defaultOcrLang% x55 y390 w50 Background2A2A2A cWhite, %ocrLanguageList%
@@ -171,15 +169,15 @@ clientLanguageList := "en|es|fr|de|it|pt|jp|ko|cn"
 if (clientLanguage != "")
 {
 	index := 0
-    Loop, Parse, clientLanguageList, |
-    {
-        index++
-        if (A_LoopField = clientLanguage)
-        {
-            defaultClientLang := index
-            break
-        }
-    }
+	Loop, Parse, clientLanguageList, |
+	{
+		index++
+		if (A_LoopField = clientLanguage)
+		{
+			defaultClientLang := index
+			break
+		}
+	}
 }
 
 Gui, Add, DropDownList, vclientLanguage choose%defaultClientLang% x165 y390 w50 Background2A2A2A cWhite, %clientLanguageList%
@@ -188,9 +186,7 @@ Gui, Add, Text, x20 y425 c4169E1, Launch All Mumu Delay:
 Gui, Add, Edit, vinstanceLaunchDelay w50 x175 y425 h20 -E0x200 Background2A2A2A cWhite Center, %instanceLaunchDelay%
 Gui, Add, Checkbox, % (autoLaunchMonitor ? "Checked" : "") " vautoLaunchMonitor x35 y455 cWhite", Auto Launch Monitor
 
-
-
-; ========== Column 2 ========== 
+; ========== Column 2 ==========
 ; ==============================
 
 ; ========== God Pack Settings Section ==========
@@ -199,13 +195,13 @@ Gui, Add, Text, x270 y25 c39FF14, Min. 2 Stars:
 Gui, Add, Edit, vminStars w50 x350 y23 h20 -E0x200 Background2A2A2A cWhite Center, %minStars%
 Gui, Add, Text, x270 y53 c39FF14, Method:
 if (deleteMethod = "5 Pack")
-    defaultDelete := 1
-else if (deleteMethod = "3 Pack") 
-    defaultDelete := 2
+	defaultDelete := 1
+else if (deleteMethod = "3 Pack")
+	defaultDelete := 2
 else if (deleteMethod = "Inject")
-    defaultDelete := 3
+	defaultDelete := 3
 else if (deleteMethod = "5 Pack (Fast)")
-    defaultDelete := 4
+	defaultDelete := 4
 ;	SquallTCGP 2025.03.12 - 	Adding the delete method 5 Pack (Fast) to the delete method dropdown list.
 Gui, Add, DropDownList, vdeleteMethod gdeleteSettings choose%defaultDelete% x325 y48 w100 Background2A2A2A cWhite, 5 Pack|3 Pack|Inject|5 Pack (Fast)
 Gui, Add, Checkbox, % (packMethod ? "Checked" : "") " vpackMethod x280 y75 c39FF14", 1 Pack Method
@@ -230,17 +226,15 @@ Gui, Add, Checkbox, % (PseudoGodPack ? "Checked" : "") " vPseudoGodPack x280 y31
 Gui, Add, Checkbox, % (CrownCheck ? "Checked" : "") " vCrownCheck x280 y335 cFF4500", Save Crowns
 Gui, Add, Checkbox, % (ImmersiveCheck ? "Checked" : "") " vImmersiveCheck x280 y355 cFF4500", Save Immersives
 
-
-
-; ========== Column 3 ========== 
-; ============================== 
+; ========== Column 3 ==========
+; ==============================
 
 ; ========== Discord Settings Section ==========
 Gui, Add, GroupBox, x505 y0 w240 h120 cFF69B4, Discord Settings ; Hot pink
 if(StrLen(discordUserID) < 3)
-    discordUserID =
+	discordUserID =
 if(StrLen(discordWebhookURL) < 3)
-    discordWebhookURL = 
+	discordWebhookURL =
 Gui, Add, Text, x520 y20 cFF69B4, Discord ID:
 Gui, Add, Edit, vdiscordUserId w210 x520 y40 h20 -E0x200 Background2A2A2A cWhite, %discordUserId%
 Gui, Add, Text, x520 y70 cFF69B4, Webhook URL:
@@ -251,44 +245,42 @@ Gui, Add, GroupBox, x505 y120 w240 h155 c00FFFF, Heartbeat Settings ; Cyan
 Gui, Add, Checkbox, % (heartBeat ? "Checked" : "") " vheartBeat x520 y145 gdiscordSettings c00FFFF", Discord Heartbeat
 
 if(StrLen(heartBeatName) < 3)
-    heartBeatName =
+	heartBeatName =
 if(StrLen(heartBeatWebhookURL) < 3)
-    heartBeatWebhookURL = 
+	heartBeatWebhookURL =
 
 if (heartBeat) {
-    Gui, Add, Text, vhbName x520 y170 c00FFFF, Name:
-    Gui, Add, Edit, vheartBeatName w210 x520 y195 h20 -E0x200 Background2A2A2A cWhite, %heartBeatName%
-    Gui, Add, Text, vhbURL x520 y220 c00FFFF, Webhook URL:
-    Gui, Add, Edit, vheartBeatWebhookURL w210 x520 y245 h20 -E0x200 Background2A2A2A cWhite, %heartBeatWebhookURL%
+	Gui, Add, Text, vhbName x520 y170 c00FFFF, Name:
+	Gui, Add, Edit, vheartBeatName w210 x520 y195 h20 -E0x200 Background2A2A2A cWhite, %heartBeatName%
+	Gui, Add, Text, vhbURL x520 y220 c00FFFF, Webhook URL:
+	Gui, Add, Edit, vheartBeatWebhookURL w210 x520 y245 h20 -E0x200 Background2A2A2A cWhite, %heartBeatWebhookURL%
 } else {
-    Gui, Add, Text, vhbName x520 y170 Hidden c00FFFF, Name:
-    Gui, Add, Edit, vheartBeatName w210 x520 y195 h20 Hidden -E0x200 Background2A2A2A cWhite, %heartBeatName%
-    Gui, Add, Text, vhbURL x520 y220 Hidden c00FFFF, Webhook URL:
-    Gui, Add, Edit, vheartBeatWebhookURL w210 x520 y245 h20 Hidden -E0x200 Background2A2A2A cWhite, %heartBeatWebhookURL%
+	Gui, Add, Text, vhbName x520 y170 Hidden c00FFFF, Name:
+	Gui, Add, Edit, vheartBeatName w210 x520 y195 h20 Hidden -E0x200 Background2A2A2A cWhite, %heartBeatName%
+	Gui, Add, Text, vhbURL x520 y220 Hidden c00FFFF, Webhook URL:
+	Gui, Add, Edit, vheartBeatWebhookURL w210 x520 y245 h20 Hidden -E0x200 Background2A2A2A cWhite, %heartBeatWebhookURL%
 }
 
 ; ========== Action Buttons ==========
-Gui, Add, Button, gOpenLink x505 y350 w76 h35, Buy Me a Coffee 
-Gui, Add, Button, gCheckForUpdates x588 y350 w77 h35, Check Updates 
-Gui, Add, Button, gOpenDiscord x670 y350 w75 h35, Join Discord 
+Gui, Add, Button, gOpenLink x505 y350 w76 h35, Buy Me a Coffee
+Gui, Add, Button, gCheckForUpdates x588 y350 w77 h35, Check Updates
+Gui, Add, Button, gOpenDiscord x670 y350 w75 h35, Join Discord
 Gui, Add, Button, gStart x505 y280 w240 h30, START BOT
-Gui, Add, Button, gArrangeWindows x630 y315 w115 h30, Arrange Windows 
+Gui, Add, Button, gArrangeWindows x630 y315 w115 h30, Arrange Windows
 Gui, Add, Button, gLaunchAllMumu x505 y315 w115 h30, Launch All Mumu
-
 
 ; ========== Download Settings Section (Bottom right) ==========
 Gui, Add, GroupBox, x255 y385 w490 h110 cWhite, Download Settings ;
 
 if(StrLen(mainIdsURL) < 3)
-    mainIdsURL =
+	mainIdsURL =
 if(StrLen(vipIdsURL) < 3)
-    vipIdsURL = 
+	vipIdsURL =
 
 Gui, Add, Text, x270 y405 cWhite, ids.txt API:
 Gui, Add, Edit, vmainIdsURL w460 x270 y425 h20 -E0x200 Background2A2A2A cWhite, %mainIdsURL%
 Gui, Add, Text, x270 y445 cWhite, vip_ids.txt (GP Test Mode) API:
 Gui, Add, Edit, vvipIdsURL w460 x270 y465 h20 -E0x200 Background2A2A2A cWhite, %vipIdsURL%
-
 
 if (defaultLanguage = "Scale125") {
 	defaultLang := 1
@@ -303,7 +295,6 @@ if (defaultLanguage = "Scale125") {
 
 Gui, Show, , %localVersion% PTCGPB Bot Setup [Non-Commercial 4.0 International License]
 Return
-
 
 CheckForUpdates:
 	CheckForUpdate()
@@ -430,7 +421,6 @@ Start:
 	IniWrite, %vipIdsURL%, Settings.ini, UserSettings, vipIdsURL
 	IniWrite, %autoLaunchMonitor%, Settings.ini, UserSettings, autoLaunchMonitor
 	IniWrite, %instanceLaunchDelay%, Settings.ini, UserSettings, instanceLaunchDelay
-
 
 	; Download a new Main ID file prior to running the rest of the below
 	if(mainIdsURL != "") {
@@ -565,8 +555,6 @@ Start:
 					offlineAHK := "Offline: none."
 				if(onlineAHK = "Online: ")
 					onlineAHK := "Online: none."
-				
-
 
 				discMessage := "\n" . onlineAHK . "\n" . offlineAHK . "\n" . packStatus
 				discMessage .= typeMsg
@@ -918,14 +906,14 @@ MoveFilesRecursively(srcFolder, destFolder) {
 		else
 		{
 			if ((relativePath = "ids.txt" && FileExist(destPath)) || (relativePath = "usernames.txt" && FileExist(destPath)) || (relativePath = "discord.txt" && FileExist(destPath))) {
-                continue
-            }
+				continue
+			}
 			if (relativePath = "usernames.txt" && FileExist(destPath)) {
-                continue
-            }
+				continue
+			}
 			if (relativePath = "usernames.txt" && FileExist(destPath)) {
-                continue
-            }
+				continue
+			}
 			; If it's a file, move it to the destination folder
 			; Ensure the directory exists before moving the file
 			FileCreateDir, % SubStr(destPath, 1, InStr(destPath, "\", 0, 0) - 1)
