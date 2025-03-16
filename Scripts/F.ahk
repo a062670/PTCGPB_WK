@@ -2388,7 +2388,7 @@ DoTutorial() {
 	failSafeTime := 0
 	Loop {
 		fileName := A_ScriptDir . "\..\usernames.txt"
-		if(FileExist("usernames.txt"))
+		if(FileExist(fileName))
 			name := ReadFile("usernames")
 		else
 			name := ReadFile("usernames_default")
