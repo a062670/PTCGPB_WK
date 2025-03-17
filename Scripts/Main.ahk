@@ -405,11 +405,15 @@ resetWindows(){
 			SelectedMonitorIndex := RegExReplace(SelectedMonitorIndex, ":.*$")
 			SysGet, Monitor, Monitor, %SelectedMonitorIndex%
 			Title := winTitle
-			rowHeight := 533  ; Adjust the height of each row
-			currentRow := Floor((1 - 1) / Columns)
-			y := currentRow * rowHeight
-			x := Mod((1 - 1), Columns) * scaleParam
 
+			instanceIndex := StrReplace(Title, "Main", "")
+			if (instanceIndex = "")
+				instanceIndex := 1
+
+			rowHeight := 533  ; Adjust the height of each row
+			currentRow := Floor((instanceIndex - 1) / Columns)
+			y := currentRow * rowHeight
+			x := Mod((instanceIndex - 1), Columns) * scaleParam
 			WinMove, %Title%, , % (MonitorLeft + x), % (MonitorTop + y), scaleParam, 537
 			break
 		}

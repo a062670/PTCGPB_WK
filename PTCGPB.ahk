@@ -5,7 +5,7 @@ SetTitleMatchMode, 3
 
 githubUser := "Arturo-1212"
 repoName := "PTCGPB"
-localVersion := "v6.3.18"
+localVersion := "v6.3.19"
 scriptFolder := A_ScriptDir
 zipPath := A_Temp . "\update.zip"
 extractPath := A_Temp . "\update"
@@ -26,7 +26,7 @@ MsgBox, 64, 白王修改版, 感謝群友的努力新增了以下四點 1.SCALE1
 
 KillADBProcesses()
 
-global Instances, instanceStartDelay, jsonFileName, PacksText, runMain, scaleParam
+global Instances, instanceStartDelay, jsonFileName, PacksText, runMain, Mains, scaleParam
 
 totalFile := A_ScriptDir . "\json\total.json"
 backupFile := A_ScriptDir . "\json\total-backup.json"
@@ -63,6 +63,7 @@ IniRead, SelectedMonitorIndex, Settings.ini, UserSettings, SelectedMonitorIndex,
 IniRead, swipeSpeed, Settings.ini, UserSettings, swipeSpeed, 300
 IniRead, deleteMethod, Settings.ini, UserSettings, deleteMethod, 3 Pack
 IniRead, runMain, Settings.ini, UserSettings, runMain, 1
+IniRead, Mains, Settings.ini, UserSettings, Mains, 1
 IniRead, heartBeat, Settings.ini, UserSettings, heartBeat, 0
 IniRead, heartBeatWebhookURL, Settings.ini, UserSettings, heartBeatWebhookURL, ""
 IniRead, heartBeatName, Settings.ini, UserSettings, heartBeatName, ""
@@ -112,7 +113,8 @@ Gui, Add, Text, x20 y90 cWhite, Start Delay:
 Gui, Add, Edit, vinstanceStartDelay w50 x105 y88 h20 -E0x200 Background2A2A2A cWhite Center, %instanceStartDelay%
 Gui, Add, Text, x20 y115 cWhite, Columns:
 Gui, Add, Edit, vColumns w50 x105 y113 h20 -E0x200 Background2A2A2A cWhite Center, %Columns%
-Gui, Add, Checkbox, % (runMain ? "Checked" : "") " vrunMain x35 y140 cWhite", Run Main
+Gui, Add, Checkbox, % (runMain ? "Checked" : "") " vrunMain gmainSettings x35 y140 cWhite", Run Main(s)
+Gui, Add, Edit, % "vMains w50 x135 y138 h20 -E0x200 Background2A2A2A cWhite Center" . (runMain ? "" : " Hidden"), %Mains%
 
 ; ========== Time Settings Section ==========
 Gui, Add, GroupBox, x5 y165 w240 h110 c9370DB, Time Settings ; Purple
@@ -307,6 +309,17 @@ CheckForUpdates:
 	CheckForUpdate()
 return
 
+mainSettings:
+	Gui, Submit, NoHide
+
+	if (runMain) {
+		GuiControl, Show, Mains
+	}
+	else {
+		GuiControl, Hide, Mains
+	}
+return
+
 discordSettings:
 	Gui, Submit, NoHide
 
@@ -338,12 +351,16 @@ return
 
 ArrangeWindows:
 	GuiControlGet, runMain,, runMain
+	GuiControlGet, Mains,, Mains
 	GuiControlGet, Instances,, Instances
 	GuiControlGet, Columns,, Columns
 	GuiControlGet, SelectedMonitorIndex,, SelectedMonitorIndex
 	if (runMain) {
-		resetWindows("Main", SelectedMonitorIndex)
-		sleep, 10
+		Loop %Mains% {
+			mainInstanceName := "Main" . (A_Index > 1 ? A_Index : "")
+			resetWindows(mainInstanceName, SelectedMonitorIndex)
+			sleep, 10
+		}
 	}
 	Loop %Instances% {
 		resetWindows(A_Index, SelectedMonitorIndex)
@@ -359,11 +376,13 @@ LaunchAllMumu:
 	GuiControlGet, Instances,, Instances
 	GuiControlGet, folderPath,, folderPath
 	GuiControlGet, runMain,, runMain
+	GuiControlGet, Mains,, Mains
 	GuiControlGet, instanceLaunchDelay,, instanceLaunchDelay
 
 	IniWrite, %Instances%, Settings.ini, UserSettings, Instances
 	IniWrite, %folderPath%, Settings.ini, UserSettings, folderPath
 	IniWrite, %runMain%, Settings.ini, UserSettings, runMain
+	IniWrite, %Mains%, Settings.ini, UserSettings, Mains
 	IniWrite, %instanceLaunchDelay%, Settings.ini, UserSettings, instanceLaunchDelay
 
 	launchAllFile := "LaunchAllMumu.ahk"
@@ -449,6 +468,7 @@ Start:
 	IniWrite, %swipeSpeed%, Settings.ini, UserSettings, swipeSpeed
 	IniWrite, %deleteMethod%, Settings.ini, UserSettings, deleteMethod
 	IniWrite, %runMain%, Settings.ini, UserSettings, runMain
+	IniWrite, %Mains%, Settings.ini, UserSettings, Mains
 	IniWrite, %heartBeat%, Settings.ini, UserSettings, heartBeat
 	IniWrite, %heartBeatWebhookURL%, Settings.ini, UserSettings, heartBeatWebhookURL
 	IniWrite, %heartBeatName%, Settings.ini, UserSettings, heartBeatName
@@ -477,15 +497,48 @@ Start:
 	IniWrite, %autoLaunchMonitor%, Settings.ini, UserSettings, autoLaunchMonitor
 	IniWrite, %instanceLaunchDelay%, Settings.ini, UserSettings, instanceLaunchDelay
 
+	; Using FriendID field to provide a URL to download ids.txt is deprecated.
+	if (inStr(FriendID, "http")) {
+		MsgBox, To provide a URL for friend IDs, please use the ids.txt API field and leave the Friend ID field empty.
+
+		if (mainIdsURL = "") {
+			IniWrite, "", Settings.ini, UserSettings, FriendID
+			IniWrite, %FriendID%, Settings.ini, UserSettings, mainIdsURL
+		}
+
+		Reload
+	}
+
 	; Download a new Main ID file prior to running the rest of the below
-	if(mainIdsURL != "") {
+	if (mainIdsURL != "") {
 		DownloadFile(mainIdsURL, "ids.txt")
 	}
 
 	; Run main before instances to account for instance start delay
 	if (runMain) {
-		FileName := "Scripts\Main.ahk"
-		Run, %FileName%
+		Loop, %Mains%
+		{
+			if (A_Index != 1) {
+				SourceFile := "Scripts\Main.ahk" ; Path to the source .ahk file
+				TargetFolder := "Scripts\" ; Path to the target folder
+				TargetFile := TargetFolder . "Main" . A_Index . ".ahk" ; Generate target file path
+				FileDelete, %TargetFile%
+				FileCopy, %SourceFile%, %TargetFile%, 1 ; Copy source file to target
+				if (ErrorLevel)
+					MsgBox, Failed to create %TargetFile%. Ensure permissions and paths are correct.
+			}
+
+			mainInstanceName := "Main" . (A_Index > 1 ? A_Index : "")
+			FileName := "Scripts\" . mainInstanceName . ".ahk"
+			Command := FileName
+
+			if (A_Index > 1 && instanceStartDelay > 0) {
+				instanceStartDelayMS := instanceStartDelay * 1000
+				Sleep, instanceStartDelayMS
+			}
+
+			Run, %Command%
+		}
 	}
 
 	; Loop to process each instance
@@ -506,7 +559,7 @@ Start:
 		FileName := "Scripts\" . A_Index . ".ahk"
 		Command := FileName
 
-		if (A_Index != 1 && instanceStartDelay > 0) {
+		if ((Mains > 1 || A_Index > 1) && instanceStartDelay > 0) {
 			instanceStartDelayMS := instanceStartDelay * 1000
 			Sleep, instanceStartDelayMS
 		}
@@ -527,8 +580,6 @@ Start:
 		}
 	}
 
-	if(inStr(FriendID, "http"))
-		DownloadFile(FriendID, "ids.txt")
 	SelectedMonitorIndex := RegExReplace(SelectedMonitorIndex, ":.*$")
 	SysGet, Monitor, Monitor, %SelectedMonitorIndex%
 	rerollTime := A_TickCount
@@ -570,11 +621,13 @@ Start:
 		total := SumVariablesInJsonFile()
 		totalSeconds := Round((A_TickCount - rerollTime) / 1000) ; Total time in seconds
 		mminutes := Floor(totalSeconds / 60)
-		if(total = 0)
-			total := "0                             "
+
 		packStatus := "Time: " . mminutes . "m Packs: " . total
-		packStatus .= " Avg: " . Round(total / mminutes, 2) . " packs/min"
-		CreateStatusMessage(packStatus, 287, 490)
+		packStatus .= "   |   Avg: " . Round(total / mminutes, 2) . " packs/min"
+
+		; Display pack status at the bottom of the first reroll instance
+		CreateStatusMessage(packStatus, ((Mains * scaleParam) + 5), 490)
+
 		if(heartBeat)
 			if((A_Index = 1 || (Mod(A_Index, 60) = 0))) {
 				onlineAHK := "Online: "
@@ -693,8 +746,8 @@ DownloadFile(url, filename) {
 
 }
 
-resetWindows(Title, SelectedMonitorIndex){
-	global Columns, runMain
+resetWindows(Title, SelectedMonitorIndex) {
+	global Columns, runMain, Mains
 	RetryCount := 0
 	MaxRetries := 10
 	Loop
@@ -703,11 +756,13 @@ resetWindows(Title, SelectedMonitorIndex){
 			; Get monitor origin from index
 			SelectedMonitorIndex := RegExReplace(SelectedMonitorIndex, ":.*$")
 			SysGet, Monitor, Monitor, %SelectedMonitorIndex%
-			if(runMain) {
-				if (Title = "Main") {
-					instanceIndex := 1
+			if (runMain) {
+				if (InStr(Title, "Main") = 1) {
+					instanceIndex := StrReplace(Title, "Main", "")
+					if (instanceIndex = "")
+						instanceIndex := 1
 				} else {
-					instanceIndex := Title + 1
+					instanceIndex := (Mains - 1) + Title + 1
 				}
 			} else {
 				instanceIndex := Title
