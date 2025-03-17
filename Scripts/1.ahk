@@ -16,7 +16,7 @@ CoordMode, Pixel, Screen
 DllCall("AllocConsole")
 WinHide % "ahk_id " DllCall("GetConsoleWindow", "ptr")
 
-global winTitle, changeDate, failSafe, openPack, Delay, failSafeTime, StartSkipTime, Columns, failSafe, adbPort, scriptName, adbShell, adbPath, GPTest, StatusText, defaultLanguage, setSpeed, jsonFileName, pauseToggle, SelectedMonitorIndex, swipeSpeed, godPack, scaleParam, discordUserId, discordWebhookURL, deleteMethod, packs, FriendID, friendIDs, Instances, username, friendCode, stopToggle, friended, runMain, showStatus, injectMethod, packMethod, loadDir, loadedAccount, nukeAccount, TrainerCheck, FullArtCheck, RainbowCheck, dateChange, foundGP, foundTS, friendsAdded, minStars, PseudoGodPack, Palkia, Dialga, Mew, Pikachu, Charizard, Mewtwo, packArray, CrownCheck, ImmersiveCheck, slowMotion, screenShot, accountFile, invalid, starCount, gpFound, foundTS
+global winTitle, changeDate, failSafe, openPack, Delay, failSafeTime, StartSkipTime, Columns, failSafe, adbPort, scriptName, adbShell, adbPath, GPTest, StatusText, defaultLanguage, setSpeed, jsonFileName, pauseToggle, SelectedMonitorIndex, swipeSpeed, godPack, scaleParam, discordUserId, discordWebhookURL, deleteMethod, packs, FriendID, friendIDs, Instances, username, friendCode, stopToggle, friended, runMain, Mains, showStatus, injectMethod, packMethod, loadDir, loadedAccount, nukeAccount, TrainerCheck, FullArtCheck, RainbowCheck, dateChange, foundGP, foundTS, friendsAdded, minStars, PseudoGodPack, Palkia, Dialga, Mew, Pikachu, Charizard, Mewtwo, packArray, CrownCheck, ImmersiveCheck, slowMotion, screenShot, accountFile, invalid, starCount, gpFound, foundTS
 global DeadCheck
 
 scriptName := StrReplace(A_ScriptName, ".ahk")
@@ -42,6 +42,7 @@ IniRead, SelectedMonitorIndex, %A_ScriptDir%\..\Settings.ini, UserSettings, Sele
 IniRead, swipeSpeed, %A_ScriptDir%\..\Settings.ini, UserSettings, swipeSpeed, 300
 IniRead, deleteMethod, %A_ScriptDir%\..\Settings.ini, UserSettings, deleteMethod, 3 Pack
 IniRead, runMain, %A_ScriptDir%\..\Settings.ini, UserSettings, runMain, 1
+IniRead, Mains, %A_ScriptDir%\..\Settings.ini, UserSettings, Mains, 1
 IniRead, heartBeat, %A_ScriptDir%\..\Settings.ini, UserSettings, heartBeat, 0
 IniRead, heartBeatWebhookURL, %A_ScriptDir%\..\Settings.ini, UserSettings, heartBeatWebhookURL, ""
 IniRead, heartBeatName, %A_ScriptDir%\..\Settings.ini, UserSettings, heartBeatName, ""
@@ -669,7 +670,11 @@ ChooseTag() {
 	FindImageAndClick(20, 500, 55, 530, , "Home", 40, 516, 500) 212 276 230 294
 	FindImageAndClick(203, 272, 237, 300, , "Profile", 143, 95, 500)
 	FindImageAndClick(205, 310, 220, 319, , "ChosenTag", 143, 306, 1000)
-	FindImageAndClick(53, 218, 63, 228, , "Badge", 143, 466, 500)
+	FindImageAndClick(203, 272, 237, 300, , "Profile", 143, 505, 1000)
+	if(FindOrLoseImage(145, 140, 157, 155, , "Eevee", 1)) {
+		FindImageAndClick(163, 200, 173, 207, , "ChooseEevee", 147, 207, 1000)
+		FindImageAndClick(53, 218, 63, 228, , "Badge", 143, 466, 500)
+	}
 }
 
 EraseInput(num := 0, total := 0) {
@@ -970,7 +975,7 @@ LevelUp() {
 }
 
 resetWindows(){
-	global Columns, winTitle, SelectedMonitorIndex, scaleParam, FriendID
+	global Columns, winTitle, SelectedMonitorIndex, scaleParam
 	CreateStatusMessage("Arranging window positions and sizes")
 	RetryCount := 0
 	MaxRetries := 10
@@ -981,33 +986,17 @@ resetWindows(){
 			SelectedMonitorIndex := RegExReplace(SelectedMonitorIndex, ":.*$")
 			SysGet, Monitor, Monitor, %SelectedMonitorIndex%
 			Title := winTitle
-			rowHeight := 533  ; Height of each row
 
-			if(runMain) {
-				; Calculate currentRow
-				if (winTitle <= Columns - 1) {
-					currentRow := 0  ; First row has (Columns - 1) windows
-				} else {
-					; For rows after the first, adjust calculation
-					adjustedWinTitle := winTitle - (Columns - 1)
-					currentRow := Floor((adjustedWinTitle - 1) / Columns) + 1
-				}
-
-				; Calculate x position
-				if (currentRow == 0) {
-					x := winTitle * scaleParam  ; First row uses (Columns - 1) columns
-				} else {
-					adjustedWinTitle := winTitle - (Columns - 1)
-					x := Mod(adjustedWinTitle - 1, Columns) * scaleParam  ; Subsequent rows use full Columns
-				}
+			if (runMain) {
+				instanceIndex := (Mains - 1) + Title + 1
 			} else {
-				currentRow := Floor((winTitle - 1) / Columns)
-				x := Mod((winTitle - 1), Columns) * scaleParam
+				instanceIndex := Title
 			}
 
+			rowHeight := 533  ; Adjust the height of each row
+			currentRow := Floor((instanceIndex - 1) / Columns)
 			y := currentRow * rowHeight
-
-			; Move the window
+			x := Mod((instanceIndex - 1), Columns) * scaleParam
 			WinMove, %Title%, , % (MonitorLeft + x), % (MonitorTop + y), scaleParam, 537
 			break
 		}
@@ -1388,8 +1377,11 @@ FoundStars(star) {
 	CreateStatusMessage(logMessage)
 	LogToFile(logMessage, "GPlog.txt")
 	LogToDiscord(logMessage, screenShot, discordUserId, "", fcScreenshot)
+	/*
+	; 原版換 tag 及頭像
 	if(star != "Crown" && star != "Immersive")
 		ChooseTag()
+	*/
 }
 
 FindBorders(prefix) {
@@ -1565,7 +1557,10 @@ GodPackFound(validity) {
 	; Adjust the below to only send a 'ping' to Discord friends on Valid packs
 	if(validity = "Valid") {
 		LogToDiscord(logMessage, screenShot, discordUserId, "", fcScreenshot)
+		/*
+		; 原版換 tag 及頭像
 		ChooseTag()
+		*/
 	} else {
 		LogToDiscord(logMessage, screenShot)
 	}
@@ -1754,11 +1749,6 @@ DownloadFile(url, filename) {
 }
 
 ReadFile(filename, numbers := false) {
-	global FriendID
-	if(InStr(FriendID, "http")) {
-		DownloadFile(FriendID, "ids.txt")
-		Delay(1)
-	}
 	FileRead, content, %A_ScriptDir%\..\%filename%.txt
 
 	if (!content)
@@ -2479,6 +2469,18 @@ DoTutorial() {
 	adbClick(143,466)
 	Delay(1)
 
+	/*
+	;原版換頭像
+	;choose any
+	Delay(1)
+	if(FindOrLoseImage(147, 160, 157, 169, , "Erika", 1)) {
+		AdbClick(143, 207)
+		Delay(1)
+		AdbClick(143, 207)
+		FindImageAndClick(165, 294, 173, 301, , "ChooseErika", 143, 306)
+		FindImageAndClick(190, 241, 225, 270, , "Name", 143, 462) ;wait for name input screen
+	}
+	*/
 	FindImageAndClick(0, 476, 40, 502, , "OK", 139, 257) ;wait for name input screen
 
 	failSafe := A_TickCount
