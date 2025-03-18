@@ -72,9 +72,9 @@ packArray := []  ; Initialize an empty array
 
 Loop, % pokemonList.MaxIndex()  ; Loop through the array
 {
-    pokemon := pokemonList[A_Index]  ; Get the variable name as a string
-    if (%pokemon%)  ; Dereference the variable using %pokemon%
-        packArray.push(pokemon)  ; Add the name to packArray
+	pokemon := pokemonList[A_Index]  ; Get the variable name as a string
+	if (%pokemon%)  ; Dereference the variable using %pokemon%
+		packArray.push(pokemon)  ; Add the name to packArray
 }
 
 changeDate := getChangeDateTime() ; get server reset time
@@ -130,7 +130,7 @@ Loop {
 		Gui, Add, Button, x120 y0 w40 h25 gStopScript, Stop (Shift+F7)
 		Gui, Add, Button, x160 y0 w40 h25 gShowStatusMessages, Status (Shift+F8)
 		DllCall("SetWindowPos", "Ptr", WinExist(), "Ptr", 1  ; HWND_BOTTOM
-				, "Int", 0, "Int", 0, "Int", 0, "Int", 0, "UInt", 0x13)  ; SWP_NOSIZE, SWP_NOMOVE, SWP_NOACTIVATE
+			, "Int", 0, "Int", 0, "Int", 0, "Int", 0, "UInt", 0x13)  ; SWP_NOSIZE, SWP_NOMOVE, SWP_NOACTIVATE
 		Gui, Show, NoActivate x%x4% y%y4% AutoSize
 		break
 	}
@@ -260,10 +260,10 @@ if(DeadCheck==1) {
 			HourglassOpening() ;deletemethod check in here at the start
 
 		if(wonderPicked) {
-			
-			;	SquallTCGP 2025.03.12 - 	Added a check to not add friends if the delete method is 5 Pack (Fast). When using this method (5 Pack (Fast)), 
+
+			;	SquallTCGP 2025.03.12 - 	Added a check to not add friends if the delete method is 5 Pack (Fast). When using this method (5 Pack (Fast)),
 			;															it goes to the social menu and clicks the home button to exit (instead of opening all packs directly)
-			; 														just to get around the checking for a level after opening a pack. This change is made based on the 
+			; 														just to get around the checking for a level after opening a pack. This change is made based on the
 			;															5p-no delete community mod created by DietPepperPhD in the discord server.
 
 			if(deleteMethod != "5 Pack (Fast)") {
@@ -1196,27 +1196,27 @@ CreateStatusMessage(Message, GuiName := 50, X := 0, Y := 80) {
 
 ;Modified from https://stackoverflow.com/a/49354127
 SetTextAndResize(controlHwnd, newText) {
-    dc := DllCall("GetDC", "Ptr", controlHwnd)
+	dc := DllCall("GetDC", "Ptr", controlHwnd)
 
-    ; 0x31 = WM_GETFONT
-    SendMessage 0x31,,,, ahk_id %controlHwnd%
-    hFont := ErrorLevel
-    oldFont := 0
-    if (hFont != "FAIL")
-        oldFont := DllCall("SelectObject", "Ptr", dc, "Ptr", hFont)
+	; 0x31 = WM_GETFONT
+	SendMessage 0x31,,,, ahk_id %controlHwnd%
+	hFont := ErrorLevel
+	oldFont := 0
+	if (hFont != "FAIL")
+		oldFont := DllCall("SelectObject", "Ptr", dc, "Ptr", hFont)
 
-    VarSetCapacity(rect, 16, 0)
-    ; 0x440 = DT_CALCRECT | DT_EXPANDTABS
-    h := DllCall("DrawText", "Ptr", dc, "Ptr", &newText, "Int", -1, "Ptr", &rect, "UInt", 0x440)
-    ; width = rect.right - rect.left
-    w := NumGet(rect, 8, "Int") - NumGet(rect, 0, "Int")
+	VarSetCapacity(rect, 16, 0)
+	; 0x440 = DT_CALCRECT | DT_EXPANDTABS
+	h := DllCall("DrawText", "Ptr", dc, "Ptr", &newText, "Int", -1, "Ptr", &rect, "UInt", 0x440)
+	; width = rect.right - rect.left
+	w := NumGet(rect, 8, "Int") - NumGet(rect, 0, "Int")
 
-    if oldFont
-        DllCall("SelectObject", "Ptr", dc, "Ptr", oldFont)
-    DllCall("ReleaseDC", "Ptr", controlHwnd, "Ptr", dc)
+	if oldFont
+		DllCall("SelectObject", "Ptr", dc, "Ptr", oldFont)
+	DllCall("ReleaseDC", "Ptr", controlHwnd, "Ptr", dc)
 
-    GuiControl,, %controlHwnd%, %newText%
-    GuiControl MoveDraw, %controlHwnd%, % "h" h*96/A_ScreenDPI + 2 " w" w*96/A_ScreenDPI + 2
+	GuiControl,, %controlHwnd%, %newText%
+	GuiControl MoveDraw, %controlHwnd%, % "h" h*96/A_ScreenDPI + 2 " w" w*96/A_ScreenDPI + 2
 }
 
 CheckPack() {
@@ -1292,15 +1292,15 @@ FoundStars(star) {
 		try {
 			if(injectMethod && IsFunc("ocr_from_file"))
 			{
-					ocrText := Func("ocr_from_file").Call(fcScreenshot, ocrLanguage)
-					ocrLines := StrSplit(ocrText, "`n")
-					len := ocrLines.MaxIndex()
-					if(len > 1) {
-						playerName := ocrLines[1]
-						playerID := RegExReplace(ocrLines[2], "[^0-9]", "")
-						; playerID := SubStr(ocrLines[2], 1, 19)
-						username := playerName
-					}
+				ocrText := Func("ocr_from_file").Call(fcScreenshot, ocrLanguage)
+				ocrLines := StrSplit(ocrText, "`n")
+				len := ocrLines.MaxIndex()
+				if(len > 1) {
+					playerName := ocrLines[1]
+					playerID := RegExReplace(ocrLines[2], "[^0-9]", "")
+					; playerID := SubStr(ocrLines[2], 1, 19)
+					username := playerName
+				}
 			}
 		} catch e {
 			LogToFile("Failed to OCR the friend code: " . e.message, "BC.txt")
@@ -1353,8 +1353,8 @@ FindGodPack() {
 	borderCoords := [[20, 284, 90, 286]
 		,[103, 284, 173, 286]]
 
-	;	SquallTCGP 2025.03.12 - 	Just checking the packs count and setting them to 0 if it's number of packs is 3. 
-	;															This applies to any Delete Method except 5 Pack (Fast). This change is made based 
+	;	SquallTCGP 2025.03.12 - 	Just checking the packs count and setting them to 0 if it's number of packs is 3.
+	;															This applies to any Delete Method except 5 Pack (Fast). This change is made based
 	;															on the 5p-no delete community mod created by DietPepperPhD in the discord server.
 	if(deleteMethod != "5 Pack (Fast)") {
 		if(packs = 3)
@@ -1444,15 +1444,15 @@ GodPackFound(validity) {
 	try {
 		if(injectMethod && IsFunc("ocr_from_file"))
 		{
-				ocrText := Func("ocr_from_file").Call(fcScreenshot, ocrLanguage)
-				ocrLines := StrSplit(ocrText, "`n")
-				len := ocrLines.MaxIndex()
-				if(len > 1) {
-					playerName := ocrLines[1]
-					playerID := RegExReplace(ocrLines[2], "[^0-9]", "")
-					; playerID := SubStr(ocrLines[2], 1, 19)
-					username := playerName
-				}
+			ocrText := Func("ocr_from_file").Call(fcScreenshot, ocrLanguage)
+			ocrLines := StrSplit(ocrText, "`n")
+			len := ocrLines.MaxIndex()
+			if(len > 1) {
+				playerName := ocrLines[1]
+				playerID := RegExReplace(ocrLines[2], "[^0-9]", "")
+				; playerID := SubStr(ocrLines[2], 1, 19)
+				username := playerName
+			}
 		}
 	} catch e {
 		LogToFile("Failed to OCR the friend code: " . e.message, "BC.txt")
@@ -1522,7 +1522,7 @@ loadAccount() {
 
 		;initializeAdbShell()
 
-	adbShell.StdIn.WriteLine("am force-stop jp.pokemon.pokemontcgp")
+		adbShell.StdIn.WriteLine("am force-stop jp.pokemon.pokemontcgp")
 
 	RunWait, % adbPath . " -s 127.0.0.1:" . adbPort . " push " . loadDir . " /sdcard/deviceAccount.xml",, Hide
 
@@ -1607,26 +1607,26 @@ saveAccount(file := "Valid") {
 }
 
 ; adbClick(X, Y) {
-	; global adbShell, setSpeed, adbPath, adbPort
-	; initializeAdbShell()
-	; X := Round(X / 277 * 540)
-	; Y := Round((Y - 44) / 489 * 960)
-	; adbShell.StdIn.WriteLine("input tap " X " " Y)
+; global adbShell, setSpeed, adbPath, adbPort
+; initializeAdbShell()
+; X := Round(X / 277 * 540)
+; Y := Round((Y - 44) / 489 * 960)
+; adbShell.StdIn.WriteLine("input tap " X " " Y)
 ; }
 
 adbClick(X, Y) {
-    global adbShell
-    static clickCommands := Object()
-    static convX := 540/277, convY := 960/489, offset := -44
+	global adbShell
+	static clickCommands := Object()
+	static convX := 540/277, convY := 960/489, offset := -44
 
-    key := X << 16 | Y
+	key := X << 16 | Y
 
-    if (!clickCommands.HasKey(key)) {
-        clickCommands[key] := Format("input tap {} {}"
-            , Round(X * convX)
-            , Round((Y + offset) * convY))
-    }
-    adbShell.StdIn.WriteLine(clickCommands[key])
+	if (!clickCommands.HasKey(key)) {
+		clickCommands[key] := Format("input tap {} {}"
+			, Round(X * convX)
+			, Round((Y + offset) * convY))
+	}
+	adbShell.StdIn.WriteLine(clickCommands[key])
 }
 
 ControlClick(X, Y) {
@@ -1994,7 +1994,6 @@ bboxAndPause(X1, Y1, X2, Y2, doPause := False) {
 
 	Gui, BoundingBox:Destroy
 }
-
 
 initializeAdbShell() {
 	global adbShell, adbPath, adbPort
@@ -2662,7 +2661,7 @@ SelectPack(HG := false) {
 			CreateStatusMessage("In failsafe for HourglassPack4. " . failSafeTime "/45 seconds")
 		}
 	}
-	;if(HG != "Tutorial")
+		;if(HG != "Tutorial")
 		failSafe := A_TickCount
 		failSafeTime := 0
 		Loop {
@@ -3054,11 +3053,10 @@ getChangeDateTime() {
 	Return FormattedTime
 }
 
-
-/*
-^e::
-	msgbox ss
-	pToken := Gdip_Startup()
-	Screenshot()
-return
-*/
+	/*
+	^e::
+		msgbox ss
+		pToken := Gdip_Startup()
+		Screenshot()
+	return
+	*/
