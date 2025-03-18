@@ -663,6 +663,8 @@ changeProfile(character) {
 	Delay(3)
 	adbClick(143,466)
 	Delay(1)
+	FindImageAndClick(120, 500, 155, 530, , "Social", 143, 518, 500)
+	AddFriends(false, true)
 }
 
 ChooseTag() {
@@ -1520,6 +1522,12 @@ GodPackFound(validity) {
 	LogToFile(logMessage, godPackLog)
 	CreateStatusMessage(logMessage)
 	friendCode := getFriendCode()
+	if(validity = "Valid") {
+		if(starCount > 2)
+			changeProfile("Pikachu")
+		else
+			changeProfile("Erika")
+	}
 	IniWrite, 0, %A_ScriptDir%\%scriptName%.ini, UserSettings, DeadCheck
 
 	; Pull screenshot of the Friend code page; wait so we don't get the clipboard pop up; good for the inject method
@@ -1551,15 +1559,6 @@ GodPackFound(validity) {
 	; Adjust the below to only send a 'ping' to Discord friends on Valid packs
 	if(validity = "Valid") {
 		LogToDiscord(logMessage, screenShot, discordUserId, "", fcScreenshot)
-
-		; WK add
-		if(validity = "Valid") {
-			if(starCount > 2)
-				changeProfile("Pikachu")
-			else
-				changeProfile("Erika")
-		}
-
 		/*
 		; 原版換 tag 及頭像
 		ChooseTag()
