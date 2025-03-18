@@ -663,6 +663,8 @@ changeProfile(character) {
 	Delay(3)
 	adbClick(143,466)
 	Delay(1)
+	FindImageAndClick(120, 500, 155, 530, , "Social", 143, 518, 500)
+	AddFriends(false, true)
 }
 
 ChooseTag() {
