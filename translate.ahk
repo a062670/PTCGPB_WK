@@ -28,7 +28,7 @@ run(){
     file.Write(content)
     file.Close()
 
-    MsgBox, 翻譯完成! 輸出檔案: %outputFile%
+    MsgBox, 翻譯完成!
     return ""
 }
 
