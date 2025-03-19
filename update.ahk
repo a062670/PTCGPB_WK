@@ -90,6 +90,12 @@ update(){
             FileRemoveDir, %tempExtractPath%, 1
             FileRemoveDir, %tempSavePath%, 1
             setupOnce()
+            MsgBox, 4, 中文化提示, 是否要執行中文化呢？
+            IfMsgBox, Yes
+            {
+                Run, "translate.ahk",, Hide, PID
+                Process, WaitClose, %PID%  ; 等待該進程結束
+            }
             MsgBox, 更新成功
             ExitApp
         }
@@ -120,7 +126,7 @@ BackupFile(scriptFolder, tempFolder){
         if (InArray(relativePath, needBackupFile) && FileExist(A_LoopFileFullPath)) { ; 如果有找到檔案 則移到暫存資料夾
             FileCopy, % A_LoopFileFullPath, % tempFolder, 1
         }
-        FileDelete, % A_LoopFileFullPath
+        FileDelete, % A_LoopFileFullPath ; 不保留根目錄的檔案 若要保留則註解
     }
 }
 
@@ -133,8 +139,6 @@ RestoreFile(scriptFolder, tempFolder){
 }
 
 MoveFilesRecursively(srcFolder, destFolder) {
-    ; MsgBox, %srcFolder%
-    ; MsgBox, %destFolder%
     ; Loop through all files and subfolders in the source folder
     Loop, Files, % srcFolder . "\*", R
     {
