@@ -1065,7 +1065,12 @@ restartGameInstance(reason, RL := true){
 			IniWrite, 0, %A_ScriptDir%\%scriptName%.ini, UserSettings, DeadCheck
 			logMessage := "\n" . username . "\n[" . starCount . "/5][" . packs . "P] " . invalid . " God pack found in instance: " . scriptName . "\nFile name: " . accountFile . "\nGot stuck getting friend code."
 			LogToFile(logMessage, "GPlog.txt")
+			/*
 			LogToDiscord(logMessage, screenShot, discordUserId)
+			*/
+			saveDir := A_ScriptDir "\..\Accounts\GodPacks\"
+			xmlFilePath := saveDir . accountFile
+			LogToDiscord(logMessage, screenShot, discordUserId, , xmlFilePath)
 		}
 		LogToFile("Restarted game for instance " scriptName " Reason: " reason, "Restart.txt")
 
