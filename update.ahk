@@ -126,7 +126,7 @@ BackupFile(scriptFolder, tempFolder){
         if (InArray(relativePath, needBackupFile) && FileExist(A_LoopFileFullPath)) { ; 如果有找到檔案 則移到暫存資料夾
             FileCopy, % A_LoopFileFullPath, % tempFolder, 1
         }
-        FileDelete, % A_LoopFileFullPath ; 不保留根目錄的檔案 若要保留則註解
+        ; FileDelete, % A_LoopFileFullPath ; 不保留根目錄的檔案 若要保留則註解
     }
 }
 
