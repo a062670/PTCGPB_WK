@@ -1322,7 +1322,7 @@ CheckPack() {
 			foundTS := "Full Art"
 	}
 	if(ShinyCheck && !foundTS) {
-		foundShiny := FindBorders("shiny2star")
+		foundShiny := FindBorders("shiny2star") + FindBorders("shiny1star")
 		if(ShinyCheck)
 			foundTS := "Shiny"
 	}
@@ -1492,13 +1492,14 @@ FindGodPack() {
 			packs += 1
 			if(packMethod)
 				packs := 1
+			foundShiny := FindBorders("shiny2star") + FindBorders("shiny1star")
 			foundImmersive := FindBorders("immersive")
 			foundCrown := FindBorders("crown")
-			if(foundImmersive || foundCrown) {
+			if(foundImmersive || foundCrown || foundShiny) {
 				invalidGP := true
 			}
 			if(!invalidGP && minStars > 0) {
-				starCount := 5 - FindBorders("1star") - FindBorders("shiny1star")
+				starCount := 5 - FindBorders("1star")
 				if(starCount < minStars) {
 					CreateStatusMessage("Does not meet minimum 2 star threshold.")
 					invalidGP := true
@@ -2745,44 +2746,35 @@ SelectPack(HG := false) {
 	global openPack, packArray
 	packy := 196
 	if(openPack = "Shining") {
-		packx := 145 ;TODO verify that shining is where arceus was
-	} else if(openPack = "Arceus") {
 		packx := 145
-		;packx := 200 ;TODO replace and verify that arceus went to where dialga was
-	} else if(openPack = "Mew") {   ;TODO remove and verify that mew is not in home screen
-		packx := 80   ;TODO remove and verify that mew is not in home screen
-	} else {
+	} else if(openPack = "Arceus") {
 		packx := 200
-		;packx := 80 ;TODO replace and verify that dialga went to where mew was
+	} else {
+		packx := 80
 	}
 	FindImageAndClick(233, 400, 264, 428, , "Points", packx, packy)
-	if(openPack = "Pikachu" || openPack = "Mewtwo" || openPack = "Charizard") { ;TODO remove
-		;if(openPack = "Pikachu" || openPack = "Mewtwo" || openPack = "Charizard" || openPack = "Mew") { ;TODO uncomment
+	if(openPack = "Pikachu" || openPack = "Mewtwo" || openPack = "Charizard" || openPack = "Mew") {
 		FindImageAndClick(115, 140, 160, 155, , "SelectExpansion", 245, 475)
 		packy := 442
 		if(openPack = "Pikachu" || openPack = "Mewtwo" || openPack = "Charizard"){
-			;Sleep, 500 ; TODO uncomment
-			;adbSwipeUp(160) ; TODO uncomment
-			;Sleep, 500 ; TODO uncomment
-			;TODO find new y. maybe not even needed
+			Sleep, 500
+			adbSwipeUp(160)
+			Sleep, 500
 		}
 		if(openPack = "Pikachu"){
-            packx := 245
-									; packx := 125 ;TODO replace and verify
+            packx := 125
         } else if(openPack = "Mewtwo"){
-            packx := 205
-									; packx := 85 ;TODO replace and verify
+            packx := 85
         } else if(openPack = "Charizard"){
-            packx := 165
-									; packx := 45 ;TODO replace and verify
+            packx := 45
         } else if(openPack = "Mew"){
-            packx := 205 ;TODO verify that mew went to where mewtwo was
+            packx := 205
         }
 		FindImageAndClick(233, 400, 264, 428, , "Points", packx, packy)
 	} else if(openPack = "Palkia") {
-		Delay(2)
+		Sleep, 500
 		adbClick(245, 245) ;temp
-		Delay(2)
+		Sleep, 500
 	}
 	if(HG = "Tutorial") {
 		FindImageAndClick(236, 198, 266, 226, , "Hourglass2", 180, 436, 500) ;stop at hourglasses tutorial 2 180 to 203?
