@@ -1,4 +1,4 @@
-#Include %A_ScriptDir%\Include\Gdip_All.ahk
+﻿#Include %A_ScriptDir%\Include\Gdip_All.ahk
 #Include %A_ScriptDir%\Include\Gdip_Imagesearch.ahk
 
 ; BallCity - 2025.20.25 - Add OCR library for Username if Inject is on
