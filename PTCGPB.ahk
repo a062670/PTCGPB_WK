@@ -287,6 +287,9 @@ Gui, Add, Button, gOpenLink x505 y350 w76 h35, Buy Me a Coffee
 /*
 Gui, Add, Button, gCheckForUpdates x588 y350 w77 h35, Check Updates
 */
+
+Gui, Add, Button, gUpdateToWKLatest x588 y350 w77 h35, 更新為WK最新版
+
 Gui, Add, Button, gOpenDiscord x670 y350 w75 h35, Join Discord
 Gui, Add, Button, gStart x505 y280 w240 h30, START BOT
 Gui, Add, Button, gArrangeWindows x630 y315 w115 h30, Arrange Windows
@@ -322,6 +325,12 @@ Gui, Add, DropDownList, x597 y397 w145 vdefaultLanguage choose%defaultLang%, Sca
 
 Gui, Show, , %localVersion% PTCGPB Bot Setup [Non-Commercial 4.0 International License]
 Return
+
+UpdateToWKLatest:
+	Run, "update.ahk",, Hide, PID
+	Process, WaitClose, %PID%
+	Reload
+return
 
 CheckForUpdates:
 	CheckForUpdate()
