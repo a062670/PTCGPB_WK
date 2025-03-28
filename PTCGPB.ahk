@@ -5,7 +5,7 @@ SetTitleMatchMode, 3
 
 githubUser := "Arturo-1212"
 repoName := "PTCGPB"
-localVersion := "v6.3.24"
+localVersion := "v6.3.25"
 scriptFolder := A_ScriptDir
 zipPath := A_Temp . "\update.zip"
 extractPath := A_Temp . "\update"
@@ -242,7 +242,7 @@ Gui, Add, Checkbox, % (TrainerCheck ? "Checked" : "") " vTrainerCheck x385 y255 
 Gui, Add, Checkbox, % (RainbowCheck ? "Checked" : "") " vRainbowCheck x270 y275 cFF4500", Single Rainbow
 Gui, Add, Checkbox, % (CheckShiningPackOnly ? "Checked" : "") " vCheckShiningPackOnly x385 y275 cFF4500", only for Shining
 Gui, Add, Checkbox, % (PseudoGodPack ? "Checked" : "") " vPseudoGodPack x270 y305 cFF4500", Double 2 Star
-Gui, Add, Checkbox, % (InvalidCheck ? "Checked" : "") " vInvalidCheck x385 y305 cFF4500", Delete Invalid
+Gui, Add, Checkbox, % (InvalidCheck ? "Checked" : "") " vInvalidCheck x385 y305 cFF4500", Ignore Invalid
 Gui, Add, Checkbox, % (CrownCheck ? "Checked" : "") " vCrownCheck x270 y335 cFF4500", Save Crowns
 Gui, Add, Checkbox, % (ImmersiveCheck ? "Checked" : "") " vImmersiveCheck x270 y355 cFF4500", Save Immersives
 Gui, Add, Checkbox, % (ShinyCheck ? "Checked" : "") " vShinyCheck x385 y335 cFF4500", Save Shiny
