@@ -16,7 +16,7 @@ CoordMode, Pixel, Screen
 DllCall("AllocConsole")
 WinHide % "ahk_id " DllCall("GetConsoleWindow", "ptr")
 
-global winTitle, changeDate, failSafe, openPack, Delay, failSafeTime, StartSkipTime, Columns, failSafe, adbPort, scriptName, adbShell, adbPath, GPTest, StatusText, defaultLanguage, setSpeed, jsonFileName, pauseToggle, SelectedMonitorIndex, swipeSpeed, godPack, scaleParam, discordUserId, discordWebhookURL, deleteMethod, packs, FriendID, friendIDs, Instances, username, friendCode, stopToggle, friended, runMain, Mains, showStatus, injectMethod, packMethod, loadDir, loadedAccount, nukeAccount, TrainerCheck, FullArtCheck, RainbowCheck, ShinyCheck, dateChange, foundGP, foundTS, friendsAdded, minStars, PseudoGodPack, Palkia, Dialga, Mew, Pikachu, Charizard, Mewtwo, packArray, CrownCheck, ImmersiveCheck, slowMotion, screenShot, accountFile, invalid, starCount, gpFound, foundTS
+global winTitle, changeDate, failSafe, openPack, Delay, failSafeTime, StartSkipTime, Columns, failSafe, adbPort, scriptName, adbShell, adbPath, GPTest, StatusText, defaultLanguage, setSpeed, jsonFileName, pauseToggle, SelectedMonitorIndex, swipeSpeed, godPack, scaleParam, discordUserId, discordWebhookURL, deleteMethod, packs, FriendID, friendIDs, Instances, username, friendCode, stopToggle, friended, runMain, Mains, showStatus, injectMethod, packMethod, loadDir, loadedAccount, nukeAccount, CheckShiningPackOnly, TrainerCheck, FullArtCheck, RainbowCheck, ShinyCheck, dateChange, foundGP, foundTS, friendsAdded, minStars, PseudoGodPack, Palkia, Dialga, Mew, Pikachu, Charizard, Mewtwo, packArray, CrownCheck, ImmersiveCheck, InvalidCheck, slowMotion, screenShot, accountFile, invalid, starCount, gpFound, foundTS, minStarsA1Charizard, minStarsA1Mewtwo, minStarsA1Pikachu, minStarsA1a, minStarsA2Dialga, minStarsA2Palkia, minStarsA2a, minStarsA2b
 global DeadCheck
 
 scriptName := StrReplace(A_ScriptName, ".ahk")
@@ -48,12 +48,14 @@ IniRead, heartBeatWebhookURL, %A_ScriptDir%\..\Settings.ini, UserSettings, heart
 IniRead, heartBeatName, %A_ScriptDir%\..\Settings.ini, UserSettings, heartBeatName, ""
 IniRead, nukeAccount, %A_ScriptDir%\..\Settings.ini, UserSettings, nukeAccount, 0
 IniRead, packMethod, %A_ScriptDir%\..\Settings.ini, UserSettings, packMethod, 0
+IniRead, CheckShiningPackOnly, %A_ScriptDir%\..\Settings.ini, UserSettings, CheckShiningPackOnly, 0
 IniRead, TrainerCheck, %A_ScriptDir%\..\Settings.ini, UserSettings, TrainerCheck, 0
 IniRead, FullArtCheck, %A_ScriptDir%\..\Settings.ini, UserSettings, FullArtCheck, 0
 IniRead, RainbowCheck, %A_ScriptDir%\..\Settings.ini, UserSettings, RainbowCheck, 0
 IniRead, ShinyCheck, %A_ScriptDir%\..\Settings.ini, UserSettings, ShinyCheck, 0
 IniRead, CrownCheck, %A_ScriptDir%\..\Settings.ini, UserSettings, CrownCheck, 0
 IniRead, ImmersiveCheck, %A_ScriptDir%\..\Settings.ini, UserSettings, ImmersiveCheck, 0
+IniRead, InvalidCheck, %A_ScriptDir%\..\Settings.ini, UserSettings, InvalidCheck, 0
 IniRead, PseudoGodPack, %A_ScriptDir%\..\Settings.ini, UserSettings, PseudoGodPack, 0
 IniRead, minStars, %A_ScriptDir%\..\Settings.ini, UserSettings, minStars, 0
 IniRead, Palkia, %A_ScriptDir%\..\Settings.ini, UserSettings, Palkia, 0
@@ -67,6 +69,15 @@ IniRead, Mewtwo, %A_ScriptDir%\..\Settings.ini, UserSettings, Mewtwo, 0
 IniRead, slowMotion, %A_ScriptDir%\..\Settings.ini, UserSettings, slowMotion, 0
 IniRead, DeadCheck, %A_ScriptDir%\%scriptName%.ini, UserSettings, DeadCheck, 0
 IniRead, ocrLanguage, %A_ScriptDir%\..\Settings.ini, UserSettings, ocrLanguage, en
+
+IniRead, minStarsA1Charizard, %A_ScriptDir%\..\Settings.ini, UserSettings, minStarsA1Charizard, 0
+IniRead, minStarsA1Mewtwo, %A_ScriptDir%\..\Settings.ini, UserSettings, minStarsA1Mewtwo, 0
+IniRead, minStarsA1Pikachu, %A_ScriptDir%\..\Settings.ini, UserSettings, minStarsA1Pikachu, 0
+IniRead, minStarsA1a, %A_ScriptDir%\..\Settings.ini, UserSettings, minStarsA1a, 0
+IniRead, minStarsA2Dialga, %A_ScriptDir%\..\Settings.ini, UserSettings, minStarsA2Dialga, 0
+IniRead, minStarsA2Palkia, %A_ScriptDir%\..\Settings.ini, UserSettings, minStarsA2Palkia, 0
+IniRead, minStarsA2a, %A_ScriptDir%\..\Settings.ini, UserSettings, minStarsA2a, 0
+IniRead, minStarsA2b, %A_ScriptDir%\..\Settings.ini, UserSettings, minStarsA2b, 0
 
 pokemonList := ["Palkia", "Dialga", "Mew", "Pikachu", "Charizard", "Mewtwo", "Arceus", "Shining"]
 
@@ -1110,7 +1121,7 @@ menuDelete() {
 		failSafe := A_TickCount
 		failSafeTime := 0
 		Loop {
-			clickButton := FindOrLoseImage(75, 340, 195, 530, 80, "Button", 0, failSafeTime)
+			clickButton := FindOrLoseImage(75, 340, 195, 530, 40, "Button2", 0, failSafeTime)
 			if(!clickButton) {
 				clickImage := FindOrLoseImage(140, 340, 250, 530, 60, "DeleteAll", 0, failSafeTime)
 				if(clickImage) {
@@ -1295,7 +1306,7 @@ SetTextAndResize(controlHwnd, newText) {
 }
 
 CheckPack() {
-	global scriptName, DeadCheck
+	global scriptName, DeadCheck, CheckShiningPackOnly
 	foundGP := false ;check card border to find godpacks
 	foundTrainer := false
 	foundRainbow := false
@@ -1306,51 +1317,55 @@ CheckPack() {
 	foundTS := false
 	foundGP := FindGodPack()
 	;msgbox 1 foundGP:%foundGP%, TC:%TrainerCheck%, RC:%RainbowCheck%, FAC:%FullArtCheck%, FTS:%foundTS%
-	if(TrainerCheck && !foundTS) {
-		foundTrainer := FindBorders("trainer")
-		if(foundTrainer)
-			foundTS := "Trainer"
-	}
-	if(RainbowCheck && !foundTS) {
-		foundRainbow := FindBorders("rainbow")
-		if(foundRainbow)
-			foundTS := "Rainbow"
-	}
-	if(FullArtCheck && !foundTS) {
-		foundFullArt := FindBorders("fullart")
-		if(foundFullArt)
-			foundTS := "Full Art"
-	}
-	if(ShinyCheck && !foundTS) {
-		foundShiny := FindBorders("shiny2star") + FindBorders("shiny1star")
-		if(ShinyCheck)
-			foundTS := "Shiny"
-	}
-	if(ImmersiveCheck && !foundTS) {
-		foundImmersive := FindBorders("immersive")
-		if(foundImmersive)
-			foundTS := "Immersive"
-	}
-	If(CrownCheck && !foundTS) {
-		foundCrown := FindBorders("crown")
-		if(foundCrown)
-			foundTS := "Crown"
-	}
-	If(PseudoGodPack && !foundTS) {
-		2starCount := FindBorders("trainer") + FindBorders("rainbow") + FindBorders("fullart") + FindBorders("shiny2star")
-		if(2starCount > 1)
-			foundTS := "Double two star"
+	if(!CheckShiningPackOnly || openPack = "Shining") {
+		if(TrainerCheck && !foundTS) {
+			foundTrainer := FindBorders("trainer")
+			if(foundTrainer)
+				foundTS := "Trainer"
+		}
+		if(RainbowCheck && !foundTS) {
+			foundRainbow := FindBorders("rainbow")
+			if(foundRainbow)
+				foundTS := "Rainbow"
+		}
+		if(FullArtCheck && !foundTS) {
+			foundFullArt := FindBorders("fullart")
+			if(foundFullArt)
+				foundTS := "Full Art"
+		}
+		if((ShinyCheck && !foundTS) || InvalidCheck) {
+			foundShiny := FindBorders("shiny2star") + FindBorders("shiny1star")
+			if(foundShiny)
+				foundTS := "Shiny"
+		}
+		if((ImmersiveCheck && !foundTS) || InvalidCheck) {
+			foundImmersive := FindBorders("immersive")
+			if(foundImmersive)
+				foundTS := "Immersive"
+		}
+		If((CrownCheck && !foundTS) || InvalidCheck) {
+			foundCrown := FindBorders("crown")
+			if(foundCrown)
+				foundTS := "Crown"
+		}
+		If(PseudoGodPack && !foundTS) {
+			2starCount := FindBorders("trainer") + FindBorders("rainbow") + FindBorders("fullart")
+			if(2starCount > 1)
+				foundTS := "Double two star"
+		}
 	}
 	if(foundGP || foundTrainer || foundRainbow || foundFullArt || foundShiny || foundImmersive || foundCrown || 2starCount > 1) {
-		if(loadedAccount) {
-			FileDelete, %loadedAccount% ;delete xml file from folder if using inject method
-			IniWrite, 0, %A_ScriptDir%\%scriptName%.ini, UserSettings, DeadCheck
-		}
-		if(foundGP)
-			restartGameInstance("God Pack found. Continuing...", "GodPack") ; restarts to backup and delete xml file with account info.
-		else {
-			FoundStars(foundTS)
-			restartGameInstance(foundTS . " found. Continuing...", "GodPack") ; restarts to backup and delete xml file with account info.
+		if(!(InvalidCheck && (foundShiny || foundImmersive || foundCrown) || foundGP)) {
+			if(loadedAccount) {
+				FileDelete, %loadedAccount% ;delete xml file from folder if using inject method
+				IniWrite, 0, %A_ScriptDir%\%scriptName%.ini, UserSettings, DeadCheck
+			}
+			if(foundGP)
+				restartGameInstance("God Pack found. Continuing...", "GodPack") ; restarts to backup and delete xml file with account info.
+			else {
+				FoundStars(foundTS)
+				restartGameInstance(foundTS . " found. Continuing...", "GodPack") ; restarts to backup and delete xml file with account info.
+			}
 		}
 	}
 }
@@ -1443,7 +1458,33 @@ FindBorders(prefix) {
 }
 
 FindGodPack() {
-	global winTitle, discordUserId, Delay, username, packs, minStars, scriptName, DeadCheck, deleteMethod
+	global winTitle, discordUserId, Delay, username, packs, minStars, minStarsA1Charizard, minStarsA1Mewtwo, minStarsA1Pikachu, minStarsA1a, minStarsA2Dialga, minStarsA2Palkia, minStarsA2a, minStarsA2b, openPack, scriptName, DeadCheck, deleteMethod
+	packMinStars := minStars
+	if(openPack = "Shining") {
+		packMinStars := minStarsA2b
+	}
+	if (openPack = "Arceus") {
+		packMinStars := minStarsA2a
+	}
+	if (openPack = "Palkia") {
+		packMinStars := minStarsA2Palkia
+	}
+	if (openPack = "Dialga") {
+		packMinStars := minStarsA2Dialga
+	}
+	if (openPack = "Mew") {
+		packMinStars := minStarsA1a
+	}
+	if (openPack = "Pikachu") {
+		packMinStars := minStarsA1Pikachu
+	}
+	if (openPack = "Charizard") {
+		packMinStars := minStarsA1Charizard
+	}
+	if (openPack = "Mewtwo") {
+		packMinStars := minStarsA1Mewtwo
+	}
+
 	gpFound := false
 	invalidGP := false
 	searchVariation := 5
@@ -1498,9 +1539,9 @@ FindGodPack() {
 			if(foundImmersive || foundCrown || foundShiny) {
 				invalidGP := true
 			}
-			if(!invalidGP && minStars > 0) {
+			if(!invalidGP && packMinStars > 0) {
 				starCount := 5 - FindBorders("1star")
-				if(starCount < minStars) {
+				if(starCount < packMinStars) {
 					CreateStatusMessage("Does not meet minimum 2 star threshold.")
 					invalidGP := true
 				}
@@ -2540,7 +2581,7 @@ DoTutorial() {
 
 	adbClick(140, 424)
 
-	FindImageAndClick(203, 273, 228, 290, , "Pack", 140, 424) ;wait for pack to be ready  to trace
+	FindImageAndClick(225, 273, 235, 290, , "Pack", 140, 424) ;wait for pack to be ready  to trace
 		if(setSpeed > 1) {
 			FindImageAndClick(65, 195, 100, 215, , "Platin", 18, 109, 2000) ; click mod settings
 			FindImageAndClick(9, 170, 25, 190, , "One", 26, 180) ; click mod settings
@@ -2635,7 +2676,7 @@ DoTutorial() {
 	Delay(3)
 	adbClick(142, 436)
 
-	FindImageAndClick(203, 273, 228, 290, , "Pack", 239, 497) ;wait for pack to be ready  to Trace
+	FindImageAndClick(225, 273, 235, 290, , "Pack", 239, 497) ;wait for pack to be ready  to Trace
 		if(setSpeed > 1) {
 			FindImageAndClick(65, 195, 100, 215, , "Platin", 18, 109, 2000) ; click mod settings
 			FindImageAndClick(9, 170, 25, 190, , "One", 26, 180) ; click mod settings
