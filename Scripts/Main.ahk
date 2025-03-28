@@ -103,7 +103,7 @@ Loop {
 		Gui, Toolbar: Add, Button, x140 y0 w35 h25 gShowStatusMessages, Status (Shift+F8)
 		Gui, Toolbar: Add, Button, x175 y0 w35 h25 gTestScript, GP Test (Shift+F9) ; hoytdj Add
 		DllCall("SetWindowPos", "Ptr", WinExist(), "Ptr", 1  ; HWND_BOTTOM
-				, "Int", 0, "Int", 0, "Int", 0, "Int", 0, "UInt", 0x13)  ; SWP_NOSIZE, SWP_NOMOVE, SWP_NOACTIVATE
+			, "Int", 0, "Int", 0, "Int", 0, "Int", 0, "UInt", 0x13)  ; SWP_NOSIZE, SWP_NOMOVE, SWP_NOACTIVATE
 		Gui, Toolbar: Show, NoActivate x%x4% y%y4% AutoSize
 		break
 	}
@@ -497,27 +497,27 @@ CreateStatusMessage(Message, GuiName := "StatusMessage", X := 0, Y := 80) {
 
 ;Modified from https://stackoverflow.com/a/49354127
 SetTextAndResize(controlHwnd, newText) {
-    dc := DllCall("GetDC", "Ptr", controlHwnd)
+	dc := DllCall("GetDC", "Ptr", controlHwnd)
 
-    ; 0x31 = WM_GETFONT
-    SendMessage 0x31,,,, ahk_id %controlHwnd%
-    hFont := ErrorLevel
-    oldFont := 0
-    if (hFont != "FAIL")
-        oldFont := DllCall("SelectObject", "Ptr", dc, "Ptr", hFont)
+	; 0x31 = WM_GETFONT
+	SendMessage 0x31,,,, ahk_id %controlHwnd%
+	hFont := ErrorLevel
+	oldFont := 0
+	if (hFont != "FAIL")
+		oldFont := DllCall("SelectObject", "Ptr", dc, "Ptr", hFont)
 
-    VarSetCapacity(rect, 16, 0)
-    ; 0x440 = DT_CALCRECT | DT_EXPANDTABS
-    h := DllCall("DrawText", "Ptr", dc, "Ptr", &newText, "Int", -1, "Ptr", &rect, "UInt", 0x440)
-    ; width = rect.right - rect.left
-    w := NumGet(rect, 8, "Int") - NumGet(rect, 0, "Int")
+	VarSetCapacity(rect, 16, 0)
+	; 0x440 = DT_CALCRECT | DT_EXPANDTABS
+	h := DllCall("DrawText", "Ptr", dc, "Ptr", &newText, "Int", -1, "Ptr", &rect, "UInt", 0x440)
+	; width = rect.right - rect.left
+	w := NumGet(rect, 8, "Int") - NumGet(rect, 0, "Int")
 
-    if oldFont
-        DllCall("SelectObject", "Ptr", dc, "Ptr", oldFont)
-    DllCall("ReleaseDC", "Ptr", controlHwnd, "Ptr", dc)
+	if oldFont
+		DllCall("SelectObject", "Ptr", dc, "Ptr", oldFont)
+	DllCall("ReleaseDC", "Ptr", controlHwnd, "Ptr", dc)
 
-    GuiControl,, %controlHwnd%, %newText%
-    GuiControl MoveDraw, %controlHwnd%, % "h" h*96/A_ScreenDPI + 2 " w" w*96/A_ScreenDPI + 2
+	GuiControl,, %controlHwnd%, %newText%
+	GuiControl MoveDraw, %controlHwnd%, % "h" h*96/A_ScreenDPI + 2 " w" w*96/A_ScreenDPI + 2
 }
 
 adbClick(X, Y) {
@@ -1060,8 +1060,8 @@ IsLeapYear(year) {
 ; friendCode := cropAndOcr("Main", 336, 106, 188, 20, True, True, blowUp)
 cropAndOcr(winTitle := "Main", x := 0, y := 0, width := 200, height := 200, moveWindow := True, revertWindow := True, blowupPercent := 200)
 {
-	global ocrLanguage 
-	
+	global ocrLanguage
+
     if(moveWindow) {
 		WinGetPos, srcX, srcY, srcW, srcH, %winTitle%
         WinMove, %winTitle%, , srcX, srcY, 550, 1015
@@ -1069,20 +1069,20 @@ cropAndOcr(winTitle := "Main", x := 0, y := 0, width := 200, height := 200, move
     }
     hwnd := WinExist(winTitle)
     pBitmap := from_window(hwnd) ; Gdip_BitmapFromScreen( "hwnd: " . hwnd)
-    ;;;;Gdip_SaveBitmapToFile(pBitmap, "src.jpg")
+				;;;;Gdip_SaveBitmapToFile(pBitmap, "src.jpg")
 
     pBitmap2 := Gdip_CropImage(pBitmap, x, y, width, height)
     pBitmap3 := Gdip_ResizeBitmap(pBitmap2, blowupPercent, true)
     hBitmap := Gdip_CreateHBITMAPFromBitmap(pBitmap3)
-    ;;hBitmap2 := ToGrayscale(hBitmap)
+				;;hBitmap2 := ToGrayscale(hBitmap)
 
-    ;;;; ret := SavePicture(hBitmap, "biggrey1.png")
+				;;;; ret := SavePicture(hBitmap, "biggrey1.png")
     pIRandomAccessStream := HBitmapToRandomAccessStream(hBitmap)
     text := ocr(pIRandomAccessStream, ocrLanguage)
-    ;;;; MsgBox %text%
+				;;;; MsgBox %text%
 
     DeleteObject(hBitmap)
-    ;;DeleteObject(hBitmap2)
+				;;DeleteObject(hBitmap2)
     Gdip_DisposeImage(pBitmap)
     Gdip_DisposeImage(pBitmap2)
     Gdip_DisposeImage(pBitmap3)
@@ -1215,8 +1215,6 @@ RemoveNonVipFriends() {
 	}
 }
 
-
-
 GetFriendCode(blowupPercent := 200) {
 	global winTitle
 	ocrText := cropAndOcr(winTitle, 336, 106, 188, 20, True, True, blowupPercent)
@@ -1231,59 +1229,58 @@ GetFriendName(blowupPercent := 200) {
 	return friendName
 }
 
-/*
-GetFriendCode() {
-	global winTitle, scaleParam
-	WinGetPos, x, y, w, h, %winTitle%
-	if (scaleParam = 287) {
-		x := x + 170
-		y := y + 63
-		w := 103
-		h := 20
-	}
-	else {
-		x := x + 169
-		y := y + 72
-		w := 100
-		h := 20
-	}
-	; Parse friendCode status from screen
-	; Expected output something like "1234-5678-1234-5678"
-	if (ScreenshotRegion(x, y, w, h, capturedScreenshot, "friendCode")) {
-		ocrText := GetTextFromImage(capturedScreenshot)
-		friendCode := RegExReplace(Trim(ocrText, " `t`r`n"), "\D")
-		;MsgBox % "OCR Text:`n" . ocrText . "`nClean Text:`n" . friendCode
-		return friendCode
-	}
-	return ""
-}
-
-GetFriendName() {
-	global winTitle, scaleParam
-	WinGetPos, x, y, w, h, %winTitle%
-	if (scaleParam = 287) {
-		x := x + 52
-		y := y + 255
-		w := 174
-		h := 28
-	}
-	else {
-		x := x + 51
-		y := y + 262
-		w := 174
-		h := 28
+	/*
+	GetFriendCode() {
+		global winTitle, scaleParam
+		WinGetPos, x, y, w, h, %winTitle%
+		if (scaleParam = 287) {
+			x := x + 170
+			y := y + 63
+			w := 103
+			h := 20
+		}
+		else {
+			x := x + 169
+			y := y + 72
+			w := 100
+			h := 20
+		}
+		; Parse friendCode status from screen
+		; Expected output something like "1234-5678-1234-5678"
+		if (ScreenshotRegion(x, y, w, h, capturedScreenshot, "friendCode")) {
+			ocrText := GetTextFromImage(capturedScreenshot)
+			friendCode := RegExReplace(Trim(ocrText, " `t`r`n"), "\D")
+			;MsgBox % "OCR Text:`n" . ocrText . "`nClean Text:`n" . friendCode
+			return friendCode
+		}
+		return ""
 	}
 
-	if (ScreenshotRegion(x, y, w, h, capturedScreenshot, "friendName")) {
-		ocrText := GetTextFromImage(capturedScreenshot)
-		friendName := Trim(ocrText, " `t`r`n")
-		;MsgBox % "OCR Text:`n" . ocrText . "`nClean Text:`n" . friendName
-		return friendName
-	}
-	return ""
-}
-*/
+	GetFriendName() {
+		global winTitle, scaleParam
+		WinGetPos, x, y, w, h, %winTitle%
+		if (scaleParam = 287) {
+			x := x + 52
+			y := y + 255
+			w := 174
+			h := 28
+		}
+		else {
+			x := x + 51
+			y := y + 262
+			w := 174
+			h := 28
+		}
 
+		if (ScreenshotRegion(x, y, w, h, capturedScreenshot, "friendName")) {
+			ocrText := GetTextFromImage(capturedScreenshot)
+			friendName := Trim(ocrText, " `t`r`n")
+			;MsgBox % "OCR Text:`n" . ocrText . "`nClean Text:`n" . friendName
+			return friendName
+		}
+		return ""
+	}
+	*/
 
 ParseFriendCode(ByRef friendCode) {
 	failSafe := A_TickCount
@@ -1491,7 +1488,6 @@ DownloadFile(url, filename) {
 	}
 	return !errored
 }
-
 
 ; DEBUG
 ; F1::
