@@ -86,9 +86,9 @@ packArray := []  ; Initialize an empty array
 
 Loop, % pokemonList.MaxIndex()  ; Loop through the array
 {
-    pokemon := pokemonList[A_Index]  ; Get the variable name as a string
-    if (%pokemon%)  ; Dereference the variable using %pokemon%
-        packArray.push(pokemon)  ; Add the name to packArray
+	pokemon := pokemonList[A_Index]  ; Get the variable name as a string
+	if (%pokemon%)  ; Dereference the variable using %pokemon%
+		packArray.push(pokemon)  ; Add the name to packArray
 }
 
 changeDate := getChangeDateTime() ; get server reset time
@@ -144,7 +144,7 @@ Loop {
 		Gui, Add, Button, x120 y0 w40 h25 gStopScript, Stop (Shift+F7)
 		Gui, Add, Button, x160 y0 w40 h25 gShowStatusMessages, Status (Shift+F8)
 		DllCall("SetWindowPos", "Ptr", WinExist(), "Ptr", 1  ; HWND_BOTTOM
-				, "Int", 0, "Int", 0, "Int", 0, "Int", 0, "UInt", 0x13)  ; SWP_NOSIZE, SWP_NOMOVE, SWP_NOACTIVATE
+			, "Int", 0, "Int", 0, "Int", 0, "Int", 0, "UInt", 0x13)  ; SWP_NOSIZE, SWP_NOMOVE, SWP_NOACTIVATE
 		Gui, Show, NoActivate x%x4% y%y4% AutoSize
 		break
 	}
@@ -274,10 +274,10 @@ if(DeadCheck==1) {
 			HourglassOpening() ;deletemethod check in here at the start
 
 		if(wonderPicked) {
-			
-			;	SquallTCGP 2025.03.12 - 	Added a check to not add friends if the delete method is 5 Pack (Fast). When using this method (5 Pack (Fast)), 
+
+			;	SquallTCGP 2025.03.12 - 	Added a check to not add friends if the delete method is 5 Pack (Fast). When using this method (5 Pack (Fast)),
 			;															it goes to the social menu and clicks the home button to exit (instead of opening all packs directly)
-			; 														just to get around the checking for a level after opening a pack. This change is made based on the 
+			; 														just to get around the checking for a level after opening a pack. This change is made based on the
 			;															5p-no delete community mod created by DietPepperPhD in the discord server.
 
 			if(deleteMethod != "5 Pack (Fast)") {
@@ -1283,27 +1283,27 @@ CreateStatusMessage(Message, GuiName := 50, X := 0, Y := 80) {
 
 ;Modified from https://stackoverflow.com/a/49354127
 SetTextAndResize(controlHwnd, newText) {
-    dc := DllCall("GetDC", "Ptr", controlHwnd)
+	dc := DllCall("GetDC", "Ptr", controlHwnd)
 
-    ; 0x31 = WM_GETFONT
-    SendMessage 0x31,,,, ahk_id %controlHwnd%
-    hFont := ErrorLevel
-    oldFont := 0
-    if (hFont != "FAIL")
-        oldFont := DllCall("SelectObject", "Ptr", dc, "Ptr", hFont)
+	; 0x31 = WM_GETFONT
+	SendMessage 0x31,,,, ahk_id %controlHwnd%
+	hFont := ErrorLevel
+	oldFont := 0
+	if (hFont != "FAIL")
+		oldFont := DllCall("SelectObject", "Ptr", dc, "Ptr", hFont)
 
-    VarSetCapacity(rect, 16, 0)
-    ; 0x440 = DT_CALCRECT | DT_EXPANDTABS
-    h := DllCall("DrawText", "Ptr", dc, "Ptr", &newText, "Int", -1, "Ptr", &rect, "UInt", 0x440)
-    ; width = rect.right - rect.left
-    w := NumGet(rect, 8, "Int") - NumGet(rect, 0, "Int")
+	VarSetCapacity(rect, 16, 0)
+	; 0x440 = DT_CALCRECT | DT_EXPANDTABS
+	h := DllCall("DrawText", "Ptr", dc, "Ptr", &newText, "Int", -1, "Ptr", &rect, "UInt", 0x440)
+	; width = rect.right - rect.left
+	w := NumGet(rect, 8, "Int") - NumGet(rect, 0, "Int")
 
-    if oldFont
-        DllCall("SelectObject", "Ptr", dc, "Ptr", oldFont)
-    DllCall("ReleaseDC", "Ptr", controlHwnd, "Ptr", dc)
+	if oldFont
+		DllCall("SelectObject", "Ptr", dc, "Ptr", oldFont)
+	DllCall("ReleaseDC", "Ptr", controlHwnd, "Ptr", dc)
 
-    GuiControl,, %controlHwnd%, %newText%
-    GuiControl MoveDraw, %controlHwnd%, % "h" h*96/A_ScreenDPI + 2 " w" w*96/A_ScreenDPI + 2
+	GuiControl,, %controlHwnd%, %newText%
+	GuiControl MoveDraw, %controlHwnd%, % "h" h*96/A_ScreenDPI + 2 " w" w*96/A_ScreenDPI + 2
 }
 
 CheckPack() {
@@ -1389,15 +1389,15 @@ FoundStars(star) {
 		try {
 			if(injectMethod && IsFunc("ocr_from_file"))
 			{
-					ocrText := Func("ocr_from_file").Call(fcScreenshot, ocrLanguage)
-					ocrLines := StrSplit(ocrText, "`n")
-					len := ocrLines.MaxIndex()
-					if(len > 1) {
-						playerName := ocrLines[1]
-						playerID := RegExReplace(ocrLines[2], "[^0-9]", "")
-						; playerID := SubStr(ocrLines[2], 1, 19)
-						username := playerName
-					}
+				ocrText := Func("ocr_from_file").Call(fcScreenshot, ocrLanguage)
+				ocrLines := StrSplit(ocrText, "`n")
+				len := ocrLines.MaxIndex()
+				if(len > 1) {
+					playerName := ocrLines[1]
+					playerID := RegExReplace(ocrLines[2], "[^0-9]", "")
+					; playerID := SubStr(ocrLines[2], 1, 19)
+					username := playerName
+				}
 			}
 		} catch e {
 			LogToFile("Failed to OCR the friend code: " . e.message, "BC.txt")
@@ -1423,25 +1423,25 @@ FindBorders(prefix) {
 	if (prefix = "shiny1star" || prefix = "shiny2star") {
 		; TODO: Need references images for these coordinates (right side, bottom corner)
 		borderCoords := [[90, 261, 93, 283]
-		,[173, 261, 176, 283]
-		,[255, 261, 258, 283]
-		,[130, 376, 133, 398]
-		,[215, 376, 218, 398]]
+			,[173, 261, 176, 283]
+			,[255, 261, 258, 283]
+			,[130, 376, 133, 398]
+			,[215, 376, 218, 398]]
 	}
 	; 100% scale changes
 	if (scaleParam = 287) {
 		if (prefix = "shiny1star" || prefix = "shiny2star") {
 			borderCoords := [[91, 253, 95, 278]
-			,[175, 253, 179, 278]  
-			,[259, 253, 263, 278]
-			,[132, 370, 136, 395]
-			,[218, 371, 222, 394]]
+				,[175, 253, 179, 278]
+				,[259, 253, 263, 278]
+				,[132, 370, 136, 395]
+				,[218, 371, 222, 394]]
 		} else {
 			borderCoords := [[30, 277, 85, 281]
-			,[112, 277, 167, 281]
-			,[195, 277, 250, 281]
-			,[70, 394, 125, 398]
-			,[156, 394, 211, 398]]
+				,[112, 277, 167, 281]
+				,[195, 277, 250, 281]
+				,[70, 394, 125, 398]
+				,[156, 394, 211, 398]]
 		}
 	}
 	pBitmap := from_window(WinExist(winTitle))
@@ -1463,31 +1463,31 @@ FindBorders(prefix) {
 FindGodPack() {
 	global winTitle, discordUserId, Delay, username, packs, minStars, minStarsA1Charizard, minStarsA1Mewtwo, minStarsA1Pikachu, minStarsA1a, minStarsA2Dialga, minStarsA2Palkia, minStarsA2a, minStarsA2b, openPack, scriptName, DeadCheck, deleteMethod
 	packMinStars := minStars
-	if(openPack = "Shining") { 
-		packMinStars := minStarsA2b 
+	if(openPack = "Shining") {
+		packMinStars := minStarsA2b
 	}
-	if (openPack = "Arceus") { 
-		packMinStars := minStarsA2a 
+	if (openPack = "Arceus") {
+		packMinStars := minStarsA2a
 	}
-	if (openPack = "Palkia") { 
-		packMinStars := minStarsA2Palkia 
+	if (openPack = "Palkia") {
+		packMinStars := minStarsA2Palkia
 	}
-	if (openPack = "Dialga") { 
-		packMinStars := minStarsA2Dialga 
+	if (openPack = "Dialga") {
+		packMinStars := minStarsA2Dialga
 	}
-	if (openPack = "Mew") { 
-		packMinStars := minStarsA1a 
+	if (openPack = "Mew") {
+		packMinStars := minStarsA1a
 	}
-	if (openPack = "Pikachu") { 
-		packMinStars := minStarsA1Pikachu 
+	if (openPack = "Pikachu") {
+		packMinStars := minStarsA1Pikachu
 	}
-	if (openPack = "Charizard") { 
-		packMinStars := minStarsA1Charizard 
+	if (openPack = "Charizard") {
+		packMinStars := minStarsA1Charizard
 	}
-	if (openPack = "Mewtwo") { 
-		packMinStars := minStarsA1Mewtwo 
+	if (openPack = "Mewtwo") {
+		packMinStars := minStarsA1Mewtwo
 	}
-	
+
 	gpFound := false
 	invalidGP := false
 	searchVariation := 5
@@ -1499,15 +1499,15 @@ FindGodPack() {
 	}
 	borderCoords := [[20, 284, 90, 286]
 		,[103, 284, 173, 286]]
-		
+
 	; Change borderCoords if scaleParam is 287 for 100%
 	if (scaleParam = 287) {
 		borderCoords := [[21, 278, 91, 280]
 			,[105, 278, 175, 280]]
 	}
 
-	;	SquallTCGP 2025.03.12 - 	Just checking the packs count and setting them to 0 if it's number of packs is 3. 
-	;															This applies to any Delete Method except 5 Pack (Fast). This change is made based 
+	;	SquallTCGP 2025.03.12 - 	Just checking the packs count and setting them to 0 if it's number of packs is 3.
+	;															This applies to any Delete Method except 5 Pack (Fast). This change is made based
 	;															on the 5p-no delete community mod created by DietPepperPhD in the discord server.
 	if(deleteMethod != "5 Pack (Fast)") {
 		if(packs = 3)
@@ -1598,15 +1598,15 @@ GodPackFound(validity) {
 	try {
 		if(injectMethod && IsFunc("ocr_from_file"))
 		{
-				ocrText := Func("ocr_from_file").Call(fcScreenshot, ocrLanguage)
-				ocrLines := StrSplit(ocrText, "`n")
-				len := ocrLines.MaxIndex()
-				if(len > 1) {
-					playerName := ocrLines[1]
-					playerID := RegExReplace(ocrLines[2], "[^0-9]", "")
-					; playerID := SubStr(ocrLines[2], 1, 19)
-					username := playerName
-				}
+			ocrText := Func("ocr_from_file").Call(fcScreenshot, ocrLanguage)
+			ocrLines := StrSplit(ocrText, "`n")
+			len := ocrLines.MaxIndex()
+			if(len > 1) {
+				playerName := ocrLines[1]
+				playerID := RegExReplace(ocrLines[2], "[^0-9]", "")
+				; playerID := SubStr(ocrLines[2], 1, 19)
+				username := playerName
+			}
 		}
 	} catch e {
 		LogToFile("Failed to OCR the friend code: " . e.message, "BC.txt")
@@ -1676,7 +1676,7 @@ loadAccount() {
 
 		;initializeAdbShell()
 
-	adbShell.StdIn.WriteLine("am force-stop jp.pokemon.pokemontcgp")
+		adbShell.StdIn.WriteLine("am force-stop jp.pokemon.pokemontcgp")
 
 	RunWait, % adbPath . " -s 127.0.0.1:" . adbPort . " push " . loadDir . " /sdcard/deviceAccount.xml",, Hide
 
@@ -1763,26 +1763,26 @@ saveAccount(file := "Valid", ByRef filePath := "") {
 }
 
 ; adbClick(X, Y) {
-	; global adbShell, setSpeed, adbPath, adbPort
-	; initializeAdbShell()
-	; X := Round(X / 277 * 540)
-	; Y := Round((Y - 44) / 489 * 960)
-	; adbShell.StdIn.WriteLine("input tap " X " " Y)
+; global adbShell, setSpeed, adbPath, adbPort
+; initializeAdbShell()
+; X := Round(X / 277 * 540)
+; Y := Round((Y - 44) / 489 * 960)
+; adbShell.StdIn.WriteLine("input tap " X " " Y)
 ; }
 
 adbClick(X, Y) {
-    global adbShell
-    static clickCommands := Object()
-    static convX := 540/277, convY := 960/489, offset := -44
+	global adbShell
+	static clickCommands := Object()
+	static convX := 540/277, convY := 960/489, offset := -44
 
-    key := X << 16 | Y
+	key := X << 16 | Y
 
-    if (!clickCommands.HasKey(key)) {
-        clickCommands[key] := Format("input tap {} {}"
-            , Round(X * convX)
-            , Round((Y + offset) * convY))
-    }
-    adbShell.StdIn.WriteLine(clickCommands[key])
+	if (!clickCommands.HasKey(key)) {
+		clickCommands[key] := Format("input tap {} {}"
+			, Round(X * convX)
+			, Round((Y + offset) * convY))
+	}
+	adbShell.StdIn.WriteLine(clickCommands[key])
 }
 
 ControlClick(X, Y) {
@@ -1877,7 +1877,7 @@ Screenshot(filename := "Valid") {
 	pBitmap := Gdip_CloneBitmapArea(pBitmapW, 18, 175, 240, 227)
 	;scale 100%
 	if (scaleParam = 287) {
-	pBitmap := Gdip_CloneBitmapArea(pBitmapW, 17, 168, 245, 230)
+		pBitmap := Gdip_CloneBitmapArea(pBitmapW, 17, 168, 245, 230)
 	}
 	Gdip_DisposeImage(pBitmapW)
 
@@ -1910,7 +1910,7 @@ LogToDiscord(message, screenshotFile := "", ping := false, xmlFile := "", screen
 				; Base command
 				curlCommand := "curl -k "
 					. "-F ""payload_json={\""content\"":\""" . discordPing . message . "\""};type=application/json;charset=UTF-8"" "
-				
+
 				; If an screenshot or xml file is provided, send it
 				sendScreenshot1 := screenshotFile != "" && FileExist(screenshotFile)
 				sendScreenshot2 := screenshotFile2 != "" && FileExist(screenshotFile2)
@@ -2166,7 +2166,6 @@ bboxAndPause(X1, Y1, X2, Y2, doPause := False) {
 
 	Gui, BoundingBox:Destroy
 }
-
 
 initializeAdbShell() {
 	global adbShell, adbPath, adbPort
@@ -2784,7 +2783,7 @@ SelectPack(HG := false) {
 	global openPack, packArray
 	packy := 196
 	if(openPack = "Shining") {
-		packx := 145 
+		packx := 145
 	} else if(openPack = "Arceus") {
 		packx := 200
 	} else {
@@ -2795,7 +2794,7 @@ SelectPack(HG := false) {
 		FindImageAndClick(115, 140, 160, 155, , "SelectExpansion", 245, 475)
 		packy := 442
 		if(openPack = "Pikachu" || openPack = "Mewtwo" || openPack = "Charizard"){
-			Sleep, 500 
+			Sleep, 500
 			adbSwipeUp(160)
 			Sleep, 500
 		}
@@ -2804,15 +2803,15 @@ SelectPack(HG := false) {
         } else if(openPack = "Mewtwo"){
             packx := 85
         } else if(openPack = "Charizard"){
-            packx := 45 
+            packx := 45
         } else if(openPack = "Mew"){
             packx := 205
         }
 		FindImageAndClick(233, 400, 264, 428, , "Points", packx, packy)
 	} else if(openPack = "Palkia") {
-		Sleep, 500 
+		Sleep, 500
 		adbClick(245, 245) ;temp
-		Sleep, 500 
+		Sleep, 500
 	}
 	if(HG = "Tutorial") {
 		FindImageAndClick(236, 198, 266, 226, , "Hourglass2", 180, 436, 500) ;stop at hourglasses tutorial 2 180 to 203?
@@ -2841,7 +2840,7 @@ SelectPack(HG := false) {
 			CreateStatusMessage("In failsafe for HourglassPack4. " . failSafeTime "/45 seconds")
 		}
 	}
-	;if(HG != "Tutorial")
+		;if(HG != "Tutorial")
 		failSafe := A_TickCount
 		failSafeTime := 0
 		Loop {
@@ -3240,11 +3239,10 @@ getChangeDateTime() {
 	Return FormattedTime
 }
 
-
-/*
-^e::
-	msgbox ss
-	pToken := Gdip_Startup()
-	Screenshot()
-return
-*/
+	/*
+	^e::
+		msgbox ss
+		pToken := Gdip_Startup()
+		Screenshot()
+	return
+	*/

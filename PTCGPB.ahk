@@ -1,4 +1,4 @@
-version = Arturos PTCGP Bot
+﻿version = Arturos PTCGP Bot
 #SingleInstance, force
 CoordMode, Mouse, Screen
 SetTitleMatchMode, 3
@@ -108,8 +108,6 @@ IniRead, sendAccountXml, Settings.ini, UserSettings, sendAccountXml, 0
 Gui, Color, 1E1E1E, 333333 ; Dark theme background
 Gui, Font, s10 cWhite, Segoe UI ; Modern font
 
-
-
 ; ========== Column 1 ==========
 ; ==============================
 
@@ -158,7 +156,7 @@ if (defaultLanguage = "Scale125") {
 	defaultLang := 1
 	scaleParam := 277
 } else if (defaultLanguage = "Scale100") {
-	defaultLang := 2  
+	defaultLang := 2
 	scaleParam := 287
 }
 Gui, Add, DropDownList, x155 y345 w75 vdefaultLanguage choose%defaultLang% Background2A2A2A cWhite, Scale125|Scale100
@@ -211,8 +209,6 @@ Gui, Add, Text, x20 y455 c4169E1, Launch All Mumu Delay:
 Gui, Add, Edit, vinstanceLaunchDelay w50 x170 y453 h20 -E0x200 Background2A2A2A cWhite Center, %instanceLaunchDelay%
 Gui, Add, Checkbox, % (autoLaunchMonitor ? "Checked" : "") " vautoLaunchMonitor x30 y480 c4169E1", Auto Launch Monitor
 
-
-
 ; ========== Column 2 ==========
 ; ==============================
 
@@ -259,8 +255,6 @@ Gui, Add, Checkbox, % (InvalidCheck ? "Checked" : "") " vInvalidCheck x385 y305 
 Gui, Add, Checkbox, % (CrownCheck ? "Checked" : "") " vCrownCheck x270 y335 cFF4500", Save Crowns
 Gui, Add, Checkbox, % (ImmersiveCheck ? "Checked" : "") " vImmersiveCheck x270 y355 cFF4500", Save Immersives
 Gui, Add, Checkbox, % (ShinyCheck ? "Checked" : "") " vShinyCheck x385 y335 cFF4500", Save Shiny
-
-
 
 ; ========== Column 3 ==========
 ; ==============================
@@ -310,7 +304,6 @@ Gui, Add, Button, gStart x505 y300 w240 h30, START BOT
 Gui, Add, Button, gArrangeWindows x630 y335 w115 h30, Arrange Windows
 Gui, Add, Button, gLaunchAllMumu x505 y335 w115 h30, Launch All Mumu
 
-
 ; ========== Download Settings Section (Bottom right) ==========
 Gui, Add, GroupBox, x255 y405 w490 h110 cWhite, Download Settings ;
 
@@ -326,7 +319,6 @@ Gui, Add, Edit, vvipIdsURL w460 x270 y485 h20 -E0x200 Background2A2A2A cWhite, %
 
 Gui, Show, , %localVersion% PTCGPB Bot Setup [Non-Commercial 4.0 International License]
 Return
-
 
 CheckForUpdates:
 	CheckForUpdate()
@@ -505,10 +497,10 @@ Start:
 	IniWrite, %minStarsA2Palkia%, Settings.ini, UserSettings, minStarsA2Palkia
 	IniWrite, %minStarsA2a%, Settings.ini, UserSettings, minStarsA2a
 	IniWrite, %minStarsA2b%, Settings.ini, UserSettings, minStarsA2b
-	
+
 	IniWrite, %heartBeatDelay%, Settings.ini, UserSettings, heartBeatDelay
 	IniWrite, %sendAccountXml%, Settings.ini, UserSettings, sendAccountXml
-	
+
 	; Using FriendID field to provide a URL to download ids.txt is deprecated.
 	if (inStr(FriendID, "http")) {
 		MsgBox, To provide a URL for friend IDs, please use the ids.txt API field and leave the Friend ID field empty.
@@ -677,8 +669,6 @@ Start:
 					offlineAHK := "Offline: none."
 				if(onlineAHK = "Online: ")
 					onlineAHK := "Online: none."
-
-
 
 				discMessage := "\n" . onlineAHK . "\n" . offlineAHK . "\n" . packStatus . "\nVersion: " . RegExReplace(githubUser, "-.*$") . "-" . localVersion
 				discMessage .= typeMsg
