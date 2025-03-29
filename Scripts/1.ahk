@@ -1407,6 +1407,10 @@ FoundStars(star) {
 	friendCode := getFriendCode()
 	IniWrite, 0, %A_ScriptDir%\%scriptName%.ini, UserSettings, DeadCheck
 
+	if(star == "Double two star") {
+		changeProfile("Erika")
+	}
+
 	; Pull back screenshot of the friend code/name (good for inject method)
 	Sleep, 8000
 	fcScreenshot := Screenshot("FRIENDCODE")
