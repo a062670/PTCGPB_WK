@@ -10,7 +10,7 @@ scriptFolder := A_ScriptDir
 zipPath := A_Temp . "\update.zip"
 extractPath := A_Temp . "\update"
 
-githubUser := "WK"
+githubUser := "WK_cn"
 localVersion .= ".1"
 
 if not A_IsAdmin
