@@ -1530,7 +1530,7 @@ FindGodPack() {
 	
 	gpFound := false
 	invalidGP := false
-	searchVariation := 5
+	searchVariation := 6
 	confirm := false
 	Loop {
 		if(FindBorders("lag") = 0)
