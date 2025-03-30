@@ -20,9 +20,11 @@ if not A_IsAdmin
 	ExitApp
 }
 
+/*
 MsgBox, 64, The project is now licensed under CC BY-NC 4.0, The original intention of this project was not for it to be used for paid services even those disguised as 'donations.' I hope people respect my wishes and those of the community. `nThe project is now licensed under CC BY-NC 4.0, which allows you to use, modify, and share the software only for non-commercial purposes. Commercial use, including using the software to provide paid services or selling it (even if donations are involved), is not allowed under this license. The new license applies to this and all future releases.
 
 CheckForUpdate()
+*/
 
 KillADBProcesses()
 
@@ -318,12 +320,15 @@ if (heartBeat) {
 
 ; ========== Action Buttons ==========
 Gui, Add, Button, gOpenLink x505 y370 w77 h35, Buy Me a Coffee
+/*
 Gui, Add, Button, gCheckForUpdates x587 y370 w77 h35, Check Updates
+*/
 Gui, Add, Button, gOpenDiscord x669 y370 w77 h35, Join Discord
 Gui, Add, Button, gStart x505 y300 w240 h30, START BOT
 Gui, Add, Button, gArrangeWindows x628 y335 w117 h30, Arrange Windows
 Gui, Add, Button, gLaunchAllMumu x505 y335 w118 h30, Launch All Mumu
 
+Gui, Add, Button, gUpdateToWKLatest x588 y370 w77 h35, Update to WK Latest
 
 ; ========== Download Settings Section (Bottom right) ==========
 sectionColor := "cWhite"
@@ -342,6 +347,11 @@ Gui, Add, Edit, vvipIdsURL w460 x270 y485 h20 -E0x200 Background2A2A2A cWhite, %
 Gui, Show, , %localVersion% PTCGPB Bot Setup [Non-Commercial 4.0 International License]
 Return
 
+UpdateToWKLatest:
+	Run, "update.ahk",, Hide, PID
+	Process, WaitClose, %PID%
+	Reload
+return
 
 CheckForUpdates:
 	CheckForUpdate()
