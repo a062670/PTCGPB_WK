@@ -655,6 +655,35 @@ AddFriends(renew := false, getFC := false) {
 	return n ;return added friends so we can dynamically update the .txt in the middle of a run without leaving friends at the end
 }
 
+changeProfile(character) {
+	FindImageAndClick(120, 500, 155, 530, , "Social", 143, 518, 500)
+	FindImageAndClick(20, 500, 55, 530, , "Home", 40, 516, 500) 212 276 230 294
+	FindImageAndClick(203, 272, 237, 300, , "Profile", 143, 95, 500)
+	FindImageAndClick(130, 448, 157, 457, , "OK7", 143, 179, 500)
+	Delay(3)
+	adbClick(143,244)
+	Delay(3)
+	if(character = "Pikachu")
+		adbClick(55,244)
+	else if(character = "Erika")
+		adbClick(143,338)
+	else if(character = "Snorlax")
+		adbClick(230,244)
+	else if(character = "Slowpoke")
+		adbClick(55,338)
+	Delay(3)
+	adbClick(143,466)
+	Delay(1)
+	FindImageAndClick(130, 448, 157, 457, , "OK7", 143, 316, 500)
+	Delay(3)
+	adbClick(143,370)
+	Delay(3)
+	adbClick(143,466)
+	Delay(1)
+	FindImageAndClick(120, 500, 155, 530, , "Social", 143, 518, 500)
+	AddFriends(false, true)
+}
+
 ChooseTag() {
 	FindImageAndClick(120, 500, 155, 530, , "Social", 143, 518, 500)
 	FindImageAndClick(20, 500, 55, 530, , "Home", 40, 516, 500) 212 276 230 294
@@ -1381,6 +1410,11 @@ FoundStars(star) {
 	friendCode := getFriendCode()
 	IniWrite, 0, %A_ScriptDir%\%scriptName%.ini, UserSettings, DeadCheck
 
+	; WK 換頭像
+	if(star == "Double two star") {
+		changeProfile("Erika")
+	}
+
 	; Pull back screenshot of the friend code/name (good for inject method)
 	Sleep, 8000
 	fcScreenshot := Screenshot("FRIENDCODE")
@@ -1411,8 +1445,11 @@ FoundStars(star) {
 	CreateStatusMessage(logMessage)
 	LogToFile(logMessage, "GPlog.txt")
 	LogToDiscord(logMessage, screenShot, discordUserId, accountFullPath, fcScreenshot)
+	/*
+	; 原版換頭像
 	if(star != "Crown" && star != "Immersive" && star != "Shiny")
 		ChooseTag()
+	*/
 }
 
 FindBorders(prefix) {
@@ -1591,6 +1628,15 @@ GodPackFound(validity) {
 	LogToFile(logMessage, godPackLog)
 	CreateStatusMessage(logMessage)
 	friendCode := getFriendCode()
+	
+	; WK 換頭像
+	if(validity = "Valid") {
+		if(starCount > 2)
+			changeProfile("Pikachu")
+		else
+			changeProfile("Erika")
+	}
+
 	IniWrite, 0, %A_ScriptDir%\%scriptName%.ini, UserSettings, DeadCheck
 
 	; Pull screenshot of the Friend code page; wait so we don't get the clipboard pop up; good for the inject method
@@ -1622,7 +1668,11 @@ GodPackFound(validity) {
 	; Adjust the below to only send a 'ping' to Discord friends on Valid packs
 	if(validity = "Valid") {
 		LogToDiscord(logMessage, screenShot, discordUserId, accountFullPath, fcScreenshot)
+		/*
+		; 原版換頭像
 		ChooseTag()
+		*/
+		
 	} else {
 		LogToDiscord(logMessage, screenShot, false, accountFullPath, fcScreenshot)
 	}
@@ -2537,6 +2587,19 @@ DoTutorial() {
 			adbClick(41, 296)
 		}
 	FindImageAndClick(190, 241, 225, 270, , "Name", 189, 438) ;wait for name input screen
+
+	; WK 換頭像
+	FindImageAndClick(80, 448, 217, 480, , "OK7", 143, 179, 500) ; change profile image
+	Delay(3)
+	adbClick(143,244)
+	Delay(3)
+	adbClick(230,338)
+	Delay(3)
+	adbClick(143,466)
+	Delay(1)
+
+	/*
+	;原版換頭像
 	;choose any
 	Delay(1)
 	if(FindOrLoseImage(147, 160, 157, 169, , "Erika", 1)) {
@@ -2546,6 +2609,7 @@ DoTutorial() {
 		FindImageAndClick(165, 294, 173, 301, , "ChooseErika", 143, 306)
 		FindImageAndClick(190, 241, 225, 270, , "Name", 143, 462) ;wait for name input screen
 	}
+	*/
 	FindImageAndClick(0, 476, 40, 502, , "OK", 139, 257) ;wait for name input screen
 
 	failSafe := A_TickCount
