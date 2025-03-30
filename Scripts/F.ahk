@@ -1064,9 +1064,9 @@ resetWindows(){
 			Title := winTitle
 
 			if (runMain) {
-				instanceIndex := (Mains - 1) + Title + 1
+				instanceIndex := (Mains - 1) + Instances + 1
 			} else {
-				instanceIndex := Title
+				instanceIndex := Instances + 1
 			}
 
 			rowHeight := 533  ; Adjust the height of each row
