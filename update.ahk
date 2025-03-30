@@ -6,7 +6,7 @@ SetWorkingDir, %A_ScriptDir%
 
 scriptFolder := A_ScriptDir
 zipPath := A_Temp . "\update.zip"
-wkBranch := "WK_cn_cloud"
+wkBranch := "WK"
 zipDownloadURL := "https://github.com/a062670/PTCGPB_WK/archive/refs/heads/" . wkBranch .  ".zip"
 
 ; ↓↓↓↓↓ git上不可以有值
