@@ -10,6 +10,9 @@ scriptFolder := A_ScriptDir
 zipPath := A_Temp . "\update.zip"
 extractPath := A_Temp . "\update"
 
+githubUser := "WK"
+localVersion .= ".1"
+
 if not A_IsAdmin
 {
 	; Relaunch script with admin rights
