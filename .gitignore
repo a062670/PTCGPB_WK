@@ -11,6 +11,7 @@ Scripts/*.ahk
 Scripts/*.ini
 !Scripts/1.ahk
 !Scripts/Main.ahk
+!Scripts/F.ahk
 Scripts/temp/*
 !Scripts/temp/1.txt
 HeartBeat.ini
