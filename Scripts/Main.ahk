@@ -182,9 +182,11 @@ Loop {
 	FindImageAndClick(170, 450, 195, 480, , "Approve", 228, 464)
 	if(firstRun) {
 		Sleep, 1000
+		/*
 		adbClick(205, 510)
 		Sleep, 1000
 		adbClick(210, 372)
+		*/
 		firstRun := false
 	}
 	done := false
