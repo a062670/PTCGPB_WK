@@ -11,7 +11,7 @@ zipPath := A_Temp . "\update.zip"
 extractPath := A_Temp . "\update"
 
 githubUser := "WK_cn"
-localVersion .= ".1"
+localVersion .= ".2"
 
 if not A_IsAdmin
 {
