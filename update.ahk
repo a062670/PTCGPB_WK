@@ -14,13 +14,14 @@ groupName := ""
 apiUrl := ""
 discordWebhookURL := ""
 heartBeatWebhookURL := ""
+configUrl := ""
 ; ↑↑↑↑↑ git上不可以有值
 
 update()
 Return
 
 setupOnce(){
-    global discordWebhookURL, heartBeatWebhookURL, apiUrl, groupName
+    global discordWebhookURL, heartBeatWebhookURL, apiUrl, groupName, configUrl
     ; 一次性更新到新版使用 變數有值才做
     if(groupName != ""){
         IniWrite, %groupName%, TeamSettings.ini, TeamSettings, groupName
@@ -35,6 +36,11 @@ setupOnce(){
     if(heartBeatWebhookURL != ""){
         IniWrite, %heartBeatWebhookURL%, Settings.ini, UserSettings, heartBeatWebhookURL
         IniWrite, %heartBeatWebhookURL%, TeamSettings.ini, TeamSettings, heartBeatWebhookURL
+    }
+    if(configUrl != ""){
+        IniWrite, %configUrl%, Settings.ini, UserSettings, configUrl
+        Run, "applyTeamConfig.ahk",, Hide, PID
+        Process, WaitClose, %PID%
     }
 }
 
