@@ -21,7 +21,7 @@ applyTeamConfig(){
         ; 一般流程
         IniRead, configUrl, TeamSettings.ini, TeamSettings, configUrl , %A_Space%
         if(configUrl == ""){
-            MsgBox, 無車隊設定檔
+            MsgBox, 尚未車隊設定檔連結
             ExitApp
         }
     }
