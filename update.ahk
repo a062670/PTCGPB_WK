@@ -1,4 +1,4 @@
-﻿#NoEnv
+#NoEnv
 #SingleInstance, Force
 SendMode, Input
 SetBatchLines, -1
@@ -41,6 +41,9 @@ setupOnce(){
         IniWrite, %configUrl%, TeamSettings.ini, TeamSettings, configUrl
         Run, "applyTeamConfig.ahk",, Hide, PID
         Process, WaitClose, %PID%
+    }
+    if(A_ScriptName != "update.ahk"){
+        FileDelete, % A_ScriptName
     }
 }
 
