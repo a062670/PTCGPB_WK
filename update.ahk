@@ -38,7 +38,7 @@ setupOnce(){
         IniWrite, %heartBeatWebhookURL%, TeamSettings.ini, TeamSettings, heartBeatWebhookURL
     }
     if(configUrl != ""){
-        IniWrite, %configUrl%, Settings.ini, UserSettings, configUrl
+        IniWrite, %configUrl%, TeamSettings.ini, TeamSettings, configUrl
         Run, "applyTeamConfig.ahk",, Hide, PID
         Process, WaitClose, %PID%
     }
